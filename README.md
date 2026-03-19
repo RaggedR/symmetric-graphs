@@ -22,7 +22,7 @@ Quotient-driven layouts for symmetric graphs, using automorphism group orbits to
 
 ## Graphs
 
-All graphs are **cubic** (3-regular). The collection is the complete [Foster census](https://en.wikipedia.org/wiki/Foster_census) of cubic arc-transitive (symmetric) graphs up to 20 vertices, plus selected entries up to 30. Cubic graphs are the simplest non-trivial regular graphs, and their automorphism groups are large relative to their size, making them a natural testbed for symmetry-aware drawing.
+All graphs are **cubic** (3-regular). The collection is the complete [Foster census](https://en.wikipedia.org/wiki/Foster_census) of cubic arc-transitive (symmetric) graphs up to 30 vertices — all 13 of them. Cubic graphs are the simplest non-trivial regular graphs, and their automorphism groups are large relative to their size, making them a natural testbed for symmetry-aware drawing.
 
 **The list is exhaustive for n ≤ 30**: every cubic arc-transitive graph on at most 30 vertices appears in the gallery (there are exactly 13). No cubic arc-transitive graph exists on 12 or 22 vertices.
 
