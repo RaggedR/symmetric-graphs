@@ -46,7 +46,7 @@ Given a graph Γ, we compute G = Aut(Γ) and select a subgroup H ≤ G whose orb
 
 All group structures computed by GAP (GRAPE package). K₄ and K₃,₃ are included in the code but omitted from the gallery as trivially small. The gallery shows the 11 graphs from F008 to F030.
 
-No cubic arc-transitive graph exists on 12 or 22 vertices. The next entry after F030 is at n=32.
+The next entry after F030 is at n=32.
 
 ## Usage
 
