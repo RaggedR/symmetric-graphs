@@ -866,15 +866,17 @@ def main():
                          aut_order=data.get('aut_order'),
                          aut_structure=data.get('aut_structure'))
 
-    tex_file = os.path.join(GRAPHVIZ_DIR, f"auto-{args.graph}.tex")
-    pdf_file = os.path.join(GRAPHVIZ_DIR, f"auto-{args.graph}.pdf")
+    indiv_dir = os.path.join(GRAPHVIZ_DIR, "individual_graphs")
+    os.makedirs(indiv_dir, exist_ok=True)
+    tex_file = os.path.join(indiv_dir, f"auto-{args.graph}.tex")
+    pdf_file = os.path.join(indiv_dir, f"auto-{args.graph}.pdf")
 
     with open(tex_file, 'w') as f:
         f.write(tikz)
 
     result = subprocess.run(
         ["pdflatex", "-interaction=nonstopmode", f"auto-{args.graph}.tex"],
-        capture_output=True, text=True, cwd=GRAPHVIZ_DIR
+        capture_output=True, text=True, cwd=indiv_dir
     )
 
     if result.returncode != 0:
@@ -884,7 +886,7 @@ def main():
 
     for ext in ['aux', 'log']:
         try:
-            os.remove(os.path.join(GRAPHVIZ_DIR, f"auto-{args.graph}.{ext}"))
+            os.remove(os.path.join(indiv_dir, f"auto-{args.graph}.{ext}"))
         except FileNotFoundError:
             pass
 
