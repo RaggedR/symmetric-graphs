@@ -22,15 +22,19 @@ Quotient-driven layouts for symmetric graphs, using automorphism group orbits to
 
 ## Graphs
 
-| Graph | Vertices | Crossing number | Our layout |
-|-------|:--------:|:---------------:|:----------:|
-| Petersen | 10 | 2 | 5 |
-| Heawood | 14 | ? | 14 |
-| Pappus | 18 | 5 | 7 |
-| Dodecahedron | 20 | 0 | 0 |
-| Desargues | 20 | ? | 20 |
-| Mobius-Kantor | 16 | ? | 16 |
-| Cube | 8 | 0 | 0 |
+All seven graphs are **cubic** (3-regular) — every vertex has degree 3. Cubic graphs are the simplest non-trivial regular graphs, and most of the classic symmetric graphs happen to be cubic: the Petersen graph, the generalized Petersen graphs GP(n,k), the Levi graphs of point-line configurations, and the polyhedral skeletons of the Platonic solids. They are a natural testbed for symmetry-aware drawing because their automorphism groups are large relative to their size.
+
+Given a graph Γ, we compute G = Aut(Γ) and select a subgroup H ≤ G whose orbits give a clean quotient. The layout places each H-orbit on a concentric ring.
+
+| Graph | n | G = Aut(Γ) | \|G\| | H | \|H\| | Orbits | Crossings |
+|-------|:-:|------------|:-----:|---|:-----:|--------|:---------:|
+| Petersen | 10 | S₅ | 120 | D₁₀ | 10 | [5, 5] | 5 |
+| Heawood | 14 | PGL(2,7) | 336 | C₂ × C₂ | 4 | [2, 2, 2, 4, 4] | 14 |
+| Pappus | 18 | (C₃ × C₃) ⋊ S₃ | 216 | S₃ | 6 | [6, 6, 6] | 7 |
+| Dodecahedron | 20 | A₅ × C₂ | 120 | C₅ | 5 | [5, 5, 5, 5] | 0 |
+| Desargues GP(10,3) | 20 | S₅ × C₂ | 240 | C₁₀ | 10 | [10, 10] | 20 |
+| Mobius-Kantor GP(8,3) | 16 | GL(2,3) ⋊ C₂ | 96 | C₈ | 8 | [8, 8] | 16 |
+| Cube | 8 | S₄ × C₂ | 48 | C₄ | 4 | [4, 4] | 0 |
 
 ## Usage
 
