@@ -14,8 +14,10 @@ from draw_graph import run_gap, find_best_layout, COLORS
 GRAPHVIZ_DIR = os.path.expanduser("~/git/graphviz")
 
 ALL_GRAPHS = [
-    "petersen", "heawood", "pappus", "dodecahedron",
-    "desargues", "moebiuskantor", "cube",
+    "k4", "k33", "cube", "petersen",
+    "heawood", "moebiuskantor", "pappus",
+    "dodecahedron", "desargues", "nauru",
+    "f26a", "coxeter", "tuttecoxeter",
 ]
 
 
@@ -93,14 +95,11 @@ def main():
             'quotient': best,
         })
 
-    # Layout: 3 columns, 3 rows (7 graphs + 1 empty + title)
-    # Top row: 3 graphs
-    # Middle row: 3 graphs
-    # Bottom row: 1 graph centered
-    ncols = 3
-    col_width = 12.0
-    row_height = 14.0
-    scale = 0.85
+    # Layout: 4 columns (smaller scale for more graphs)
+    ncols = 4
+    col_width = 11.0
+    row_height = 13.0
+    scale = 0.75
 
     positions = []
     for i in range(len(graph_data)):
