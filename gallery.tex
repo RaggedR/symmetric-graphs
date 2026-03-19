@@ -1,0 +1,326 @@
+\documentclass[border=20pt]{standalone}
+\usepackage{amsmath, amssymb}
+\usepackage{tikz}
+
+\definecolor{c0}{HTML}{E53935}
+\definecolor{c1}{HTML}{1E88E5}
+\definecolor{c2}{HTML}{43A047}
+\definecolor{c3}{HTML}{FB8C00}
+\definecolor{c4}{HTML}{8E24AA}
+\definecolor{c5}{HTML}{00ACC1}
+\definecolor{c6}{HTML}{F4511E}
+\definecolor{c7}{HTML}{3949AB}
+\definecolor{c8}{HTML}{7CB342}
+\definecolor{c9}{HTML}{C2185B}
+\definecolor{c10}{HTML}{FF7043}
+\definecolor{c11}{HTML}{26A69A}
+\definecolor{c12}{HTML}{5C6BC0}
+\definecolor{c13}{HTML}{FFCA28}
+\definecolor{c14}{HTML}{AB47BC}
+
+\begin{document}
+\begin{tikzpicture}[
+  v/.style={circle, draw, thick, minimum size=5mm, inner sep=0pt},
+  e/.style={thick, gray!40},
+  graphtitle/.style={font=\large\bfseries},
+  graphsub/.style={font=\footnotesize, text=gray},
+]
+
+\node[font=\Huge\bfseries] at (18.0, 7.5) {Symmetric Graph Gallery};
+\node[font=\normalsize, text=gray] at (18.0, 6.5) {Quotient-driven layouts --- cyclic and cylindrical symmetry};
+
+% === Petersen ===
+\node[graphtitle] at (6.0, 4.675) {Petersen};
+\node[graphsub] at (6.0, 4.165) {$|\mathrm{Aut}| = 20$, 2 orbits};
+\node[v, fill=c0!30] (gPetersen1) at (6.79, -1.08) {\tiny 1};
+\node[v, fill=c0!30] (gPetersen2) at (6.00, 1.34) {\tiny 2};
+\node[v, fill=c1!30] (gPetersen3) at (6.00, 3.82) {\tiny 3};
+\node[v, fill=c1!30] (gPetersen4) at (9.64, 1.18) {\tiny 4};
+\node[v, fill=c1!30] (gPetersen5) at (8.25, -3.09) {\tiny 5};
+\node[v, fill=c0!30] (gPetersen6) at (4.73, 0.41) {\tiny 6};
+\node[v, fill=c0!30] (gPetersen7) at (5.21, -1.08) {\tiny 7};
+\node[v, fill=c1!30] (gPetersen8) at (2.36, 1.18) {\tiny 8};
+\node[v, fill=c0!30] (gPetersen9) at (7.27, 0.41) {\tiny 9};
+\node[v, fill=c1!30] (gPetersen10) at (3.75, -3.09) {\tiny 10};
+\draw[thick, c0!60] (gPetersen1) -- (gPetersen2);
+\draw[e] (gPetersen1) -- (gPetersen5);
+\draw[thick, c0!60] (gPetersen1) -- (gPetersen6);
+\draw[e] (gPetersen2) -- (gPetersen3);
+\draw[thick, c0!60] (gPetersen2) -- (gPetersen7);
+\draw[thick, c1!60] (gPetersen3) -- (gPetersen4);
+\draw[thick, c1!60] (gPetersen3) -- (gPetersen8);
+\draw[thick, c1!60] (gPetersen4) -- (gPetersen5);
+\draw[e] (gPetersen4) -- (gPetersen9);
+\draw[thick, c1!60] (gPetersen5) -- (gPetersen10);
+\draw[e] (gPetersen6) -- (gPetersen8);
+\draw[thick, c0!60] (gPetersen6) -- (gPetersen9);
+\draw[thick, c0!60] (gPetersen7) -- (gPetersen9);
+\draw[e] (gPetersen7) -- (gPetersen10);
+\draw[thick, c1!60] (gPetersen8) -- (gPetersen10);
+
+% === Heawood ===
+\node[graphtitle] at (18.0, 4.675) {Heawood};
+\node[graphsub] at (18.0, 4.165) {$|\mathrm{Aut}| = 20$, 5 orbits};
+\node[v, fill=c0!30] (gHeawood1) at (18.00, 3.82) {\tiny 1};
+\node[v, fill=c1!30] (gHeawood2) at (16.34, 3.45) {\tiny 2};
+\node[v, fill=c2!30] (gHeawood3) at (15.01, 2.38) {\tiny 3};
+\node[v, fill=c3!30] (gHeawood4) at (14.27, 0.85) {\tiny 4};
+\node[v, fill=c3!30] (gHeawood5) at (14.27, -0.85) {\tiny 5};
+\node[v, fill=c4!30] (gHeawood6) at (15.01, -2.38) {\tiny 6};
+\node[v, fill=c4!30] (gHeawood7) at (16.34, -3.45) {\tiny 7};
+\node[v, fill=c3!30] (gHeawood8) at (18.00, -3.82) {\tiny 8};
+\node[v, fill=c3!30] (gHeawood9) at (19.66, -3.45) {\tiny 9};
+\node[v, fill=c2!30] (gHeawood10) at (20.99, -2.38) {\tiny 10};
+\node[v, fill=c1!30] (gHeawood11) at (21.73, -0.85) {\tiny 11};
+\node[v, fill=c0!30] (gHeawood12) at (21.73, 0.85) {\tiny 12};
+\node[v, fill=c4!30] (gHeawood13) at (20.99, 2.38) {\tiny 13};
+\node[v, fill=c4!30] (gHeawood14) at (19.66, 3.45) {\tiny 14};
+\draw[e] (gHeawood1) -- (gHeawood2);
+\draw[e] (gHeawood1) -- (gHeawood6);
+\draw[e] (gHeawood1) -- (gHeawood14);
+\draw[e] (gHeawood2) -- (gHeawood3);
+\draw[thick, c1!60] (gHeawood2) -- (gHeawood11);
+\draw[e] (gHeawood3) -- (gHeawood4);
+\draw[e] (gHeawood3) -- (gHeawood8);
+\draw[thick, c3!60] (gHeawood4) -- (gHeawood5);
+\draw[e] (gHeawood4) -- (gHeawood13);
+\draw[e] (gHeawood5) -- (gHeawood6);
+\draw[e] (gHeawood5) -- (gHeawood10);
+\draw[thick, c4!60] (gHeawood6) -- (gHeawood7);
+\draw[e] (gHeawood7) -- (gHeawood8);
+\draw[e] (gHeawood7) -- (gHeawood12);
+\draw[thick, c3!60] (gHeawood8) -- (gHeawood9);
+\draw[e] (gHeawood9) -- (gHeawood10);
+\draw[e] (gHeawood9) -- (gHeawood14);
+\draw[e] (gHeawood10) -- (gHeawood11);
+\draw[e] (gHeawood11) -- (gHeawood12);
+\draw[e] (gHeawood12) -- (gHeawood13);
+\draw[thick, c4!60] (gHeawood13) -- (gHeawood14);
+
+% === Pappus ===
+\node[graphtitle] at (30.0, 4.675) {Pappus};
+\node[graphsub] at (30.0, 4.165) {$|\mathrm{Aut}| = 18$, 3 orbits};
+\node[v, fill=c0!30] (gPappus1) at (30.00, 3.82) {\tiny 1};
+\node[v, fill=c0!30] (gPappus2) at (26.69, 1.91) {\tiny 2};
+\node[v, fill=c0!30] (gPappus3) at (26.69, -1.91) {\tiny 3};
+\node[v, fill=c0!30] (gPappus4) at (30.00, -3.82) {\tiny 4};
+\node[v, fill=c0!30] (gPappus5) at (33.31, -1.91) {\tiny 5};
+\node[v, fill=c0!30] (gPappus6) at (33.31, 1.91) {\tiny 6};
+\node[v, fill=c1!30] (gPappus7) at (30.00, 2.58) {\tiny 7};
+\node[v, fill=c2!30] (gPappus8) at (30.00, 1.34) {\tiny 8};
+\node[v, fill=c1!30] (gPappus9) at (27.76, 1.29) {\tiny 9};
+\node[v, fill=c2!30] (gPappus10) at (28.84, 0.67) {\tiny 10};
+\node[v, fill=c1!30] (gPappus11) at (27.76, -1.29) {\tiny 11};
+\node[v, fill=c2!30] (gPappus12) at (28.84, -0.67) {\tiny 12};
+\node[v, fill=c2!30] (gPappus13) at (30.00, -1.34) {\tiny 13};
+\node[v, fill=c1!30] (gPappus14) at (30.00, -2.58) {\tiny 14};
+\node[v, fill=c2!30] (gPappus15) at (31.16, -0.67) {\tiny 15};
+\node[v, fill=c1!30] (gPappus16) at (32.24, -1.29) {\tiny 16};
+\node[v, fill=c2!30] (gPappus17) at (31.16, 0.67) {\tiny 17};
+\node[v, fill=c1!30] (gPappus18) at (32.24, 1.29) {\tiny 18};
+\draw[thick, c0!60] (gPappus1) -- (gPappus2);
+\draw[thick, c0!60] (gPappus1) -- (gPappus6);
+\draw[e] (gPappus1) -- (gPappus18);
+\draw[thick, c0!60] (gPappus2) -- (gPappus3);
+\draw[e] (gPappus2) -- (gPappus9);
+\draw[thick, c0!60] (gPappus3) -- (gPappus4);
+\draw[e] (gPappus3) -- (gPappus14);
+\draw[thick, c0!60] (gPappus4) -- (gPappus5);
+\draw[e] (gPappus4) -- (gPappus11);
+\draw[thick, c0!60] (gPappus5) -- (gPappus6);
+\draw[e] (gPappus5) -- (gPappus16);
+\draw[e] (gPappus6) -- (gPappus7);
+\draw[e] (gPappus7) -- (gPappus8);
+\draw[e] (gPappus7) -- (gPappus12);
+\draw[e] (gPappus8) -- (gPappus9);
+\draw[thick, c2!60] (gPappus8) -- (gPappus15);
+\draw[e] (gPappus9) -- (gPappus10);
+\draw[e] (gPappus10) -- (gPappus11);
+\draw[thick, c2!60] (gPappus10) -- (gPappus17);
+\draw[e] (gPappus11) -- (gPappus12);
+\draw[thick, c2!60] (gPappus12) -- (gPappus13);
+\draw[e] (gPappus13) -- (gPappus14);
+\draw[e] (gPappus13) -- (gPappus18);
+\draw[e] (gPappus14) -- (gPappus15);
+\draw[e] (gPappus15) -- (gPappus16);
+\draw[e] (gPappus16) -- (gPappus17);
+\draw[e] (gPappus17) -- (gPappus18);
+
+% === Dodecahedron ===
+\node[graphtitle] at (6.0, -9.325) {Dodecahedron};
+\node[graphsub] at (6.0, -9.835) {$|\mathrm{Aut}| = 20$, 4 orbits};
+\node[v, fill=c0!30] (gDodecahedron1) at (6.00, -11.00) {\tiny 1};
+\node[v, fill=c1!30] (gDodecahedron2) at (6.00, -10.18) {\tiny 2};
+\node[v, fill=c1!30] (gDodecahedron3) at (9.64, -12.82) {\tiny 3};
+\node[v, fill=c0!30] (gDodecahedron4) at (8.85, -13.07) {\tiny 4};
+\node[v, fill=c2!30] (gDodecahedron5) at (6.00, -11.83) {\tiny 5};
+\node[v, fill=c2!30] (gDodecahedron6) at (3.94, -13.33) {\tiny 6};
+\node[v, fill=c0!30] (gDodecahedron7) at (3.15, -13.07) {\tiny 7};
+\node[v, fill=c1!30] (gDodecahedron8) at (2.36, -12.82) {\tiny 8};
+\node[v, fill=c1!30] (gDodecahedron9) at (3.75, -17.09) {\tiny 9};
+\node[v, fill=c1!30] (gDodecahedron10) at (8.25, -17.09) {\tiny 10};
+\node[v, fill=c0!30] (gDodecahedron11) at (7.76, -16.42) {\tiny 11};
+\node[v, fill=c2!30] (gDodecahedron12) at (8.06, -13.33) {\tiny 12};
+\node[v, fill=c3!30] (gDodecahedron13) at (7.27, -13.59) {\tiny 13};
+\node[v, fill=c3!30] (gDodecahedron14) at (6.00, -12.66) {\tiny 14};
+\node[v, fill=c3!30] (gDodecahedron15) at (4.73, -13.59) {\tiny 15};
+\node[v, fill=c2!30] (gDodecahedron16) at (4.73, -15.75) {\tiny 16};
+\node[v, fill=c0!30] (gDodecahedron17) at (4.24, -16.42) {\tiny 17};
+\node[v, fill=c2!30] (gDodecahedron18) at (7.27, -15.75) {\tiny 18};
+\node[v, fill=c3!30] (gDodecahedron19) at (6.79, -15.08) {\tiny 19};
+\node[v, fill=c3!30] (gDodecahedron20) at (5.21, -15.08) {\tiny 20};
+\draw[e] (gDodecahedron1) -- (gDodecahedron2);
+\draw[e] (gDodecahedron1) -- (gDodecahedron5);
+\draw[e] (gDodecahedron1) -- (gDodecahedron6);
+\draw[thick, c1!60] (gDodecahedron2) -- (gDodecahedron3);
+\draw[thick, c1!60] (gDodecahedron2) -- (gDodecahedron8);
+\draw[e] (gDodecahedron3) -- (gDodecahedron4);
+\draw[thick, c1!60] (gDodecahedron3) -- (gDodecahedron10);
+\draw[e] (gDodecahedron4) -- (gDodecahedron5);
+\draw[e] (gDodecahedron4) -- (gDodecahedron12);
+\draw[e] (gDodecahedron5) -- (gDodecahedron14);
+\draw[e] (gDodecahedron6) -- (gDodecahedron7);
+\draw[e] (gDodecahedron6) -- (gDodecahedron15);
+\draw[e] (gDodecahedron7) -- (gDodecahedron8);
+\draw[e] (gDodecahedron7) -- (gDodecahedron16);
+\draw[thick, c1!60] (gDodecahedron8) -- (gDodecahedron9);
+\draw[thick, c1!60] (gDodecahedron9) -- (gDodecahedron10);
+\draw[e] (gDodecahedron9) -- (gDodecahedron17);
+\draw[e] (gDodecahedron10) -- (gDodecahedron11);
+\draw[e] (gDodecahedron11) -- (gDodecahedron12);
+\draw[e] (gDodecahedron11) -- (gDodecahedron18);
+\draw[e] (gDodecahedron12) -- (gDodecahedron13);
+\draw[thick, c3!60] (gDodecahedron13) -- (gDodecahedron14);
+\draw[thick, c3!60] (gDodecahedron13) -- (gDodecahedron19);
+\draw[thick, c3!60] (gDodecahedron14) -- (gDodecahedron15);
+\draw[thick, c3!60] (gDodecahedron15) -- (gDodecahedron20);
+\draw[e] (gDodecahedron16) -- (gDodecahedron17);
+\draw[e] (gDodecahedron16) -- (gDodecahedron20);
+\draw[e] (gDodecahedron17) -- (gDodecahedron18);
+\draw[e] (gDodecahedron18) -- (gDodecahedron19);
+\draw[thick, c3!60] (gDodecahedron19) -- (gDodecahedron20);
+
+% === Desargues ===
+\node[graphtitle] at (18.0, -9.325) {Desargues};
+\node[graphsub] at (18.0, -9.835) {$|\mathrm{Aut}| = 20$, 2 orbits};
+\node[v, fill=c0!30] (gDesargues1) at (18.79, -15.08) {\tiny 1};
+\node[v, fill=c0!30] (gDesargues2) at (16.73, -14.41) {\tiny 2};
+\node[v, fill=c0!30] (gDesargues3) at (18.00, -12.66) {\tiny 3};
+\node[v, fill=c1!30] (gDesargues4) at (18.00, -10.18) {\tiny 4};
+\node[v, fill=c1!30] (gDesargues5) at (15.75, -10.91) {\tiny 5};
+\node[v, fill=c0!30] (gDesargues6) at (17.21, -12.92) {\tiny 6};
+\node[v, fill=c0!30] (gDesargues7) at (19.27, -13.59) {\tiny 7};
+\node[v, fill=c0!30] (gDesargues8) at (18.00, -15.34) {\tiny 8};
+\node[v, fill=c1!30] (gDesargues9) at (18.00, -17.82) {\tiny 9};
+\node[v, fill=c1!30] (gDesargues10) at (20.25, -17.09) {\tiny 10};
+\node[v, fill=c0!30] (gDesargues11) at (18.79, -12.92) {\tiny 11};
+\node[v, fill=c1!30] (gDesargues12) at (14.36, -15.18) {\tiny 12};
+\node[v, fill=c0!30] (gDesargues13) at (19.27, -14.41) {\tiny 13};
+\node[v, fill=c1!30] (gDesargues14) at (20.25, -10.91) {\tiny 14};
+\node[v, fill=c1!30] (gDesargues15) at (14.36, -12.82) {\tiny 15};
+\node[v, fill=c0!30] (gDesargues16) at (17.21, -15.08) {\tiny 16};
+\node[v, fill=c1!30] (gDesargues17) at (21.64, -12.82) {\tiny 17};
+\node[v, fill=c0!30] (gDesargues18) at (16.73, -13.59) {\tiny 18};
+\node[v, fill=c1!30] (gDesargues19) at (15.75, -17.09) {\tiny 19};
+\node[v, fill=c1!30] (gDesargues20) at (21.64, -15.18) {\tiny 20};
+\draw[thick, c0!60] (gDesargues1) -- (gDesargues2);
+\draw[e] (gDesargues1) -- (gDesargues10);
+\draw[thick, c0!60] (gDesargues1) -- (gDesargues11);
+\draw[thick, c0!60] (gDesargues2) -- (gDesargues3);
+\draw[e] (gDesargues2) -- (gDesargues12);
+\draw[e] (gDesargues3) -- (gDesargues4);
+\draw[thick, c0!60] (gDesargues3) -- (gDesargues13);
+\draw[thick, c1!60] (gDesargues4) -- (gDesargues5);
+\draw[thick, c1!60] (gDesargues4) -- (gDesargues14);
+\draw[e] (gDesargues5) -- (gDesargues6);
+\draw[thick, c1!60] (gDesargues5) -- (gDesargues15);
+\draw[thick, c0!60] (gDesargues6) -- (gDesargues7);
+\draw[thick, c0!60] (gDesargues6) -- (gDesargues16);
+\draw[thick, c0!60] (gDesargues7) -- (gDesargues8);
+\draw[e] (gDesargues7) -- (gDesargues17);
+\draw[e] (gDesargues8) -- (gDesargues9);
+\draw[thick, c0!60] (gDesargues8) -- (gDesargues18);
+\draw[thick, c1!60] (gDesargues9) -- (gDesargues10);
+\draw[thick, c1!60] (gDesargues9) -- (gDesargues19);
+\draw[thick, c1!60] (gDesargues10) -- (gDesargues20);
+\draw[e] (gDesargues11) -- (gDesargues14);
+\draw[thick, c0!60] (gDesargues11) -- (gDesargues18);
+\draw[thick, c1!60] (gDesargues12) -- (gDesargues15);
+\draw[thick, c1!60] (gDesargues12) -- (gDesargues19);
+\draw[thick, c0!60] (gDesargues13) -- (gDesargues16);
+\draw[e] (gDesargues13) -- (gDesargues20);
+\draw[thick, c1!60] (gDesargues14) -- (gDesargues17);
+\draw[e] (gDesargues15) -- (gDesargues18);
+\draw[e] (gDesargues16) -- (gDesargues19);
+\draw[thick, c1!60] (gDesargues17) -- (gDesargues20);
+
+% === Moebius-Kantor ===
+\node[graphtitle] at (30.0, -9.325) {Moebius-Kantor};
+\node[graphsub] at (30.0, -9.835) {$|\mathrm{Aut}| = 16$, 2 orbits};
+\node[v, fill=c0!30] (gMoebius-Kantor1) at (30.00, -10.18) {\tiny 1};
+\node[v, fill=c0!30] (gMoebius-Kantor2) at (32.70, -11.30) {\tiny 2};
+\node[v, fill=c0!30] (gMoebius-Kantor3) at (33.83, -14.00) {\tiny 3};
+\node[v, fill=c0!30] (gMoebius-Kantor4) at (32.70, -16.70) {\tiny 4};
+\node[v, fill=c0!30] (gMoebius-Kantor5) at (30.00, -17.82) {\tiny 5};
+\node[v, fill=c0!30] (gMoebius-Kantor6) at (27.30, -16.70) {\tiny 6};
+\node[v, fill=c0!30] (gMoebius-Kantor7) at (26.18, -14.00) {\tiny 7};
+\node[v, fill=c0!30] (gMoebius-Kantor8) at (27.30, -11.30) {\tiny 8};
+\node[v, fill=c1!30] (gMoebius-Kantor9) at (30.00, -12.66) {\tiny 9};
+\node[v, fill=c1!30] (gMoebius-Kantor10) at (30.95, -13.05) {\tiny 10};
+\node[v, fill=c1!30] (gMoebius-Kantor11) at (31.34, -14.00) {\tiny 11};
+\node[v, fill=c1!30] (gMoebius-Kantor12) at (30.95, -14.95) {\tiny 12};
+\node[v, fill=c1!30] (gMoebius-Kantor13) at (30.00, -15.34) {\tiny 13};
+\node[v, fill=c1!30] (gMoebius-Kantor14) at (29.05, -14.95) {\tiny 14};
+\node[v, fill=c1!30] (gMoebius-Kantor15) at (28.66, -14.00) {\tiny 15};
+\node[v, fill=c1!30] (gMoebius-Kantor16) at (29.05, -13.05) {\tiny 16};
+\draw[thick, c0!60] (gMoebius-Kantor1) -- (gMoebius-Kantor2);
+\draw[thick, c0!60] (gMoebius-Kantor1) -- (gMoebius-Kantor8);
+\draw[e] (gMoebius-Kantor1) -- (gMoebius-Kantor9);
+\draw[thick, c0!60] (gMoebius-Kantor2) -- (gMoebius-Kantor3);
+\draw[e] (gMoebius-Kantor2) -- (gMoebius-Kantor10);
+\draw[thick, c0!60] (gMoebius-Kantor3) -- (gMoebius-Kantor4);
+\draw[e] (gMoebius-Kantor3) -- (gMoebius-Kantor11);
+\draw[thick, c0!60] (gMoebius-Kantor4) -- (gMoebius-Kantor5);
+\draw[e] (gMoebius-Kantor4) -- (gMoebius-Kantor12);
+\draw[thick, c0!60] (gMoebius-Kantor5) -- (gMoebius-Kantor6);
+\draw[e] (gMoebius-Kantor5) -- (gMoebius-Kantor13);
+\draw[thick, c0!60] (gMoebius-Kantor6) -- (gMoebius-Kantor7);
+\draw[e] (gMoebius-Kantor6) -- (gMoebius-Kantor14);
+\draw[thick, c0!60] (gMoebius-Kantor7) -- (gMoebius-Kantor8);
+\draw[e] (gMoebius-Kantor7) -- (gMoebius-Kantor15);
+\draw[e] (gMoebius-Kantor8) -- (gMoebius-Kantor16);
+\draw[thick, c1!60] (gMoebius-Kantor9) -- (gMoebius-Kantor12);
+\draw[thick, c1!60] (gMoebius-Kantor9) -- (gMoebius-Kantor14);
+\draw[thick, c1!60] (gMoebius-Kantor10) -- (gMoebius-Kantor13);
+\draw[thick, c1!60] (gMoebius-Kantor10) -- (gMoebius-Kantor15);
+\draw[thick, c1!60] (gMoebius-Kantor11) -- (gMoebius-Kantor14);
+\draw[thick, c1!60] (gMoebius-Kantor11) -- (gMoebius-Kantor16);
+\draw[thick, c1!60] (gMoebius-Kantor12) -- (gMoebius-Kantor15);
+\draw[thick, c1!60] (gMoebius-Kantor13) -- (gMoebius-Kantor16);
+
+% === Cube ===
+\node[graphtitle] at (18.0, -23.325) {Cube};
+\node[graphsub] at (18.0, -23.835) {$|\mathrm{Aut}| = 8$, 2 orbits};
+\node[v, fill=c0!30] (gCube1) at (18.00, -24.18) {\tiny 1};
+\node[v, fill=c1!30] (gCube2) at (18.00, -26.66) {\tiny 2};
+\node[v, fill=c1!30] (gCube3) at (19.34, -28.00) {\tiny 3};
+\node[v, fill=c0!30] (gCube4) at (21.82, -28.00) {\tiny 4};
+\node[v, fill=c0!30] (gCube5) at (14.18, -28.00) {\tiny 5};
+\node[v, fill=c1!30] (gCube6) at (16.66, -28.00) {\tiny 6};
+\node[v, fill=c1!30] (gCube7) at (18.00, -29.34) {\tiny 7};
+\node[v, fill=c0!30] (gCube8) at (18.00, -31.82) {\tiny 8};
+\draw[e] (gCube1) -- (gCube2);
+\draw[thick, c0!60] (gCube1) -- (gCube4);
+\draw[thick, c0!60] (gCube1) -- (gCube5);
+\draw[thick, c1!60] (gCube2) -- (gCube3);
+\draw[thick, c1!60] (gCube2) -- (gCube6);
+\draw[e] (gCube3) -- (gCube4);
+\draw[thick, c1!60] (gCube3) -- (gCube7);
+\draw[thick, c0!60] (gCube4) -- (gCube8);
+\draw[e] (gCube5) -- (gCube6);
+\draw[thick, c0!60] (gCube5) -- (gCube8);
+\draw[thick, c1!60] (gCube6) -- (gCube7);
+\draw[e] (gCube7) -- (gCube8);
+
+\end{tikzpicture}
+\end{document}
