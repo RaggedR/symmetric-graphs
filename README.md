@@ -31,18 +31,20 @@ Given a graph Γ, we compute G = Aut(Γ) and select a subgroup H ≤ G whose orb
 | Foster | Graph | n | G = Aut(Γ) | \|G\| | H | \|H\| | Orbits |
 |:------:|-------|:-:|------------|:-----:|---|:-----:|--------|
 | F004 | K₄ | 4 | S₄ | 24 | C₂ | 2 | [2, 2] |
-| F006 | K₃,₃ | 6 | S₃ ≀ C₂ | 72 | C₂ | 2 | [3, 3] |
-| F008 | Cube | 8 | S₄ × C₂ | 48 | C₄ | 4 | [4, 4] |
-| F010 | Petersen | 10 | S₅ | 120 | D₁₀ | 10 | [5, 5] |
-| F014 | Heawood | 14 | PGL(2,7) | 336 | C₂ × C₂ | 4 | [2, 2, 2, 4, 4] |
-| F016 | Mobius-Kantor GP(8,3) | 16 | GL(2,3) ⋊ C₂ | 96 | C₈ | 8 | [8, 8] |
-| F018 | Pappus | 18 | (C₃ × C₃) ⋊ S₃ | 216 | S₃ | 6 | [6, 6, 6] |
-| F020A | Dodecahedron | 20 | A₅ × C₂ | 120 | C₅ | 5 | [5, 5, 5, 5] |
-| F020B | Desargues GP(10,3) | 20 | S₅ × C₂ | 240 | C₁₀ | 10 | [10, 10] |
-| F024 | Nauru GP(12,5) | 24 | S₄ × D₁₂ | 144 | C₁₂ | 12 | [12, 12] |
-| F026A | F26A | 26 | C₁₃ ⋊ C₆ | 78 | — | — | — |
-| F028 | Coxeter | 28 | PGL(2,7) | 336 | D₁₄ | 14 | [7, 7, 7, 7] |
-| F030 | Tutte-Coxeter | 30 | S₆ × C₂ | 1440 | — | — | — |
+| F006 | K₃,₃ | 6 | (S₃ × S₃) : C₂ | 72 | C₂ | 2 | [2, 2, 2] |
+| F008 | Cube = GP(4,1) | 8 | C₂ × S₄ | 48 | C₄ | 4 | [4, 4] |
+| F010 | Petersen = GP(5,2) | 10 | S₅ | 120 | D₁₀ | 10 | [5, 5] |
+| F014 | Heawood | 14 | PSL(3,2) : C₂ | 336 | C₂ × C₂ | 4 | [2, 2, 2, 4, 4] |
+| F016 | Mobius-Kantor = GP(8,3) | 16 | GL(2,3) : C₂ | 96 | C₈ | 8 | [8, 8] |
+| F018 | Pappus | 18 | ((C₃ × C₃) : C₃) : D₈ | 216 | S₃ | 6 | [6, 6, 6] |
+| F020A | Dodecahedron | 20 | C₂ × A₅ | 120 | C₅ | 5 | [5, 5, 5, 5] |
+| F020B | Desargues = GP(10,3) | 20 | C₂ × S₅ | 240 | C₁₀ | 10 | [10, 10] |
+| F024 | Nauru = GP(12,5) | 24 | S₄ × S₃ | 144 | C₁₂ | 12 | [12, 12] |
+| F026A | F26A | 26 | C₁₃ : C₆ | 78 | C₁₃ : C₃ | 39 | [13, 13] |
+| F028 | Coxeter | 28 | PSL(3,2) : C₂ | 336 | D₁₄ | 14 | [7, 7, 7, 7] |
+| F030 | Tutte-Coxeter | 30 | (A₆ . C₂) : C₂ | 1440 | C₁₀ | 10 | [10, 10, 10] |
+
+All group structures computed by GAP (GRAPE package). K₄ and K₃,₃ are included in the code but omitted from the gallery as trivially small. The gallery shows the 11 graphs from F008 to F030.
 
 No cubic arc-transitive graph exists on 12 or 22 vertices. The next entry after F030 is at n=32.
 

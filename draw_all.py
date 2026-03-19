@@ -14,15 +14,14 @@ from draw_graph import run_gap, find_best_layout, COLORS
 GRAPHVIZ_DIR = os.path.expanduser("~/git/graphviz")
 
 ALL_GRAPHS = [
-    "k4", "k33", "cube", "petersen",
-    "heawood", "moebiuskantor", "pappus",
-    "dodecahedron", "desargues", "nauru",
+    "cube", "petersen", "heawood", "moebiuskantor",
+    "pappus", "dodecahedron", "desargues", "nauru",
     "f26a", "coxeter", "tuttecoxeter",
 ]
 
 
 def graph_to_tikz(coords, adj, n, orbits, graph_name, quotient_info,
-                  cx, cy, scale=1.0):
+                  cx, cy, scale=1.0, aut_order=None, aut_structure=None):
     """Generate TikZ commands for one graph, offset to (cx, cy)."""
     n_orbits = len(orbits)
     v_to_orbit = {}
@@ -32,12 +31,16 @@ def graph_to_tikz(coords, adj, n, orbits, graph_name, quotient_info,
 
     lines = []
 
-    # Title
+    # Title and group labels
     q_label = quotient_info.get('subgroup_structure', '?')
     lines.append(f"\\node[graphtitle] at ({cx}, {cy + 5.5 * scale}) {{{graph_name}}};")
-    lines.append(f"\\node[graphsub] at ({cx}, {cy + 4.9 * scale}) "
-                 f"{{$|\\mathrm{{Aut}}| = {quotient_info.get('subgroup_order', '?') * (n // sum(quotient_info['orbit_sizes']) * len(quotient_info['orbit_sizes']))}$, "
-                 f"{n_orbits} orbits}};")
+    if aut_order and aut_structure:
+        lines.append(f"\\node[graphsub] at ({cx}, {cy + 4.9 * scale}) "
+                     f"{{$\\mathrm{{Aut}} = {aut_structure}$, "
+                     f"$H = {q_label}$}};")
+    else:
+        lines.append(f"\\node[graphsub] at ({cx}, {cy + 4.9 * scale}) "
+                     f"{{$H = {q_label}$, {n_orbits} orbits}};")
 
     # Vertices
     for v in range(1, n + 1):
@@ -84,8 +87,6 @@ def main():
             continue
         coords, best = find_best_layout(results, n, adj)
 
-        # Get |Aut| from GAP by checking subgroup_order * index
-        # Actually, just display n and orbit info
         graph_data.append({
             'name': data['graph'],
             'n': n,
@@ -93,6 +94,8 @@ def main():
             'coords': coords,
             'orbits': best['orbits'],
             'quotient': best,
+            'aut_order': data.get('aut_order'),
+            'aut_structure': data.get('aut_structure'),
         })
 
     # Layout: 4 columns (smaller scale for more graphs)
@@ -147,7 +150,9 @@ def main():
         tikz = graph_to_tikz(
             gd['coords'], gd['adj'], gd['n'],
             gd['orbits'], gd['name'], gd['quotient'],
-            cx, cy, scale=scale
+            cx, cy, scale=scale,
+            aut_order=gd.get('aut_order'),
+            aut_structure=gd.get('aut_structure'),
         )
         lines.append(tikz)
         lines.append("")

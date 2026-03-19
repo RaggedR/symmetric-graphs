@@ -9,203 +9,159 @@ LoadPackage("grape");
 LoadPackage("json", false);  # may not be available, we'll format manually
 
 # ============================================================
+# Graph constructors
+# ============================================================
+
+# Generalized Petersen graph GP(n,k)
+# Outer cycle: 1-2-...-n-1, inner star: (n+i) adjacent to n+((i+k-1) mod n)+1
+# Spokes: i adjacent to n+i
+GPGraph := function(n, k)
+    local adj, i, ip, im;
+    adj := List([1..2*n], i -> []);
+    for i in [1..n] do
+        # Outer cycle
+        ip := (i mod n) + 1;
+        Add(adj[i], ip); Add(adj[ip], i);
+        # Spoke
+        Add(adj[i], n+i); Add(adj[n+i], i);
+        # Inner star: step k
+        ip := n + ((i-1+k) mod n) + 1;
+        if not ip in adj[n+i] then
+            Add(adj[n+i], ip); Add(adj[ip], n+i);
+        fi;
+    od;
+    # Deduplicate
+    for i in [1..2*n] do adj[i] := Set(adj[i]); od;
+    return adj;
+end;
+
+# LCF graph: Hamiltonian cycle 1-2-...-n-1 plus chords from shift pattern
+# shifts is a list, repeated to fill n vertices
+LCFGraph := function(n, shifts)
+    local adj, i, s, j, period;
+    adj := List([1..n], i -> []);
+    period := Length(shifts);
+    for i in [1..n] do
+        # Hamiltonian cycle
+        j := (i mod n) + 1;
+        if not j in adj[i] then Add(adj[i], j); Add(adj[j], i); fi;
+        # LCF chord
+        s := shifts[((i-1) mod period) + 1];
+        j := ((i-1+s) mod n) + 1;
+        if not j in adj[i] then Add(adj[i], j); Add(adj[j], i); fi;
+    od;
+    for i in [1..n] do adj[i] := Set(adj[i]); od;
+    return adj;
+end;
+
+# Complete graph K_n
+CompleteAdj := function(n)
+    return List([1..n], i -> Filtered([1..n], j -> j <> i));
+end;
+
+# Complete bipartite K_{a,b}
+CompleteBipartiteAdj := function(a, b)
+    local adj, i;
+    adj := [];
+    for i in [1..a] do Add(adj, List([1..b], j -> a+j)); od;
+    for i in [1..b] do Add(adj, List([1..a], j -> j)); od;
+    return adj;
+end;
+
+# ============================================================
 # Graph library
 # ============================================================
 
 GraphLibrary := rec();
 
-GraphLibrary.petersen := function()
-    return rec(
-        name := "Petersen",
-        n := 10,
-        adj := [
-            [2,5,6], [1,3,7], [2,4,8], [3,5,9], [1,4,10],
-            [1,8,9], [2,9,10], [3,6,10], [4,6,7], [5,7,8]
-        ]
-    );
-end;
-
-GraphLibrary.dodecahedron := function()
-    return rec(
-        name := "Dodecahedron",
-        n := 20,
-        adj := [
-            [2,5,6], [1,3,8], [2,4,10], [3,5,12], [1,4,14],
-            [1,7,15], [6,8,16], [2,7,9], [8,10,17], [3,9,11],
-            [10,12,18], [4,11,13], [12,14,19], [5,13,15], [6,14,20],
-            [7,17,20], [9,16,18], [11,17,19], [13,18,20], [15,16,19]
-        ]
-    );
-end;
-
-GraphLibrary.cube := function()
-    return rec(
-        name := "Cube",
-        n := 8,
-        adj := [
-            [2,4,5], [1,3,6], [2,4,7], [1,3,8],
-            [1,6,8], [2,5,7], [3,6,8], [4,5,7]
-        ]
-    );
-end;
-
-GraphLibrary.icosahedron := function()
-    return rec(
-        name := "Icosahedron",
-        n := 12,
-        adj := [
-            [2,3,4,5,6], [1,3,6,7,8], [1,2,4,8,9], [1,3,5,9,10],
-            [1,4,6,10,11], [1,2,5,7,11], [2,6,8,11,12], [2,3,7,9,12],
-            [3,4,8,10,12], [4,5,9,11,12], [5,6,7,10,12], [7,8,9,10,11]
-        ]
-    );
-end;
-
-GraphLibrary.heawood := function()
-    # Heawood graph: incidence graph of Fano plane, 14 vertices, cubic, bipartite
-    return rec(
-        name := "Heawood",
-        n := 14,
-        adj := [
-            [2,6,14], [1,3,11], [2,4,8], [3,5,13], [4,6,10],
-            [1,5,7], [6,8,12], [3,7,9], [8,10,14], [5,9,11],
-            [2,10,12], [7,11,13], [4,12,14], [1,9,13]
-        ]
-    );
-end;
-
-GraphLibrary.pappus := function()
-    # Pappus graph: 18 vertices, cubic, bipartite, 3-arc-transitive
-    # LCF notation: [5,7,-7,7,-7,-5]^3, |Aut| = 216
-    return rec(
-        name := "Pappus",
-        n := 18,
-        adj := [
-            [2,6,18], [1,3,9], [2,4,14], [3,5,11], [4,6,16],
-            [1,5,7], [6,8,12], [7,9,15], [2,8,10], [9,11,17],
-            [4,10,12], [7,11,13], [12,14,18], [3,13,15], [8,14,16],
-            [5,15,17], [10,16,18], [1,13,17]
-        ]
-    );
-end;
-
-GraphLibrary.desargues := function()
-    # Desargues graph: 20 vertices, cubic, bipartite
-    # It is the generalised Petersen graph GP(10,3)
-    return rec(
-        name := "Desargues",
-        n := 20,
-        adj := [
-            [2,10,11], [1,3,12], [2,4,13], [3,5,14], [4,6,15],
-            [5,7,16], [6,8,17], [7,9,18], [8,10,19], [1,9,20],
-            [1,14,18], [2,15,19], [3,16,20], [4,11,17], [5,12,18],
-            [6,13,19], [7,14,20], [8,11,15], [9,12,16], [10,13,17]
-        ]
-    );
-end;
-
-GraphLibrary.moebiuskantor := function()
-    # Moebius-Kantor graph: generalised Petersen GP(8,3), 16 vertices, cubic
-    return rec(
-        name := "Moebius-Kantor",
-        n := 16,
-        adj := [
-            [2,8,9], [1,3,10], [2,4,11], [3,5,12], [4,6,13],
-            [5,7,14], [6,8,15], [1,7,16], [1,12,14], [2,13,15],
-            [3,14,16], [4,9,15], [5,10,16], [6,9,11], [7,10,12],
-            [8,11,13]
-        ]
-    );
-end;
-
-GraphLibrary.k33 := function()
-    # Complete bipartite K_{3,3}
-    return rec(
-        name := "K33",
-        n := 6,
-        adj := [
-            [4,5,6], [4,5,6], [4,5,6],
-            [1,2,3], [1,2,3], [1,2,3]
-        ]
-    );
-end;
-
+# --- Foster census F004: K4 ---
 GraphLibrary.k4 := function()
-    # Complete graph on 4 vertices (F004 in Foster census)
-    return rec(
-        name := "K4",
-        n := 4,
-        adj := [
-            [2,3,4], [1,3,4], [1,2,4], [1,2,3]
-        ]
-    );
+    return rec(name := "K4", n := 4, adj := CompleteAdj(4));
 end;
 
+# --- Foster census F006: K_{3,3} ---
+GraphLibrary.k33 := function()
+    return rec(name := "K33", n := 6, adj := CompleteBipartiteAdj(3, 3));
+end;
+
+# --- Foster census F008: Cube = GP(4,1) ---
+GraphLibrary.cube := function()
+    return rec(name := "Cube", n := 8, adj := GPGraph(4, 1));
+end;
+
+# --- Foster census F010: Petersen = GP(5,2) ---
+GraphLibrary.petersen := function()
+    return rec(name := "Petersen", n := 10, adj := GPGraph(5, 2));
+end;
+
+# --- Foster census F014: Heawood, LCF [5,-5]^7 ---
+GraphLibrary.heawood := function()
+    return rec(name := "Heawood", n := 14, adj := LCFGraph(14, [5, -5]));
+end;
+
+# --- Foster census F016: Mobius-Kantor = GP(8,3) ---
+GraphLibrary.moebiuskantor := function()
+    return rec(name := "Moebius-Kantor", n := 16, adj := GPGraph(8, 3));
+end;
+
+# --- Foster census F018: Pappus, LCF [5,7,-7,7,-7,-5]^3 ---
+GraphLibrary.pappus := function()
+    return rec(name := "Pappus", n := 18, adj := LCFGraph(18, [5, 7, -7, 7, -7, -5]));
+end;
+
+# --- Foster census F020A: Dodecahedron ---
+# LCF [10,7,4,-4,-7,10,-4,7,-7,4]^2, but we use a labeling where the C5
+# orbit quotient is a path — this gives a Schlegel diagram with 0 crossings
+GraphLibrary.dodecahedron := function()
+    return rec(name := "Dodecahedron", n := 20, adj := [
+        [2,5,6], [1,3,8], [2,4,10], [3,5,12], [1,4,14],
+        [1,7,15], [6,8,16], [2,7,9], [8,10,17], [3,9,11],
+        [10,12,18], [4,11,13], [12,14,19], [5,13,15], [6,14,20],
+        [7,17,20], [9,16,18], [11,17,19], [13,18,20], [15,16,19]
+    ]);
+end;
+
+# --- Foster census F020B: Desargues = GP(10,3) ---
+GraphLibrary.desargues := function()
+    return rec(name := "Desargues", n := 20, adj := GPGraph(10, 3));
+end;
+
+# --- Foster census F024: Nauru = GP(12,5) ---
 GraphLibrary.nauru := function()
-    # Nauru graph: GP(12,5), 24 vertices, cubic, arc-transitive
-    return rec(
-        name := "Nauru",
-        n := 24,
-        adj := [
-            [2,12,13], [1,3,14], [2,4,15], [3,5,16], [4,6,17], [5,7,18],
-            [6,8,19], [7,9,20], [8,10,21], [9,11,22], [10,12,23], [11,1,24],
-            [1,18,20], [2,19,21], [3,20,22], [4,21,23], [5,22,24], [6,23,13],
-            [7,24,14], [8,13,15], [9,14,16], [10,15,17], [11,16,18], [12,17,19]
-        ]
-    );
+    return rec(name := "Nauru", n := 24, adj := GPGraph(12, 5));
 end;
 
+# --- Foster census F026A, LCF [-7,7]^13 ---
 GraphLibrary.f26a := function()
-    # F26A graph: first cubic symmetric graph on 26 vertices
-    # LCF notation [-7, 7]^13, |Aut| = 78
-    return rec(
-        name := "F26A",
-        n := 26,
-        adj := [
-            [2,26,20], [1,3,9], [2,4,22], [3,5,11], [4,6,24], [5,7,13],
-            [6,8,26], [7,9,15], [8,10,2], [9,11,17], [10,12,4], [11,13,19],
-            [12,14,6], [13,15,21], [14,16,8], [15,17,23], [16,18,10], [17,19,25],
-            [18,20,12], [19,21,1], [20,22,14], [21,23,3], [22,24,16], [23,25,5],
-            [24,26,18], [25,1,7]
-        ]
-    );
+    return rec(name := "F26A", n := 26, adj := LCFGraph(26, [-7, 7]));
 end;
 
+# --- Foster census F028: Coxeter graph ---
+# Hub (1-7) connected to three 7-cycle rings with steps 1, 2, 3
 GraphLibrary.coxeter := function()
-    # Coxeter graph: 28 vertices, cubic, distance-regular, girth 7
-    # Hub (1-7) + three 7-cycle rings with steps 1, 2, 3
-    # |Aut| = PGL(2,7), order 336
-    return rec(
-        name := "Coxeter",
-        n := 28,
-        adj := [
-            [8,15,22], [9,16,23], [10,17,24], [11,18,25], [12,19,26],
-            [13,20,27], [14,21,28],
-            [1,9,14], [2,8,10], [3,9,11], [4,10,12], [5,11,13], [6,12,14],
-            [7,13,8],
-            [1,17,20], [2,18,21], [3,15,19], [4,16,20], [5,17,21], [6,15,18],
-            [7,16,19],
-            [1,25,26], [2,26,27], [3,27,28], [4,22,28], [5,22,23], [6,23,24],
-            [7,24,25]
-        ]
-    );
+    local adj, i, j, steps;
+    adj := List([1..28], i -> []);
+    steps := [1, 2, 3];
+    for j in [0..6] do
+        # Spokes from hub vertex j+1 to each ring
+        for i in [1..3] do
+            Add(adj[j+1], 7*i + j + 1);
+            Add(adj[7*i + j + 1], j+1);
+        od;
+        # Ring edges: ring i has step steps[i]
+        for i in [1..3] do
+            Add(adj[7*i + j + 1], 7*i + ((j + steps[i]) mod 7) + 1);
+            Add(adj[7*i + ((j + steps[i]) mod 7) + 1], 7*i + j + 1);
+        od;
+    od;
+    for i in [1..28] do adj[i] := Set(adj[i]); od;
+    return rec(name := "Coxeter", n := 28, adj := adj);
 end;
 
+# --- Foster census F030: Tutte-Coxeter (Tutte 8-cage), LCF [-13,-9,7,-7,9,13]^5 ---
 GraphLibrary.tuttecoxeter := function()
-    # Tutte-Coxeter graph (Tutte 8-cage): 30 vertices, cubic, 4-arc-transitive
-    # Levi graph of generalized quadrangle GQ(2,2)
-    # LCF notation [-13, -9, 7, -7, 9, 13]^5, |Aut| = 1440
-    return rec(
-        name := "Tutte-Coxeter",
-        n := 30,
-        adj := [
-            [2,30,18], [1,3,23], [2,4,10], [3,5,27], [4,6,14], [5,7,19],
-            [6,8,24], [7,9,29], [8,10,16], [9,11,3], [10,12,20], [11,13,25],
-            [12,14,30], [13,15,5], [14,16,22], [15,17,9], [16,18,26], [17,19,1],
-            [18,20,6], [19,21,11], [20,22,28], [21,23,15], [22,24,2], [23,25,7],
-            [24,26,12], [25,27,17], [26,28,4], [27,29,21], [28,30,8], [29,1,13]
-        ]
-    );
+    return rec(name := "Tutte-Coxeter", n := 30,
+               adj := LCFGraph(30, [-13, -9, 7, -7, 9, 13]));
 end;
 
 # ============================================================
@@ -340,8 +296,11 @@ SearchQuotients := function(data, max_degree)
     graph := BuildGraph(data);
     aut := AutGroupGraph(graph);
 
+    data.aut_order := Size(aut);
+    data.aut_structure := StructureDescription(aut);
+
     Print("Graph: ", data.name, " (", n, " vertices)\n");
-    Print("|Aut| = ", Size(aut), "  ", StructureDescription(aut), "\n\n");
+    Print("|Aut| = ", data.aut_order, "  ", data.aut_structure, "\n\n");
 
     results := [];
     seen := [];  # track orbit sets we've already processed
@@ -473,6 +432,8 @@ OutputJSON := function(data, results)
     Print("{\n");
     Print("  \"graph\": \"", data.name, "\",\n");
     Print("  \"n\": ", data.n, ",\n");
+    Print("  \"aut_order\": ", data.aut_order, ",\n");
+    Print("  \"aut_structure\": \"", data.aut_structure, "\",\n");
     Print("  \"adj\": ", data.adj, ",\n");
     Print("  \"results\": [\n");
 

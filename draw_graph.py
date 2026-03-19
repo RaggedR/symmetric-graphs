@@ -683,7 +683,8 @@ def compute_layout(quotient, n, adj, mode="auto"):
 # TikZ output
 # ============================================================
 
-def generate_tikz(coords, adj, n, orbits, graph_name, quotient_info):
+def generate_tikz(coords, adj, n, orbits, graph_name, quotient_info,
+                   aut_order=None, aut_structure=None):
     n_orbits = len(orbits)
     v_to_orbit = {}
     for oi, orbit in enumerate(orbits):
@@ -713,9 +714,17 @@ def generate_tikz(coords, adj, n, orbits, graph_name, quotient_info):
 
     q_label = quotient_info.get('subgroup_structure', '?')
     lines.append(f"\\node[title] at (0, 6.5) {{{graph_name}}};")
-    lines.append(f"\\node[subtitle] at (0, 5.8) "
-                 f"{{Orbits of ${q_label}$ ({n_orbits} orbits of "
-                 f"{quotient_info['orbit_sizes']})}};")
+    if aut_structure and aut_order:
+        lines.append(f"\\node[subtitle] at (0, 5.8) "
+                     f"{{$\\mathrm{{Aut}} = {aut_structure}$, "
+                     f"$|\\mathrm{{Aut}}| = {aut_order}$}};")
+        lines.append(f"\\node[subtitle] at (0, 5.2) "
+                     f"{{$H = {q_label}$ $\\leq$ $\\mathrm{{Aut}}$, "
+                     f"{n_orbits} orbits of {quotient_info['orbit_sizes']}}};")
+    else:
+        lines.append(f"\\node[subtitle] at (0, 5.8) "
+                     f"{{Orbits of ${q_label}$ ({n_orbits} orbits of "
+                     f"{quotient_info['orbit_sizes']})}};")
     lines.append("")
 
     # Vertices
@@ -853,7 +862,9 @@ def main():
         sys.exit(1)
 
     coords, best = find_best_layout(results, n, adj, layout_mode=args.layout)
-    tikz = generate_tikz(coords, adj, n, best['orbits'], graph_name, best)
+    tikz = generate_tikz(coords, adj, n, best['orbits'], graph_name, best,
+                         aut_order=data.get('aut_order'),
+                         aut_structure=data.get('aut_structure'))
 
     tex_file = os.path.join(GRAPHVIZ_DIR, f"auto-{args.graph}.tex")
     pdf_file = os.path.join(GRAPHVIZ_DIR, f"auto-{args.graph}.pdf")
