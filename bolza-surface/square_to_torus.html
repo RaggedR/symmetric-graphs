@@ -153,40 +153,119 @@ const FLAT_SCALE = 2.5;  // size of the flat square
 
 function computePoint(xn, yn, t) {
   // xn, yn ∈ [0, 1]
-  const u = 2 * Math.PI * xn;
-  const v = 2 * Math.PI * yn;
-
-  // Flat position
-  const fx = (xn - 0.5) * FLAT_SCALE;
   const fy = (yn - 0.5) * FLAT_SCALE;
 
-  // Cylinder position (rolled in x-direction)
-  const cx = R * Math.cos(u);
-  const cy = fy;  // y unchanged
-  const cz = R * Math.sin(u);
-
-  // Torus position
-  const tx = (R + r * Math.cos(v)) * Math.cos(u);
-  const ty = r * Math.sin(v);
-  const tz = (R + r * Math.cos(v)) * Math.sin(u);
-
   if (t <= 0.5) {
-    // Phase 1: flat → cylinder
-    const s = t * 2;
-    const ss = smoothstep(s);
-    return [
-      lerp(fx, cx, ss),
-      lerp(fy, cy, ss),
-      lerp(0, cz, ss)
-    ];
+    // Phase 1: flat → cylinder (progressive bend in x)
+    // At s=0: flat sheet. At s=1: full cylinder.
+    // Bend angle increases from 0 to 2π.
+    const s = smoothstep(t * 2);
+    const angle = s * 2 * Math.PI * xn;
+    // The "unbent" length maps to an arc: radius shrinks from ∞ (flat) to R
+    // Use: at bend s, the sheet curves with radius that gives arc length = FLAT_SCALE
+    // For partial bend: radius = FLAT_SCALE / (s * 2π), but clamp for s→0
+    if (s < 0.001) {
+      return [(xn - 0.5) * FLAT_SCALE, fy, 0];
+    }
+    const bendR = FLAT_SCALE / (s * 2 * Math.PI);
+    const x = bendR * Math.sin(angle);
+    const z = bendR * (1 - Math.cos(angle));
+    // Center the shape: at s=1, bendR=R and the cylinder is centered
+    const cx = -bendR * Math.sin(s * Math.PI);  // shift so it stays centered
+    const cz = -bendR * (1 - Math.cos(s * Math.PI));
+    return [x + cx, fy, z + cz];
   } else {
-    // Phase 2: cylinder → torus
-    const s = (t - 0.5) * 2;
-    const ss = smoothstep(s);
+    // Phase 2: cylinder → torus (progressive bend in y)
+    // The cylinder axis is along y. We bend it into a ring.
+    const s = smoothstep((t - 0.5) * 2);
+    const u = 2 * Math.PI * xn;
+
+    if (s < 0.001) {
+      // Pure cylinder
+      return [R * Math.cos(u), fy, R * Math.sin(u)];
+    }
+
+    // Bend the cylinder: the y-axis curves into a circle of radius bendR
+    const bendAngle = s * 2 * Math.PI * yn;
+    const bendR = FLAT_SCALE / (s * 2 * Math.PI);
+    // Position along the bent axis
+    const axisX = bendR * Math.sin(bendAngle);
+    const axisY = bendR * (1 - Math.cos(bendAngle));
+    // Center
+    const cax = -bendR * Math.sin(s * Math.PI);
+    const cay = -bendR * (1 - Math.cos(s * Math.PI));
+    // The tube cross-section: at this point along the axis, the local
+    // "outward" direction is the tangent rotated 90° = (cos(bendAngle), sin(bendAngle)) in the bend plane
+    const outX = Math.cos(bendAngle);  // radial direction in bend plane
+    const outY = Math.sin(bendAngle);
+    // The tube offset: r * cos(v) in the outward direction, r * sin(v) perpendicular to bend plane
+    // At s=0: outward = (0, 1, 0) rotated... we need to be careful about which plane we bend in.
+    // The cylinder axis is along y. We bend it so y curves into the x-y plane.
+    // Local frame: tangent = d/d(bendAngle), normal = toward center, binormal = along cylinder cross-section
+    const tubeR = lerp(r, r, 1); // tube radius stays constant
+    // Cross-section angle
+    const v = 2 * Math.PI * yn;
+    // In the cylinder, cross-section is in the x-z plane at angle u
+    // On the torus, cross-section is tube angle v in (radial, axisPerp) plane
+    // Interpolate: the cross-section circle defined by u stays, but gets modulated
+    const cylX = R * Math.cos(u);
+    const cylZ = R * Math.sin(u);
+
+    // Simpler approach: interpolate the MAJOR radius from ∞ (straight) to R_major
+    // At parameter s, major radius = FLAT_SCALE / (s * 2π)
+    // The tube center traces a circle of this radius in the x-y plane
+    const majorR = bendR;
+    // Tube center position
+    const tcx = (majorR + cax) + 0; // need to think about this differently...
+
+    // Let me use a cleaner formulation:
+    // The cylinder has its axis along y, with tube cross-section radius R in x-z.
+    // We want to bend the y-axis into a circle of radius majorR in the x-y plane.
+    // Each point on the cylinder: (R*cos(u), y, R*sin(u))
+    // After bending y into angle φ = y/majorR on a circle of radius majorR:
+    //   center of cross-section: ((majorR + R*cos(u)) * cos(φ), (majorR + R*cos(u)) * sin(φ) ... no
+
+    // Actually: the cylinder point (R*cos(u), y, R*sin(u))
+    // Bending y around a circle: y → angle φ, with R_bend = majorR
+    // The cross-section at position y moves to angle φ = y / majorR (arc length)
+    // Wait, I should parameterize by yn not y.
+
+    // phi = s * 2π * yn = bendAngle (how far around the bend)
+    const phi = bendAngle;
+    // At this angle, the center of the cross-section is at:
+    // (majorR * sin(phi) + cax, majorR*(1-cos(phi)) + cay, 0) — bending in x-y plane
+    // But we want to bend in the plane that keeps z unchanged...
+    // Actually the torus major circle should be in x-z, matching the final torus orientation.
+
+    // Let me just do it right:
+    // Final torus: major circle in x-z, tube in the radial-y plane
+    // (R + r*cos(v)) * cos(u), r*sin(v), (R + r*cos(v)) * sin(u)
+
+    // Progressive bend: replace the straight cylinder axis (along y) with a circular arc in x-y
+    // No wait... the cylinder already has its major circle in x-z (from phase 1).
+    // Phase 2 bends the y-axis into the tube circle.
+
+    // Cylinder point: (R*cos(u), fy, R*sin(u)) where fy = (yn-0.5)*FLAT_SCALE
+    // We want to bend fy into angle v = 2π*yn on a tube of radius r
+    // The tube center is at (R*cos(u), 0, R*sin(u))
+    // The tube direction at angle v: radially outward * cos(v) + y * sin(v)
+    // Radially outward = (cos(u), 0, sin(u))
+
+    // Progressive bend: tube radius = FLAT_SCALE / (s * 2π)
+    const tubeR2 = FLAT_SCALE / (s * 2 * Math.PI);
+    const bendV = s * 2 * Math.PI * yn;
+    // Tube center offset from axis in the radial-y plane:
+    const radialOffset = tubeR2 * (1 - Math.cos(bendV));
+    const yOffset = tubeR2 * Math.sin(bendV);
+    // Center the tube
+    const cRad = -tubeR2 * (1 - Math.cos(s * Math.PI));
+    const cY = -tubeR2 * Math.sin(s * Math.PI);
+
+    const effR = R + radialOffset + cRad;
     return [
-      lerp(cx, tx, ss),
-      lerp(cy, ty, ss),
-      lerp(cz, tz, ss)
+      effR * Math.cos(u),
+      yOffset + cY,
+      effR * Math.sin(u)
     ];
   }
 }

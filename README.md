@@ -70,6 +70,9 @@ Watch a unit square fold into a torus in two phases: rolling into a cylinder (id
 
 Cohomology and Poincaré disk tiling of the Bolza surface — the most symmetric genus-2 Riemann surface, with Aut = GL(2,3) of order 48. The (2,3,8) triangle group tiles the hyperbolic plane with 48 fundamental domains per copy of the surface.
 
+- **[Octagon → Torus pipeline](https://raggedr.github.io/symmetric-graphs/bolza-surface/bolza_pipeline.html)** — Full animated pipeline: hyperbolic octagon → Euclidean octagon → cut into two pentagons → deform to cut squares → roll into cylinders → bend into two wounded tori → glue. All 48 (2,3,8) triangles tracked through every transformation. Drag the slider or hit Play.
+- **[Hyperbolic octagon explorer](https://raggedr.github.io/symmetric-graphs/bolza-surface/bolza_octagon.html)** — Interactive viewer of the 48 fundamental domain triangles. Press 1-5 to switch between: hyperbolic octagon (geodesic arcs), Euclidean octagon, half-octagon, cut square, wounded torus.
+- **[Wounded torus fold](https://raggedr.github.io/symmetric-graphs/bolza-surface/wounded_torus_fold.html)** — Half-octagon deforms into a cut square, then folds into a wounded torus via progressive bending (no self-intersection).
 - `bolza-surface/bolza_cohomology.py` — oriented Lefschetz traces, H¹ = V₂ ⊕ V̄₂
 - `bolza-surface/bolza_3d.html` — Poincaré disk tiling + 3D genus-2 surface
 - `bolza-surface/bolza_disk.pdf` — publication-quality TikZ rendering of the tiling

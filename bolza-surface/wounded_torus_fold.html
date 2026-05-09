@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<title>Half-Octagon → Wounded Torus</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#08080c; overflow:hidden; font-family:'Courier New',monospace; }
+canvas { display:block; }
+#info { position:absolute; top:12px; left:16px; color:#8899aa; font-size:13px; line-height:1.6; pointer-events:none; }
+#info h2 { color:#ccd0d8; font-size:16px; margin-bottom:4px; font-weight:normal; }
+#controls { position:absolute; bottom:20px; left:50%; transform:translateX(-50%); color:#8899aa; font-size:12px; text-align:center; }
+#controls input[type=range] { width:300px; cursor:pointer; }
+#phase { color:#e8b84d; font-size:13px; margin-top:4px; }
+#playBtn { background:none; border:1px solid #667788; color:#ccd0d8; padding:4px 16px;
+  cursor:pointer; font-family:inherit; font-size:13px; border-radius:3px; margin-right:12px; }
+#playBtn:hover { border-color:#99aabb; }
+.cut { color:#ff4444; }
+.side { color:#aabbcc; }
+</style>
+</head><body>
+
+<div id="info">
+  <h2>Half-Octagon → Wounded Torus</h2>
+  <span id="stageLabel">Half-octagon (Bolza fundamental domain, one handle)</span><br>
+  <span class="cut">Red</span> = cut V₄→V₀ (becomes gash) ·
+  <span style="color:#4488ff">Blue</span> = a₁ ·
+  <span style="color:#44cc66">Green</span> = b₁⁻¹
+</div>
+
+<div id="controls">
+  <input type="range" id="slider" min="0" max="1000" value="0">
+  <div id="phase">t = 0.00 — drag to fold</div>
+  <button id="playBtn">&#9654; Play</button>
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x08080c);
+const cam = new THREE.PerspectiveCamera(40, innerWidth/innerHeight, 0.1, 100);
+cam.position.set(0, 0, 8);
+const ren = new THREE.WebGLRenderer({ antialias: true });
+ren.setSize(innerWidth, innerHeight);
+ren.setPixelRatio(Math.min(devicePixelRatio, 2));
+document.body.appendChild(ren.domElement);
+const ctl = new OrbitControls(cam, ren.domElement);
+ctl.enableDamping = true; ctl.dampingFactor = 0.05;
+
+scene.add(new THREE.AmbientLight(0x556677, 0.6));
+let l;
+l = new THREE.DirectionalLight(0xffeedd, 1.2); l.position.set(5,8,5); scene.add(l);
+l = new THREE.DirectionalLight(0x99aacc, 0.5); l.position.set(-4,2,-3); scene.add(l);
+l = new THREE.DirectionalLight(0xaabbdd, 0.3); l.position.set(0,-5,5); scene.add(l);
+
+// ── Parameters ──
+const R = 1.3;
+const r = 0.5;
+const CUT = 0.35;
+const N = 40;
+const FLAT_SCALE = 2.5;
+
+// Phase boundaries
+const P1 = 1/3;  // end of morph
+const P2 = 2/3;  // end of roll
+
+// ── Pentagon geometry: half-octagon and cut-square ──
+
+// Half-octagon vertices (upper half of regular octagon, V₀..V₄)
+const S2 = Math.SQRT2 / 2; // ≈ 0.7071
+const octVerts = [
+  [1, 0],       // V₀
+  [S2, S2],     // V₁
+  [0, 1],       // V₂
+  [-S2, S2],    // V₃
+  [-1, 0]       // V₄
+];
+
+// Cut-square vertices (unit square minus bottom-left corner)
+const sqVerts = [
+  [CUT, 0],     // S₀ — corresponds to V₀
+  [1, 0],       // S₁ — V₁
+  [1, 1],       // S₂ — V₂
+  [0, 1],       // S₃ — V₃
+  [0, CUT]      // S₄ — V₄
+];
+
+// Centroids
+function centroid(verts) {
+  let cx = 0, cy = 0;
+  for (const [x, y] of verts) { cx += x; cy += y; }
+  return [cx / verts.length, cy / verts.length];
+}
+const octC = centroid(octVerts);
+const sqC = centroid(sqVerts);
+
+// Barycentric coordinates of P in triangle (A, B, C)
+function bary(px, py, ax, ay, bx, by, cx, cy) {
+  const det = (by - cy) * (ax - cx) + (cx - bx) * (ay - cy);
+  if (Math.abs(det) < 1e-12) return null;
+  const alpha = ((by - cy) * (px - cx) + (cx - bx) * (py - cy)) / det;
+  const beta  = ((cy - ay) * (px - cx) + (ax - cx) * (py - cy)) / det;
+  return [alpha, beta, 1 - alpha - beta];
+}
+
+// Map a point from cut-square coords to octagon-half coords
+// using triangle-fan barycentric interpolation
+function sqToOct(xn, yn) {
+  const EPS = -0.02;
+  for (let i = 0; i < 5; i++) {
+    const j = (i + 1) % 5;
+    const b = bary(xn, yn,
+      sqC[0], sqC[1],
+      sqVerts[i][0], sqVerts[i][1],
+      sqVerts[j][0], sqVerts[j][1]);
+    if (b && b[0] >= EPS && b[1] >= EPS && b[2] >= EPS) {
+      return [
+        b[0] * octC[0] + b[1] * octVerts[i][0] + b[2] * octVerts[j][0],
+        b[0] * octC[1] + b[1] * octVerts[i][1] + b[2] * octVerts[j][1]
+      ];
+    }
+  }
+  // Fallback: use centroid
+  return [octC[0], octC[1]];
+}
+
+// ── Build mesh (same grid as before, in cut-square coords) ──
+
+function isInside(xn, yn) {
+  return xn + yn >= CUT - 0.001;
+}
+
+const vertexMap = new Map();
+const vertices = [];
+let vIdx = 0;
+for (let j = 0; j <= N; j++) {
+  for (let i = 0; i <= N; i++) {
+    const xn = i / N, yn = j / N;
+    if (isInside(xn, yn)) {
+      vertexMap.set(`${i},${j}`, vIdx);
+      vertices.push({ i, j, xn, yn });
+      vIdx++;
+    }
+  }
+}
+
+const nVerts = vertices.length;
+const positions = new Float32Array(nVerts * 3);
+const normals = new Float32Array(nVerts * 3);
+const uvs = new Float32Array(nVerts * 2);
+for (let k = 0; k < nVerts; k++) {
+  uvs[k*2] = vertices[k].xn;
+  uvs[k*2+1] = vertices[k].yn;
+}
+
+// Precompute octagon positions for each vertex
+const octPositions = new Float32Array(nVerts * 2);
+for (let k = 0; k < nVerts; k++) {
+  const [ox, oy] = sqToOct(vertices[k].xn, vertices[k].yn);
+  octPositions[k*2] = ox;
+  octPositions[k*2+1] = oy;
+}
+
+const indices = [];
+for (let j = 0; j < N; j++) {
+  for (let i = 0; i < N; i++) {
+    const a = vertexMap.get(`${i},${j}`);
+    const b = vertexMap.get(`${i+1},${j}`);
+    const c = vertexMap.get(`${i},${j+1}`);
+    const d = vertexMap.get(`${i+1},${j+1}`);
+    if (a !== undefined && b !== undefined && c !== undefined && d !== undefined) {
+      indices.push(a, c, b, b, c, d);
+    } else if (a !== undefined && b !== undefined && d !== undefined) {
+      indices.push(a, d, b);
+    } else if (a !== undefined && c !== undefined && d !== undefined) {
+      indices.push(a, c, d);
+    } else if (b !== undefined && c !== undefined && d !== undefined) {
+      indices.push(b, c, d);
+    } else if (a !== undefined && b !== undefined && c !== undefined) {
+      indices.push(a, c, b);
+    }
+  }
+}
+
+const geo = new THREE.BufferGeometry();
+geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+geo.setAttribute('normal', new THREE.BufferAttribute(normals, 3));
+geo.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
+geo.setIndex(indices);
+
+const mat = new THREE.MeshPhongMaterial({
+  color: 0x5a6a80, side: THREE.DoubleSide, shininess: 25,
+  transparent: true, opacity: 0.85
+});
+scene.add(new THREE.Mesh(geo, mat));
+
+// ── Grid lines ──
+const NGRID = 8;
+const gridGroup = new THREE.Group();
+scene.add(gridGroup);
+
+function makeGridLine(npts) {
+  const pts = new Float32Array(npts * 3);
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(pts, 3));
+  return { geo, pts, npts };
+}
+
+const gridLines = [];
+for (let i = 0; i <= NGRID; i++) {
+  const xn = i / NGRID;
+  const ynMin = Math.max(0, CUT - xn);
+  const npts = 65;
+  const gl = makeGridLine(npts);
+  const line = new THREE.Line(gl.geo, new THREE.LineBasicMaterial({ color: 0x334455, transparent: true, opacity: 0.5 }));
+  gridLines.push({ ...gl, type: 'u', xn, ynMin, ynMax: 1, line });
+  gridGroup.add(line);
+}
+for (let i = 0; i <= NGRID; i++) {
+  const yn = i / NGRID;
+  const xnMin = Math.max(0, CUT - yn);
+  const npts = 65;
+  const gl = makeGridLine(npts);
+  const line = new THREE.Line(gl.geo, new THREE.LineBasicMaterial({ color: 0x334455, transparent: true, opacity: 0.5 }));
+  gridLines.push({ ...gl, type: 'v', yn, xnMin, xnMax: 1, line });
+  gridGroup.add(line);
+}
+
+// ── Special edges ──
+const NLOOP = 129;
+
+// a-loop (a₁ side: V₀→V₁ on octagon, bottom edge on square) — blue
+const aLoopPts = new Float32Array(NLOOP * 3);
+const aLoopGeo = new THREE.BufferGeometry();
+aLoopGeo.setAttribute('position', new THREE.BufferAttribute(aLoopPts, 3));
+scene.add(new THREE.Line(aLoopGeo, new THREE.LineBasicMaterial({ color: 0x4488ff, linewidth: 2 })));
+
+// b-loop (b₁⁻¹ side: V₃→V₄ on octagon, left edge on square) — green
+const bLoopPts = new Float32Array(NLOOP * 3);
+const bLoopGeo = new THREE.BufferGeometry();
+bLoopGeo.setAttribute('position', new THREE.BufferAttribute(bLoopPts, 3));
+scene.add(new THREE.Line(bLoopGeo, new THREE.LineBasicMaterial({ color: 0x44cc66, linewidth: 2 })));
+
+// Cut edge (V₄→V₀ on octagon, diagonal on square) — red
+const NCUT = 65;
+const cutPts = new Float32Array(NCUT * 3);
+const cutGeo = new THREE.BufferGeometry();
+cutGeo.setAttribute('position', new THREE.BufferAttribute(cutPts, 3));
+scene.add(new THREE.Line(cutGeo, new THREE.LineBasicMaterial({ color: 0xff4444, linewidth: 2 })));
+
+let cutTube = null;
+
+// ── Bolza (2,3,8) triangles — 24 triangles in the upper half-octagon ──
+// Both chiralities: 12 direct + 12 reflected, tiling the full half-octagon.
+// Each has 3 vertices in (xn, yn) cut-square coords.
+const BOLZA_TRIS = [
+  [[0.0834,0.2666],[0.2172,0.4051],[0.47,0.47]],
+  [[0.28,0.4972],[0.2172,0.4051],[0.47,0.47]],
+  [[0.4972,0.28],[0.6201,0.3257],[0.47,0.47]],
+  [[0.4972,0.28],[0.4051,0.2172],[0.47,0.47]],
+  [[0.5115,0.5115],[0.6201,0.3257],[0.47,0.47]],
+  [[0.28,0.4972],[0.3059,0.621],[0.47,0.47]],
+  [[0.5115,0.5115],[0.3059,0.621],[0.47,0.47]],
+  [[0.2666,0.0834],[0.4051,0.2172],[0.47,0.47]],
+  [[0.4972,0.28],[0.6201,0.3257],[0.9197,0.0447]],
+  [[0.28,0.4972],[0.2172,0.4051],[0.0447,0.9197]],
+  [[0.4972,0.28],[0.4051,0.2172],[0.9197,0.0447]],
+  [[0.2666,0.0834],[0.4051,0.2172],[0.3367,0.0133]],
+  [[0.0834,0.2666],[0.2172,0.4051],[0.0133,0.3367]],
+  [[0.5115,0.5115],[0.3059,0.621],[0.922,0.922]],
+  [[0.5115,0.5115],[0.6201,0.3257],[0.922,0.922]],
+  [[0.28,0.4972],[0.3059,0.621],[0.0447,0.9197]],
+  [[0.0894,0.5639],[0.2172,0.4051],[0.0133,0.3367]],
+  [[0.4201,0.844],[0.3059,0.621],[0.922,0.922]],
+  [[0.844,0.4201],[0.6201,0.3257],[0.922,0.922]],
+  [[0.0894,0.5639],[0.2172,0.4051],[0.0447,0.9197]],
+  [[0.5639,0.0894],[0.4051,0.2172],[0.9197,0.0447]],
+  [[0.5639,0.0894],[0.4051,0.2172],[0.3367,0.0133]],
+  [[0.844,0.4201],[0.6201,0.3257],[0.9197,0.0447]],
+  [[0.4201,0.844],[0.3059,0.621],[0.0447,0.9197]]
+];
+
+// 24 colors — golden ratio hue spacing for maximum distinction
+const TRI_COLORS = Array.from({length: 24}, (_, i) => {
+  const h = (i * 0.618034) % 1.0;
+  const s = 0.65, l = 0.55;
+  const q = l < 0.5 ? l*(1+s) : l+s-l*s, p = 2*l-q;
+  const f = (t) => { t=((t%1)+1)%1; return t<1/6?p+(q-p)*6*t:t<.5?q:t<2/3?p+(q-p)*(2/3-t)*6:p; };
+  return (Math.round(f(h+1/3)*255)<<16) | (Math.round(f(h)*255)<<8) | Math.round(f(h-1/3)*255);
+});
+
+// For each triangle: 3 edges, each sampled at PTS_PER_EDGE points
+const PTS_PER_EDGE = 16;
+const triEdgeLines = [];
+
+for (let ti = 0; ti < BOLZA_TRIS.length; ti++) {
+  const tri = BOLZA_TRIS[ti];
+  const color = TRI_COLORS[ti % TRI_COLORS.length];
+  // 3 edges: 0→1, 1→2, 2→0
+  for (let ei = 0; ei < 3; ei++) {
+    const v0 = tri[ei];
+    const v1 = tri[(ei + 1) % 3];
+    const npts = PTS_PER_EDGE;
+    const pts = new Float32Array(npts * 3);
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(pts, 3));
+    const line = new THREE.Line(geo, new THREE.LineBasicMaterial({
+      color, transparent: true, opacity: 0.9
+    }));
+    triEdgeLines.push({ geo, pts, npts, v0, v1, line });
+    scene.add(line);
+  }
+}
+
+// Also create filled triangles (semi-transparent)
+const triMeshPositions = new Float32Array(BOLZA_TRIS.length * 3 * 3);
+const triMeshColors = new Float32Array(BOLZA_TRIS.length * 3 * 3);
+const triMeshGeo = new THREE.BufferGeometry();
+triMeshGeo.setAttribute('position', new THREE.BufferAttribute(triMeshPositions, 3));
+triMeshGeo.setAttribute('color', new THREE.BufferAttribute(triMeshColors, 3));
+
+// Set per-vertex colors
+for (let ti = 0; ti < BOLZA_TRIS.length; ti++) {
+  const c = new THREE.Color(TRI_COLORS[ti % TRI_COLORS.length]);
+  for (let vi = 0; vi < 3; vi++) {
+    const idx = (ti * 3 + vi) * 3;
+    triMeshColors[idx] = c.r;
+    triMeshColors[idx+1] = c.g;
+    triMeshColors[idx+2] = c.b;
+  }
+}
+
+const triMesh = new THREE.Mesh(triMeshGeo, new THREE.MeshBasicMaterial({
+  vertexColors: true, side: THREE.DoubleSide,
+  transparent: true, opacity: 0.25
+}));
+scene.add(triMesh);
+
+// ── Fold computation ──
+function lerp(a, b, t) { return a + (b - a) * t; }
+function smoothstep(t) { return t * t * (3 - 2 * t); }
+
+function computePoint(xn, yn, t) {
+  const u = 2 * Math.PI * xn;
+  const v = 2 * Math.PI * yn;
+
+  // Octagon-half flat position (uniform scaling to preserve regular octagon shape)
+  const [ox, oy] = sqToOct(xn, yn);
+  const S = FLAT_SCALE / 2;  // uniform scale for both axes
+  const ofx = ox * S;
+  const ofy = (oy - 0.5) * S;  // center vertically around the shape's midpoint
+
+  // Cut-square flat position
+  const sfx = (xn - 0.5) * FLAT_SCALE;
+  const sfy = (yn - 0.5) * FLAT_SCALE;
+
+  // Cylinder (roll in x)
+  const cx = R * Math.cos(u);
+  const cy = sfy;
+  const cz = R * Math.sin(u);
+
+  // Torus
+  const tx = (R + r * Math.cos(v)) * Math.cos(u);
+  const ty = r * Math.sin(v);
+  const tz = (R + r * Math.cos(v)) * Math.sin(u);
+
+  if (t <= P1) {
+    // Phase 0: morph octagon → square (flat)
+    const s = smoothstep(t / P1);
+    return [lerp(ofx, sfx, s), lerp(ofy, sfy, s), 0];
+  } else if (t <= P2) {
+    // Phase 1: roll square → cylinder
+    const s = smoothstep((t - P1) / (P2 - P1));
+    return [lerp(sfx, cx, s), lerp(sfy, cy, s), lerp(0, cz, s)];
+  } else {
+    // Phase 2: bend cylinder → torus
+    const s = smoothstep((t - P2) / (1 - P2));
+    return [lerp(cx, tx, s), lerp(cy, ty, s), lerp(cz, tz, s)];
+  }
+}
+
+function updateGeometry(t) {
+  // Mesh vertices
+  const pos = geo.attributes.position.array;
+  for (let k = 0; k < nVerts; k++) {
+    const [x, y, z] = computePoint(vertices[k].xn, vertices[k].yn, t);
+    pos[k*3] = x; pos[k*3+1] = y; pos[k*3+2] = z;
+  }
+  geo.attributes.position.needsUpdate = true;
+  geo.computeVertexNormals();
+
+  // Grid lines
+  for (const gl of gridLines) {
+    for (let k = 0; k < gl.npts; k++) {
+      let xn, yn;
+      if (gl.type === 'u') {
+        xn = gl.xn;
+        yn = lerp(gl.ynMin, gl.ynMax, k / (gl.npts - 1));
+      } else {
+        xn = lerp(gl.xnMin, gl.xnMax, k / (gl.npts - 1));
+        yn = gl.yn;
+      }
+      const [x, y, z] = computePoint(xn, yn, t);
+      gl.pts[k*3] = x; gl.pts[k*3+1] = y; gl.pts[k*3+2] = z;
+    }
+    gl.geo.attributes.position.needsUpdate = true;
+  }
+
+  // a-loop: bottom edge y=0, x from CUT→1 (flat) → full wrap (torus)
+  for (let k = 0; k < NLOOP; k++) {
+    const frac = k / (NLOOP - 1);
+    const tFold = Math.max(0, (t - P1) / (1 - P1)); // 0 during morph, 0→1 during fold
+    const xn = lerp(CUT + frac * (1 - CUT), frac, tFold);
+    const [x, y, z] = computePoint(xn, 0, t);
+    aLoopPts[k*3] = x; aLoopPts[k*3+1] = y; aLoopPts[k*3+2] = z;
+  }
+  aLoopGeo.attributes.position.needsUpdate = true;
+
+  // b-loop: left edge x=0, y from CUT→1 (flat) → full wrap (torus)
+  for (let k = 0; k < NLOOP; k++) {
+    const frac = k / (NLOOP - 1);
+    const tFold = Math.max(0, (t - P1) / (1 - P1));
+    const yn = lerp(CUT + frac * (1 - CUT), frac, tFold);
+    const [x, y, z] = computePoint(0, yn, t);
+    bLoopPts[k*3] = x; bLoopPts[k*3+1] = y; bLoopPts[k*3+2] = z;
+  }
+  bLoopGeo.attributes.position.needsUpdate = true;
+
+  // Cut edge: from (CUT,0)→(0,CUT) in square coords
+  for (let k = 0; k < NCUT; k++) {
+    const frac = k / (NCUT - 1);
+    const xn = CUT * (1 - frac);
+    const yn = CUT * frac;
+    const [x, y, z] = computePoint(xn, yn, t);
+    cutPts[k*3] = x; cutPts[k*3+1] = y; cutPts[k*3+2] = z;
+  }
+  cutGeo.attributes.position.needsUpdate = true;
+
+  // Thick cut tube
+  if (cutTube) scene.remove(cutTube);
+  const tubePts = [];
+  for (let k = 0; k < NCUT; k++) {
+    tubePts.push(new THREE.Vector3(cutPts[k*3], cutPts[k*3+1], cutPts[k*3+2]));
+  }
+  const curve = new THREE.CatmullRomCurve3(tubePts, false);
+  cutTube = new THREE.Mesh(
+    new THREE.TubeGeometry(curve, 64, 0.025, 8, false),
+    new THREE.MeshPhongMaterial({ color: 0xff3333, emissive: 0x441111 })
+  );
+  scene.add(cutTube);
+
+  // Update Bolza triangle edges
+  for (const el of triEdgeLines) {
+    for (let k = 0; k < el.npts; k++) {
+      const frac = k / (el.npts - 1);
+      const xn = el.v0[0] + frac * (el.v1[0] - el.v0[0]);
+      const yn = el.v0[1] + frac * (el.v1[1] - el.v0[1]);
+      const [x, y, z] = computePoint(xn, yn, t);
+      el.pts[k*3] = x; el.pts[k*3+1] = y; el.pts[k*3+2] = z;
+    }
+    el.geo.attributes.position.needsUpdate = true;
+  }
+
+  // Update filled triangle mesh
+  for (let ti = 0; ti < BOLZA_TRIS.length; ti++) {
+    const tri = BOLZA_TRIS[ti];
+    for (let vi = 0; vi < 3; vi++) {
+      const [x, y, z] = computePoint(tri[vi][0], tri[vi][1], t);
+      const idx = (ti * 3 + vi) * 3;
+      triMeshPositions[idx] = x;
+      triMeshPositions[idx+1] = y;
+      triMeshPositions[idx+2] = z;
+    }
+  }
+  triMeshGeo.attributes.position.needsUpdate = true;
+
+  // Stage label
+  const label = document.getElementById('stageLabel');
+  if (t < P1 * 0.05) label.textContent = 'Half-octagon (one handle of Bolza surface)';
+  else if (t < P1 - 0.02) label.textContent = 'Deforming half-octagon → cut square';
+  else if (t < P1 + 0.02) label.textContent = 'Cut square (same topology, Euclidean shape)';
+  else if (t < P2 - 0.02) label.textContent = 'Rolling into cylinder (identifying a ↔ a⁻¹)';
+  else if (t < P2 + 0.02) label.textContent = 'Cylinder with notch';
+  else if (t < 1 - 0.02) label.textContent = 'Bending into torus (identifying b ↔ b⁻¹)';
+  else label.textContent = 'Wounded torus — gash is the free boundary';
+}
+
+updateGeometry(0);
+
+// ── Controls ──
+const slider = document.getElementById('slider');
+const phaseEl = document.getElementById('phase');
+const playBtn = document.getElementById('playBtn');
+let currentT = 0, autoTime = 0, playing = false;
+
+playBtn.addEventListener('click', () => {
+  playing = !playing;
+  playBtn.innerHTML = playing ? '&#9646;&#9646; Pause' : '&#9654; Play';
+  if (playing) autoTime = currentT;
+});
+
+slider.addEventListener('input', () => {
+  currentT = slider.value / 1000;
+  playing = false;
+  playBtn.innerHTML = '&#9654; Play';
+  updateGeometry(currentT);
+  phaseEl.textContent = `t = ${currentT.toFixed(2)}`;
+});
+
+window.addEventListener('resize', () => {
+  cam.aspect = innerWidth/innerHeight;
+  cam.updateProjectionMatrix();
+  ren.setSize(innerWidth, innerHeight);
+});
+
+(function animate() {
+  requestAnimationFrame(animate);
+  if (playing) {
+    autoTime += 0.002;
+    const cycle = autoTime % 5;
+    if (cycle < 1.5) currentT = cycle / 1.5;
+    else if (cycle < 2) currentT = 1;
+    else if (cycle < 3.5) currentT = 1 - (cycle - 2) / 1.5;
+    else currentT = 0;
+    slider.value = currentT * 1000;
+    phaseEl.textContent = `t = ${currentT.toFixed(2)}`;
+    updateGeometry(currentT);
+  }
+  ctl.update();
+  ren.render(scene, cam);
+})();
+</script>
+</body></html>

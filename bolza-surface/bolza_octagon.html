@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<title>Bolza Surface — Hyperbolic Octagon</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#08080c; display:flex; justify-content:center; align-items:center; height:100vh; font-family:'Courier New',monospace; }
+canvas { display:block; }
+#info { position:absolute; top:16px; left:20px; color:#8899aa; font-size:13px; line-height:1.6; pointer-events:none; }
+#info h2 { color:#ccd0d8; font-size:16px; margin-bottom:4px; font-weight:normal; }
+#info .n { color:#e8b84d; }
+</style>
+</head><body>
+
+<div id="info">
+  <h2>Bolza Surface — Hyperbolic Octagon</h2>
+  <span class="n">48</span> triangles · (2,3,8) tiling · GL(2,3)<br>
+  genus 2 · &chi; = &minus;2 · H&sup1; = V&#x2082; &oplus; V&#x0305;&#x2082;
+</div>
+
+<canvas id="c"></canvas>
+<div id="three-container" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%"></div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+window.THREE = THREE;
+window.OrbitControls = OrbitControls;
+window.threeReady = true;
+if (window.onThreeReady) window.onThreeReady();
+</script>
+
+<script>
+// 48 fundamental domain triangles in Poincaré disk coords (recentered at order-8 vertex)
+const FUND_TRIS = [[[-0.36457,-0.0],[-0.37474,0.15522],[0.0,0.0]],[[-0.25779,0.25779],[-0.37474,0.15522],[0.0,0.0]],[[0.36457,0.0],[0.37474,-0.15522],[-0.0,0.0]],[[0.25779,0.25779],[0.15522,0.37474],[0.0,0.0]],[[0.25779,0.25779],[0.37474,0.15522],[0.0,-0.0]],[[0.25779,-0.25779],[0.37474,-0.15522],[-0.0,0.0]],[[-0.0,-0.36457],[0.15522,-0.37474],[0.0,0.0]],[[0.0,-0.36457],[-0.15522,-0.37474],[0.0,0.0]],[[-0.25779,-0.25779],[-0.15522,-0.37474],[0.0,0.0]],[[-0.0,0.36457],[0.15522,0.37474],[0.0,0.0]],[[-0.25779,0.25779],[-0.15522,0.37474],[0.0,0.0]],[[-0.0,0.36457],[-0.15522,0.37474],[0.0,0.0]],[[0.36457,-0.0],[0.37474,0.15522],[0.0,-0.0]],[[-0.25779,-0.25779],[-0.37474,-0.15522],[-0.0,-0.0]],[[-0.36457,-0.0],[-0.37474,-0.15522],[-0.0,-0.0]],[[0.25779,-0.25779],[0.15522,-0.37474],[0.0,0.0]],[[0.25779,0.25779],[0.15522,0.37474],[0.45509,0.45509]],[[-0.25779,0.25779],[-0.37474,0.15522],[-0.45509,0.45509]],[[0.25779,0.25779],[0.37474,0.15522],[0.45509,0.45509]],[[0.36457,0.0],[0.37474,0.15522],[0.64359,-0.0]],[[-0.36457,-0.0],[-0.37474,-0.15522],[-0.64359,-0.0]],[[0.36457,0.0],[0.37474,-0.15522],[0.64359,-0.0]],[[-0.25779,-0.25779],[-0.37474,-0.15522],[-0.45509,-0.45509]],[[-0.25779,-0.25779],[-0.15522,-0.37474],[-0.45509,-0.45509]],[[0.25779,-0.25779],[0.15522,-0.37474],[0.45509,-0.45509]],[[-0.36457,0.0],[-0.37474,0.15522],[-0.64359,0.0]],[[0.25779,-0.25779],[0.37474,-0.15522],[0.45509,-0.45509]],[[-0.0,-0.36457],[0.15522,-0.37474],[-0.0,-0.64359]],[[-0.0,0.36457],[-0.15522,0.37474],[-0.0,0.64359]],[[-0.0,0.36457],[0.15522,0.37474],[-0.0,0.64359]],[[-0.25779,0.25779],[-0.15522,0.37474],[-0.45509,0.45509]],[[-0.0,-0.36457],[-0.15522,-0.37474],[-0.0,-0.64359]],[[-0.50408,0.2088],[-0.37474,0.15522],[-0.64359,0.0]],[[-0.2088,0.50408],[-0.15522,0.37474],[-0.0,0.64359]],[[0.2088,0.50408],[0.15522,0.37474],[-0.0,0.64359]],[[-0.50408,0.2088],[-0.37474,0.15522],[-0.45509,0.45509]],[[0.50408,0.2088],[0.37474,0.15522],[0.45509,0.45509]],[[0.50408,0.2088],[0.37474,0.15522],[0.64359,-0.0]],[[-0.50408,-0.2088],[-0.37474,-0.15522],[-0.64359,-0.0]],[[0.50408,-0.2088],[0.37474,-0.15522],[0.64359,-0.0]],[[0.2088,-0.50408],[0.15522,-0.37474],[0.45509,-0.45509]],[[-0.2088,-0.50408],[-0.15522,-0.37474],[-0.0,-0.64359]],[[-0.2088,-0.50408],[-0.15522,-0.37474],[-0.45509,-0.45509]],[[0.2088,0.50408],[0.15522,0.37474],[0.45509,0.45509]],[[-0.2088,0.50408],[-0.15522,0.37474],[-0.45509,0.45509]],[[0.50408,-0.2088],[0.37474,-0.15522],[0.45509,-0.45509]],[[-0.50408,-0.2088],[-0.37474,-0.15522],[-0.45509,-0.45509]],[[0.2088,-0.50408],[0.15522,-0.37474],[-0.0,-0.64359]]];
+
+const OCT_EDGES = [[[-0.6436,0.0],[-0.5041,0.2088]],[[-0.2088,0.5041],[-0.0,0.6436]],[[-0.0,0.6436],[0.2088,0.5041]],[[-0.5041,0.2088],[-0.4551,0.4551]],[[0.4551,0.4551],[0.5041,0.2088]],[[0.5041,0.2088],[0.6436,-0.0]],[[-0.6436,-0.0],[-0.5041,-0.2088]],[[0.5041,-0.2088],[0.6436,-0.0]],[[0.2088,-0.5041],[0.4551,-0.4551]],[[-0.0,-0.6436],[0.2088,-0.5041]],[[-0.2088,-0.5041],[-0.0,-0.6436]],[[0.2088,0.5041],[0.4551,0.4551]],[[-0.4551,0.4551],[-0.2088,0.5041]],[[0.4551,-0.4551],[0.5041,-0.2088]],[[-0.5041,-0.2088],[-0.4551,-0.4551]],[[-0.4551,-0.4551],[-0.2088,-0.5041]]];
+
+// ── Hyperbolic octagon → Euclidean octagon mapping ──
+
+// The 8 octagon corners (order-2 vertices) at angles k·45°
+// Use exact radius from triangle data (0.64359, not rounded 0.6436)
+const OCT_R = 0.64359;
+const OCT_CORNERS = [];
+for (let k = 0; k < 8; k++) {
+  const a = k * Math.PI / 4;
+  OCT_CORNERS.push([OCT_R * Math.cos(a), OCT_R * Math.sin(a)]);
+}
+
+// For each of the 8 sides, compute the geodesic circle (center, radius)
+// Side k goes from corner k to corner (k+1)%8
+// Geodesic in Poincaré disk: circle perpendicular to unit circle through p, q
+// Center C: |C|² = r² + 1, |C-p| = |C-q| = r
+const SIDE_CIRCLES = [];
+for (let k = 0; k < 8; k++) {
+  const [x1,y1] = OCT_CORNERS[k];
+  const [x2,y2] = OCT_CORNERS[(k+1)%8];
+
+  const dx = x2-x1, dy = y2-y1;
+  const rhs1 = (x2*x2+y2*y2 - x1*x1-y1*y1) / 2;
+  const rhs2 = (1 + x1*x1 + y1*y1) / 2;
+  const det = dx*y1 - dy*x1;
+
+  const Cx = (rhs1*y1 - rhs2*dy) / det;
+  const Cy = (rhs2*dx - rhs1*x1) / det;
+  const gr = Math.sqrt((x1-Cx)*(x1-Cx) + (y1-Cy)*(y1-Cy));
+
+  SIDE_CIRCLES.push({ Cx, Cy, r: gr });
+}
+
+// Euclidean regular octagon boundary radius at angle θ
+// Corners at angles k·45°, radius R_euc
+const R_EUC = 1.0;  // unit octagon
+function eucOctR(theta) {
+  // Local angle within the current side: 0 at midpoint, ±π/8 at corners
+  // Corners at k·π/4, sides span [k·π/4, (k+1)·π/4]
+  const localAngle = ((theta % (Math.PI/4)) + Math.PI/4) % (Math.PI/4) - Math.PI/8;
+  return R_EUC * Math.cos(Math.PI/8) / Math.cos(localAngle);
+}
+
+// Hyperbolic octagon boundary radius at angle θ (ray-circle intersection)
+function hypOctR(theta) {
+  const ct = Math.cos(theta), st = Math.sin(theta);
+
+  // Determine which side the ray at angle θ crosses
+  // Side k spans angles from corner k to corner k+1
+  const cornerAngle = k => ((k * Math.PI / 4) + 2*Math.PI) % (2*Math.PI);
+
+  let sideIdx = 0;
+  const ta = ((theta % (2*Math.PI)) + 2*Math.PI) % (2*Math.PI);
+  for (let k = 0; k < 8; k++) {
+    let a1 = cornerAngle(k), a2 = cornerAngle(k+1);
+    // Midpoint angle of this side
+    const mid = (a1 + a2) / 2;
+    // Check if theta is in this sector (between corners k and k+1)
+    let lo = a1, hi = a2;
+    if (hi < lo) hi += 2*Math.PI;
+    let t = ta;
+    if (t < lo) t += 2*Math.PI;
+    if (t >= lo && t < hi) { sideIdx = k; break; }
+  }
+
+  const {Cx, Cy, r} = SIDE_CIRCLES[sideIdx];
+
+  // Ray from origin at angle θ: parametric (t·cosθ, t·sinθ)
+  // Intersect with circle: (t·cosθ - Cx)² + (t·sinθ - Cy)² = r²
+  // t² - 2t(Cx·cosθ + Cy·sinθ) + (Cx²+Cy² - r²) = 0
+  const b = -(Cx*ct + Cy*st);
+  const c = Cx*Cx + Cy*Cy - r*r;
+  const disc = b*b - c;
+  if (disc < 0) return 0.6436; // fallback
+  const sq = Math.sqrt(disc);
+  const t1 = -b - sq, t2 = -b + sq;
+  // Take the positive root closest to the origin (inside the disk)
+  if (t1 > 0.01 && t1 < 1) return t1;
+  if (t2 > 0.01 && t2 < 1) return t2;
+  return 0.6436;
+}
+
+// Map a point from hyperbolic octagon to Euclidean regular octagon
+function hypToEuc(x, y) {
+  const r = Math.sqrt(x*x + y*y);
+  if (r < 1e-8) return [0, 0];
+  const theta = Math.atan2(y, x);
+  const rh = hypOctR(theta);
+  const re = eucOctR(theta);
+  const rOut = (r / rh) * re;
+  return [rOut * Math.cos(theta), rOut * Math.sin(theta)];
+}
+
+// ── Half-octagon → Cut-square mapping ──
+// Triangle-fan barycentric interpolation between two pentagons
+
+const CUT = 0.35;
+const S2 = Math.SQRT2 / 2;
+
+// Half-octagon vertices (upper half of unit Euclidean octagon)
+// Correspondence: V₀↔S₀, V₁↔S₁, V₂↔S₂, V₃↔S₃, V₄↔S₄
+const halfOctVerts = [[1,0], [S2,S2], [0,1], [-S2,S2], [-1,0]];
+const sqVerts = [[CUT,0], [1,0], [1,1], [0,1], [0,CUT]];
+
+function centroid5(verts) {
+  return [verts.reduce((s,v)=>s+v[0],0)/5, verts.reduce((s,v)=>s+v[1],0)/5];
+}
+const halfOctC = centroid5(halfOctVerts);
+const sqC = centroid5(sqVerts);
+
+function bary(px, py, ax, ay, bx, by, cx, cy) {
+  const det = (by-cy)*(ax-cx) + (cx-bx)*(ay-cy);
+  if (Math.abs(det) < 1e-12) return null;
+  const alpha = ((by-cy)*(px-cx) + (cx-bx)*(py-cy)) / det;
+  const beta  = ((cy-ay)*(px-cx) + (ax-cx)*(py-cy)) / det;
+  return [alpha, beta, 1-alpha-beta];
+}
+
+// Map a point from the half Euclidean octagon to the cut-square
+function octToSq(ox, oy) {
+  const EPS = -0.05;
+  for (let i = 0; i < 5; i++) {
+    const j = (i+1) % 5;
+    const b = bary(ox, oy,
+      halfOctC[0], halfOctC[1],
+      halfOctVerts[i][0], halfOctVerts[i][1],
+      halfOctVerts[j][0], halfOctVerts[j][1]);
+    if (b && b[0] >= EPS && b[1] >= EPS && b[2] >= EPS) {
+      return [
+        b[0]*sqC[0] + b[1]*sqVerts[i][0] + b[2]*sqVerts[j][0],
+        b[0]*sqC[1] + b[1]*sqVerts[i][1] + b[2]*sqVerts[j][1]
+      ];
+    }
+  }
+  return [sqC[0], sqC[1]];
+}
+
+// ── Cut-square → Torus mapping ──
+const TORUS_R = 1.3;  // major radius
+const TORUS_r = 0.5;  // minor radius
+
+function sqToTorus(xn, yn) {
+  const u = 2 * Math.PI * xn;
+  const v = 2 * Math.PI * yn;
+  return [
+    (TORUS_R + TORUS_r * Math.cos(v)) * Math.cos(u),
+    TORUS_r * Math.sin(v),
+    (TORUS_R + TORUS_r * Math.cos(v)) * Math.sin(u)
+  ];
+}
+
+// ── Build all pipeline stages ──
+const EUC_TRIS = FUND_TRIS.map(t => t.map(v => hypToEuc(v[0], v[1])));
+
+const UPPER_EUC = EUC_TRIS.filter(t => (t[0][1]+t[1][1]+t[2][1])/3 >= 0);
+const UPPER_HYP = FUND_TRIS.filter(t => (t[0][1]+t[1][1]+t[2][1])/3 >= 0);
+
+const SQ_TRIS = UPPER_EUC.map(t => t.map(v => octToSq(v[0], v[1])));
+const TORUS_TRIS = SQ_TRIS.map(t => t.map(v => sqToTorus(v[0], v[1])));
+
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+
+// 0 = hyperbolic full, 1 = euclidean full, 2 = half-octagon, 3 = cut-square
+let mode = 0;
+
+function resize() {
+  const s = Math.min(innerWidth, innerHeight) * 0.92;
+  canvas.width = s * devicePixelRatio;
+  canvas.height = s * devicePixelRatio;
+  canvas.style.width = s + 'px';
+  canvas.style.height = s + 'px';
+  draw();
+}
+
+// HSL to RGB
+function hsl(h, s, l) {
+  const q = l < 0.5 ? l*(1+s) : l+s-l*s, p = 2*l-q;
+  const f = t => { t=((t%1)+1)%1; return t<1/6?p+(q-p)*6*t:t<.5?q:t<2/3?p+(q-p)*(2/3-t)*6:p; };
+  return [Math.round(f(h+1/3)*255), Math.round(f(h)*255), Math.round(f(h-1/3)*255)];
+}
+
+// Geodesic arc between two points in the Poincaré disk
+function geodesicArc(ctx, x1, y1, x2, y2, cx, cy, R) {
+  // If both points are near the origin, just draw a line
+  const r1 = x1*x1 + y1*y1, r2 = x2*x2 + y2*y2;
+  if (r1 < 1e-6 && r2 < 1e-6) { ctx.lineTo(cx+x2*R, cy-y2*R); return; }
+
+  // Check if geodesic is approximately a diameter (points nearly collinear with origin)
+  const cross = x1*y2 - x2*y1;
+  if (Math.abs(cross) < 1e-6) {
+    ctx.lineTo(cx+x2*R, cy-y2*R);
+    return;
+  }
+
+  // Find circle perpendicular to unit disk passing through (x1,y1) and (x2,y2)
+  // Center (Cx, Cy) satisfies:
+  //   (x1-Cx)²+(y1-Cy)² = (x2-Cx)²+(y2-Cy)²  (equidistant)
+  //   Cx²+Cy² = r² + 1                          (perpendicular to unit circle)
+  // From equidistant: 2Cx(x2-x1) + 2Cy(y2-y1) = x2²+y2²-x1²-y1²
+  const dx = x2-x1, dy = y2-y1;
+  const rhs1 = (x2*x2+y2*y2 - x1*x1-y1*y1) / 2;
+
+  // From perpendicularity: Cx²+Cy² - ((x1-Cx)²+(y1-Cy)²) = 1
+  // Expanding: 2Cx·x1 + 2Cy·y1 - x1²-y1² = 1
+  const rhs2 = (1 + x1*x1 + y1*y1) / 2;
+
+  // Solve: dx·Cx + dy·Cy = rhs1
+  //        x1·Cx + y1·Cy = rhs2
+  const det = dx*y1 - dy*x1;
+  if (Math.abs(det) < 1e-10) { ctx.lineTo(cx+x2*R, cy-y2*R); return; }
+
+  const Cx = (rhs1*y1 - rhs2*dy) / det;
+  const Cy = (rhs2*dx - rhs1*x1) / det;
+  const gr = Math.sqrt((x1-Cx)*(x1-Cx) + (y1-Cy)*(y1-Cy));
+
+  // Angles in canvas coords (y-flipped)
+  const a1 = Math.atan2(-(y1-Cy), x1-Cx);
+  const a2 = Math.atan2(-(y2-Cy), x2-Cx);
+
+  // Determine direction: arc should stay inside the disk
+  // The shorter arc that stays inside the unit circle
+  let da = a2 - a1;
+  while (da > Math.PI) da -= 2*Math.PI;
+  while (da < -Math.PI) da += 2*Math.PI;
+
+  const ccw = da > 0;
+  ctx.arc(cx+Cx*R, cy-Cy*R, gr*R, a1, a2, !ccw);
+}
+
+function draw() {
+  const w = canvas.width, h = canvas.height;
+  const cxc = w/2, cyc = h/2, R = w * 0.46;
+
+  ctx.fillStyle = '#08080c';
+  ctx.fillRect(0, 0, w, h);
+
+  const isHyp = mode === 0;
+  const isEuc = mode === 1;
+  const isHalf = mode === 2;
+  const isSq = mode === 3;
+
+  // Select triangles and scale
+  let tris, scale, useGeodesic = false;
+  if (isHyp) { tris = FUND_TRIS; scale = R; useGeodesic = true; }
+  else if (isEuc) { tris = EUC_TRIS; scale = R * 0.9; }
+  else if (isHalf) { tris = UPPER_EUC; scale = R * 0.9; }
+  else { tris = SQ_TRIS; scale = R * 0.8; }
+
+  // For cut-square mode, offset so the square is centered
+  let ox = 0, oy = 0;
+  if (isSq) { ox = -0.5 * scale; oy = 0.5 * scale; }
+
+  if (isHyp) {
+    ctx.beginPath(); ctx.arc(cxc, cyc, R, 0, 2*Math.PI);
+    ctx.fillStyle = '#0d0d14'; ctx.fill();
+  }
+
+  // Filled triangles
+  for (let i = 0; i < tris.length; i++) {
+    const t = tris[i];
+    // Use consistent color index: for half/sq modes, offset by triangle's original position
+    const ci = (isHalf || isSq) ? i : i;
+    const [cr,cg,cb] = hsl((ci * 0.618034) % 1.0, 0.6, 0.5);
+
+    ctx.beginPath();
+    ctx.moveTo(cxc + t[0][0]*scale + ox, cyc - t[0][1]*scale + oy);
+    if (useGeodesic) {
+      geodesicArc(ctx, t[0][0], t[0][1], t[1][0], t[1][1], cxc, cyc, scale);
+      geodesicArc(ctx, t[1][0], t[1][1], t[2][0], t[2][1], cxc, cyc, scale);
+      geodesicArc(ctx, t[2][0], t[2][1], t[0][0], t[0][1], cxc, cyc, scale);
+    } else {
+      ctx.lineTo(cxc + t[1][0]*scale + ox, cyc - t[1][1]*scale + oy);
+      ctx.lineTo(cxc + t[2][0]*scale + ox, cyc - t[2][1]*scale + oy);
+    }
+    ctx.closePath();
+    ctx.fillStyle = `rgb(${cr},${cg},${cb})`;
+    ctx.fill();
+  }
+
+  // Triangle edges
+  ctx.strokeStyle = 'rgba(8,8,12,0.7)';
+  ctx.lineWidth = 1.2;
+  for (const t of tris) {
+    for (let i = 0; i < 3; i++) {
+      const j = (i+1) % 3;
+      ctx.beginPath();
+      ctx.moveTo(cxc + t[i][0]*scale + ox, cyc - t[i][1]*scale + oy);
+      if (useGeodesic) {
+        geodesicArc(ctx, t[i][0], t[i][1], t[j][0], t[j][1], cxc, cyc, scale);
+      } else {
+        ctx.lineTo(cxc + t[j][0]*scale + ox, cyc - t[j][1]*scale + oy);
+      }
+      ctx.stroke();
+    }
+  }
+
+  // Boundary
+  ctx.strokeStyle = '#e8b84d';
+  ctx.lineWidth = 3;
+  ctx.lineCap = 'round';
+
+  if (isHyp) {
+    for (const e of OCT_EDGES) {
+      ctx.beginPath();
+      ctx.moveTo(cxc + e[0][0]*scale, cyc - e[0][1]*scale);
+      geodesicArc(ctx, e[0][0], e[0][1], e[1][0], e[1][1], cxc, cyc, scale);
+      ctx.stroke();
+    }
+  } else if (isEuc) {
+    // Draw the Euclidean octagon using eucOctR so it matches the mapped triangles exactly
+    ctx.beginPath();
+    const NPTS = 128;
+    for (let k = 0; k <= NPTS; k++) {
+      const a = k * 2 * Math.PI / NPTS;
+      const er = eucOctR(a);
+      const px = cxc + er * Math.cos(a) * scale, py = cyc - er * Math.sin(a) * scale;
+      if (k === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    }
+    ctx.closePath(); ctx.stroke();
+  } else if (isHalf) {
+    ctx.beginPath();
+    for (let k = 0; k <= 4; k++) {
+      const [vx, vy] = halfOctVerts[k];
+      const px = cxc + vx*scale, py = cyc - vy*scale;
+      if (k === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    }
+    ctx.closePath(); ctx.stroke();
+    // Cut line (base of half-octagon)
+    ctx.strokeStyle = '#ff4444'; ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(cxc - scale, cyc);
+    ctx.lineTo(cxc + scale, cyc);
+    ctx.stroke();
+  } else {
+    // Cut-square boundary
+    ctx.beginPath();
+    for (let k = 0; k < 5; k++) {
+      const [vx, vy] = sqVerts[k];
+      const px = cxc + vx*scale + ox, py = cyc - vy*scale + oy;
+      if (k === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    }
+    ctx.closePath(); ctx.stroke();
+    // Cut diagonal (red)
+    ctx.strokeStyle = '#ff4444'; ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(cxc + CUT*scale + ox, cyc + oy);
+    ctx.lineTo(cxc + ox, cyc - CUT*scale + oy);
+    ctx.stroke();
+  }
+
+  // Cut line for full octagons
+  if (isHyp || isEuc) {
+    const cutR = isHyp ? 0.6436 * scale : scale;
+    ctx.strokeStyle = '#ff4444'; ctx.lineWidth = 2.5;
+    ctx.setLineDash([8, 6]);
+    ctx.beginPath();
+    ctx.moveTo(cxc + cutR, cyc); ctx.lineTo(cxc - cutR, cyc);
+    ctx.stroke(); ctx.setLineDash([]);
+  }
+
+  // Disk boundary
+  if (isHyp) {
+    ctx.beginPath(); ctx.arc(cxc, cyc, R, 0, 2*Math.PI);
+    ctx.strokeStyle = '#334455'; ctx.lineWidth = 2; ctx.stroke();
+  }
+
+  // Mode label
+  const labels = [
+    '1: Hyperbolic octagon',
+    '2: Euclidean octagon',
+    '3: Half-octagon (one handle)',
+    '4: Cut square (ready to fold)'
+  ];
+  ctx.fillStyle = '#556677';
+  ctx.font = `${R*0.035}px Courier New`;
+  ctx.textAlign = 'center';
+  ctx.fillText(labels[mode] + '  [press 1-4]', cxc, cyc + R * 0.95);
+}
+
+// ── Three.js torus setup (mode 5) ──
+let threeInited = false, threeScene, threeCam, threeRen, threeCtl;
+let torusMeshGroup;
+
+function initThree() {
+  if (threeInited || !window.THREE) return;
+  threeInited = true;
+  const container = document.getElementById('three-container');
+  threeScene = new THREE.Scene();
+  threeScene.background = new THREE.Color(0x08080c);
+  threeCam = new THREE.PerspectiveCamera(40, innerWidth/innerHeight, 0.1, 100);
+  threeCam.position.set(0, 2.5, 5);
+  threeRen = new THREE.WebGLRenderer({ antialias: true });
+  threeRen.setSize(innerWidth, innerHeight);
+  threeRen.setPixelRatio(Math.min(devicePixelRatio, 2));
+  container.appendChild(threeRen.domElement);
+  threeCtl = new OrbitControls(threeCam, threeRen.domElement);
+  threeCtl.enableDamping = true; threeCtl.dampingFactor = 0.05;
+  threeCtl.autoRotate = true; threeCtl.autoRotateSpeed = 0.6;
+
+  threeScene.add(new THREE.AmbientLight(0x556677, 0.6));
+  const l1 = new THREE.DirectionalLight(0xffeedd, 1.2); l1.position.set(5,8,5); threeScene.add(l1);
+  const l2 = new THREE.DirectionalLight(0x99aacc, 0.5); l2.position.set(-4,2,-3); threeScene.add(l2);
+
+  // Ghost torus
+  const tg = new THREE.TorusGeometry(TORUS_R, TORUS_r, 48, 96);
+  threeScene.add(new THREE.Mesh(tg, new THREE.MeshPhongMaterial({
+    color: 0x5a6a80, side: THREE.DoubleSide, shininess: 25, transparent: true, opacity: 0.3
+  })));
+
+  // Triangles on the torus
+  torusMeshGroup = new THREE.Group();
+  threeScene.add(torusMeshGroup);
+
+  const PTS_PER_EDGE = 24;
+
+  for (let i = 0; i < SQ_TRIS.length; i++) {
+    const sqT = SQ_TRIS[i];
+    const [cr,cg,cb] = hsl((i * 0.618034) % 1.0, 0.6, 0.5);
+    const color = new THREE.Color(cr/255, cg/255, cb/255);
+
+    // Filled triangle on torus surface — subdivide for curvature
+    const SUB = 8;
+    const fillPositions = [];
+    for (let a = 0; a < SUB; a++) {
+      for (let b = 0; b <= a; b++) {
+        // Barycentric subdivision
+        const u0 = (SUB-a)/SUB, u1 = b/SUB, u2 = (a-b)/SUB;
+        const u0n = (SUB-a-1)/SUB, u1n = (b+1)/SUB, u2n = (a-b)/SUB;
+        // Triangle 1
+        const p00 = [u0*sqT[0][0]+u1*sqT[1][0]+u2*sqT[2][0], u0*sqT[0][1]+u1*sqT[1][1]+u2*sqT[2][1]];
+        const p10 = [u0n*sqT[0][0]+u1*sqT[1][0]+(1-u0n-u1)*sqT[2][0], u0n*sqT[0][1]+u1*sqT[1][1]+(1-u0n-u1)*sqT[2][1]];
+        const p01 = [u0n*sqT[0][0]+u1n*sqT[1][0]+(1-u0n-u1n)*sqT[2][0], u0n*sqT[0][1]+u1n*sqT[1][1]+(1-u0n-u1n)*sqT[2][1]];
+        const t00 = sqToTorus(p00[0], p00[1]);
+        const t10 = sqToTorus(p10[0], p10[1]);
+        const t01 = sqToTorus(p01[0], p01[1]);
+        fillPositions.push(...t00, ...t10, ...t01);
+        // Triangle 2 (if exists)
+        if (b < a) {
+          const u0p = (SUB-a)/SUB, u1p = (b+1)/SUB, u2p = (a-b-1)/SUB;
+          const p11 = [u0p*sqT[0][0]+u1p*sqT[1][0]+u2p*sqT[2][0], u0p*sqT[0][1]+u1p*sqT[1][1]+u2p*sqT[2][1]];
+          const t11 = sqToTorus(p11[0], p11[1]);
+          fillPositions.push(...t01, ...t11, ...t00);
+        }
+      }
+    }
+
+    const fillGeo = new THREE.BufferGeometry();
+    fillGeo.setAttribute('position', new THREE.Float32BufferAttribute(fillPositions, 3));
+    fillGeo.computeVertexNormals();
+    torusMeshGroup.add(new THREE.Mesh(fillGeo, new THREE.MeshPhongMaterial({
+      color, side: THREE.DoubleSide, shininess: 30
+    })));
+
+    // Edges
+    for (let ei = 0; ei < 3; ei++) {
+      const v0 = sqT[ei], v1 = sqT[(ei+1)%3];
+      const edgePts = [];
+      for (let k = 0; k <= PTS_PER_EDGE; k++) {
+        const frac = k / PTS_PER_EDGE;
+        const xn = v0[0] + frac*(v1[0]-v0[0]);
+        const yn = v0[1] + frac*(v1[1]-v0[1]);
+        const [tx,ty,tz] = sqToTorus(xn, yn);
+        edgePts.push(new THREE.Vector3(tx, ty, tz));
+      }
+      const edgeGeo = new THREE.BufferGeometry().setFromPoints(edgePts);
+      torusMeshGroup.add(new THREE.Line(edgeGeo, new THREE.LineBasicMaterial({
+        color: 0x111118, linewidth: 1
+      })));
+    }
+  }
+
+  // Animate
+  (function animate() {
+    requestAnimationFrame(animate);
+    if (mode === 4) {
+      threeCtl.update();
+      threeRen.render(threeScene, threeCam);
+    }
+  })();
+}
+
+window.onThreeReady = () => { if (mode === 4) { initThree(); showMode(); } };
+
+function showMode() {
+  const c2d = document.getElementById('c');
+  const c3d = document.getElementById('three-container');
+  if (mode === 4) {
+    c2d.style.display = 'none';
+    c3d.style.display = 'block';
+    initThree();
+  } else {
+    c2d.style.display = 'block';
+    c3d.style.display = 'none';
+    draw();
+  }
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key >= '1' && e.key <= '5') { mode = parseInt(e.key) - 1; showMode(); }
+});
+
+// Update labels and draw to include mode 5
+const origDraw = draw;
+draw = function() {
+  origDraw();
+  // Override label
+  const w = canvas.width, R = w * 0.46;
+  const labels = [
+    '1: Hyperbolic octagon',
+    '2: Euclidean octagon',
+    '3: Half-octagon (one handle)',
+    '4: Cut square',
+    '5: Wounded torus'
+  ];
+  ctx.fillStyle = '#08080c';
+  ctx.fillRect(0, canvas.height - R*0.12, canvas.width, R*0.12);
+  ctx.fillStyle = '#556677';
+  ctx.font = `${R*0.035}px Courier New`;
+  ctx.textAlign = 'center';
+  ctx.fillText(labels[mode] + '  [press 1-5]', canvas.width/2, canvas.height/2 + R * 0.95);
+};
+
+window.addEventListener('resize', () => {
+  resize();
+  if (threeRen) {
+    threeCam.aspect = innerWidth/innerHeight;
+    threeCam.updateProjectionMatrix();
+    threeRen.setSize(innerWidth, innerHeight);
+  }
+});
+resize();
+</script>
+</body></html>

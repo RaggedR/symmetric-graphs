@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<title>Bolza Surface — Full Pipeline</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#08080c; overflow:hidden; font-family:'Courier New',monospace; }
+#info { position:absolute; top:12px; left:16px; color:#8899aa; font-size:13px; line-height:1.6; pointer-events:none; z-index:10; }
+#info h2 { color:#ccd0d8; font-size:16px; margin-bottom:4px; font-weight:normal; }
+#info .n { color:#e8b84d; }
+#controls { position:absolute; bottom:20px; left:50%; transform:translateX(-50%); color:#8899aa; font-size:12px; text-align:center; z-index:10; }
+#controls input[type=range] { width:400px; cursor:pointer; }
+#phase { color:#e8b84d; font-size:13px; margin-top:4px; }
+#playBtn { background:none; border:1px solid #667788; color:#ccd0d8; padding:4px 16px;
+  cursor:pointer; font-family:inherit; font-size:13px; border-radius:3px; margin-right:12px; }
+#playBtn:hover { border-color:#99aabb; }
+</style>
+</head><body>
+
+<div id="info">
+  <h2>Bolza Surface — Octagon to Torus</h2>
+  <span id="stageLabel">Hyperbolic octagon (Poincaré disk)</span>
+</div>
+
+<div id="controls">
+  <input type="range" id="slider" min="0" max="1000" value="0">
+  <div id="phase">t = 0.00</div>
+  <button id="playBtn">&#9654; Play</button>
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+// ══════════════════════════════════════════════════════════════
+//  Triangle data (48 in Poincaré disk)
+// ══════════════════════════════════════════════════════════════
+const FUND_TRIS = [[[-0.36457,-0.0],[-0.37474,0.15522],[0.0,0.0]],[[-0.25779,0.25779],[-0.37474,0.15522],[0.0,0.0]],[[0.36457,0.0],[0.37474,-0.15522],[-0.0,0.0]],[[0.25779,0.25779],[0.15522,0.37474],[0.0,0.0]],[[0.25779,0.25779],[0.37474,0.15522],[0.0,-0.0]],[[0.25779,-0.25779],[0.37474,-0.15522],[-0.0,0.0]],[[-0.0,-0.36457],[0.15522,-0.37474],[0.0,0.0]],[[0.0,-0.36457],[-0.15522,-0.37474],[0.0,0.0]],[[-0.25779,-0.25779],[-0.15522,-0.37474],[0.0,0.0]],[[-0.0,0.36457],[0.15522,0.37474],[0.0,0.0]],[[-0.25779,0.25779],[-0.15522,0.37474],[0.0,0.0]],[[-0.0,0.36457],[-0.15522,0.37474],[0.0,0.0]],[[0.36457,-0.0],[0.37474,0.15522],[0.0,-0.0]],[[-0.25779,-0.25779],[-0.37474,-0.15522],[-0.0,-0.0]],[[-0.36457,-0.0],[-0.37474,-0.15522],[-0.0,-0.0]],[[0.25779,-0.25779],[0.15522,-0.37474],[0.0,0.0]],[[0.25779,0.25779],[0.15522,0.37474],[0.45509,0.45509]],[[-0.25779,0.25779],[-0.37474,0.15522],[-0.45509,0.45509]],[[0.25779,0.25779],[0.37474,0.15522],[0.45509,0.45509]],[[0.36457,0.0],[0.37474,0.15522],[0.64359,-0.0]],[[-0.36457,-0.0],[-0.37474,-0.15522],[-0.64359,-0.0]],[[0.36457,0.0],[0.37474,-0.15522],[0.64359,-0.0]],[[-0.25779,-0.25779],[-0.37474,-0.15522],[-0.45509,-0.45509]],[[-0.25779,-0.25779],[-0.15522,-0.37474],[-0.45509,-0.45509]],[[0.25779,-0.25779],[0.15522,-0.37474],[0.45509,-0.45509]],[[-0.36457,0.0],[-0.37474,0.15522],[-0.64359,0.0]],[[0.25779,-0.25779],[0.37474,-0.15522],[0.45509,-0.45509]],[[-0.0,-0.36457],[0.15522,-0.37474],[-0.0,-0.64359]],[[-0.0,0.36457],[-0.15522,0.37474],[-0.0,0.64359]],[[-0.0,0.36457],[0.15522,0.37474],[-0.0,0.64359]],[[-0.25779,0.25779],[-0.15522,0.37474],[-0.45509,0.45509]],[[-0.0,-0.36457],[-0.15522,-0.37474],[-0.0,-0.64359]],[[-0.50408,0.2088],[-0.37474,0.15522],[-0.64359,0.0]],[[-0.2088,0.50408],[-0.15522,0.37474],[-0.0,0.64359]],[[0.2088,0.50408],[0.15522,0.37474],[-0.0,0.64359]],[[-0.50408,0.2088],[-0.37474,0.15522],[-0.45509,0.45509]],[[0.50408,0.2088],[0.37474,0.15522],[0.45509,0.45509]],[[0.50408,0.2088],[0.37474,0.15522],[0.64359,-0.0]],[[-0.50408,-0.2088],[-0.37474,-0.15522],[-0.64359,-0.0]],[[0.50408,-0.2088],[0.37474,-0.15522],[0.64359,-0.0]],[[0.2088,-0.50408],[0.15522,-0.37474],[0.45509,-0.45509]],[[-0.2088,-0.50408],[-0.15522,-0.37474],[-0.0,-0.64359]],[[-0.2088,-0.50408],[-0.15522,-0.37474],[-0.45509,-0.45509]],[[0.2088,0.50408],[0.15522,0.37474],[0.45509,0.45509]],[[-0.2088,0.50408],[-0.15522,0.37474],[-0.45509,0.45509]],[[0.50408,-0.2088],[0.37474,-0.15522],[0.45509,-0.45509]],[[-0.50408,-0.2088],[-0.37474,-0.15522],[-0.45509,-0.45509]],[[0.2088,-0.50408],[0.15522,-0.37474],[-0.0,-0.64359]]];
+
+// ══════════════════════════════════════════════════════════════
+//  Mapping functions (same as bolza_octagon.html)
+// ══════════════════════════════════════════════════════════════
+const OCT_R = 0.64359;
+const OCT_CORNERS = Array.from({length:8}, (_,k) => {
+  const a = k*Math.PI/4;
+  return [OCT_R*Math.cos(a), OCT_R*Math.sin(a)];
+});
+
+const SIDE_CIRCLES = [];
+for (let k = 0; k < 8; k++) {
+  const [x1,y1] = OCT_CORNERS[k], [x2,y2] = OCT_CORNERS[(k+1)%8];
+  const dx=x2-x1, dy=y2-y1;
+  const rhs1=(x2*x2+y2*y2-x1*x1-y1*y1)/2, rhs2=(1+x1*x1+y1*y1)/2;
+  const det=dx*y1-dy*x1;
+  const Cx=(rhs1*y1-rhs2*dy)/det, Cy=(rhs2*dx-rhs1*x1)/det;
+  SIDE_CIRCLES.push({Cx, Cy, r: Math.sqrt((x1-Cx)**2+(y1-Cy)**2)});
+}
+
+const R_EUC = 1.0;
+function eucOctR(theta) {
+  const la = ((theta%(Math.PI/4))+Math.PI/4)%(Math.PI/4) - Math.PI/8;
+  return R_EUC * Math.cos(Math.PI/8) / Math.cos(la);
+}
+
+function hypOctR(theta) {
+  const ct=Math.cos(theta), st=Math.sin(theta);
+  const ta=((theta%(2*Math.PI))+2*Math.PI)%(2*Math.PI);
+  let si=0;
+  for (let k=0;k<8;k++) {
+    let lo=k*Math.PI/4, hi=(k+1)*Math.PI/4;
+    if (hi<lo) hi+=2*Math.PI;
+    let t2=ta; if(t2<lo) t2+=2*Math.PI;
+    if (t2>=lo && t2<hi) { si=k; break; }
+  }
+  const {Cx,Cy,r}=SIDE_CIRCLES[si];
+  const b=-(Cx*ct+Cy*st), c=Cx*Cx+Cy*Cy-r*r;
+  const disc=b*b-c;
+  if (disc<0) return OCT_R;
+  const sq=Math.sqrt(disc), t1=-b-sq, t2=-b+sq;
+  if (t1>0.01&&t1<1) return t1;
+  if (t2>0.01&&t2<1) return t2;
+  return OCT_R;
+}
+
+function hypToEuc(x, y) {
+  const r=Math.sqrt(x*x+y*y);
+  if (r<1e-8) return [0,0];
+  const th=Math.atan2(y,x);
+  const ro=(r/hypOctR(th))*eucOctR(th);
+  return [ro*Math.cos(th), ro*Math.sin(th)];
+}
+
+const CUT=0.35, S2=Math.SQRT2/2;
+const halfOctVerts=[[1,0],[S2,S2],[0,1],[-S2,S2],[-1,0]];
+const sqVerts=[[CUT,0],[1,0],[1,1],[0,1],[0,CUT]];
+const hC=[halfOctVerts.reduce((s,v)=>s+v[0],0)/5, halfOctVerts.reduce((s,v)=>s+v[1],0)/5];
+const sC=[sqVerts.reduce((s,v)=>s+v[0],0)/5, sqVerts.reduce((s,v)=>s+v[1],0)/5];
+
+function bary(px,py,ax,ay,bx,by,cx,cy) {
+  const det=(by-cy)*(ax-cx)+(cx-bx)*(ay-cy);
+  if(Math.abs(det)<1e-12) return null;
+  const a=((by-cy)*(px-cx)+(cx-bx)*(py-cy))/det;
+  const b2=((cy-ay)*(px-cx)+(ax-cx)*(py-cy))/det;
+  return [a,b2,1-a-b2];
+}
+
+function octToSq(ox,oy) {
+  for(let i=0;i<5;i++){
+    const j=(i+1)%5;
+    const b=bary(ox,oy,hC[0],hC[1],halfOctVerts[i][0],halfOctVerts[i][1],halfOctVerts[j][0],halfOctVerts[j][1]);
+    if(b&&b[0]>=-0.05&&b[1]>=-0.05&&b[2]>=-0.05)
+      return [b[0]*sC[0]+b[1]*sqVerts[i][0]+b[2]*sqVerts[j][0],
+              b[0]*sC[1]+b[1]*sqVerts[i][1]+b[2]*sqVerts[j][1]];
+  }
+  return [sC[0],sC[1]];
+}
+
+// ══════════════════════════════════════════════════════════════
+//  Precompute pipeline positions for each triangle vertex
+// ══════════════════════════════════════════════════════════════
+const TORUS_R=1.3, TORUS_r=0.5;
+const FLAT_S = 2.2;  // scale for flat display
+
+// For each of the 48 triangles, compute positions at each stage
+const upperIdx = [], lowerIdx = [];
+for (let i = 0; i < 48; i++) {
+  const cy = FUND_TRIS[i].reduce((s,v) => s+v[1], 0) / 3;
+  (cy >= 0 ? upperIdx : lowerIdx).push(i);
+}
+
+// Precompute per-vertex: [hypFlat, eucFlat, sqCoord] for upper triangles
+const vertexPipeline = []; // for each upper tri: [{hyp, euc, sq}, {}, {}]
+for (const ti of upperIdx) {
+  const verts = [];
+  for (const [dx, dy] of FUND_TRIS[ti]) {
+    const [ex, ey] = hypToEuc(dx, dy);
+    const [sx, sy] = octToSq(ex, ey);
+    verts.push({
+      hyp: [dx * FLAT_S / OCT_R, dy * FLAT_S / OCT_R, 0],
+      euc: [ex * FLAT_S, ey * FLAT_S, 0],
+      sq:  [(sx-0.5)*FLAT_S, (sy-0.5)*FLAT_S, 0],
+      sqUV: [sx, sy]
+    });
+  }
+  vertexPipeline.push(verts);
+}
+
+// Lower half-octagon → cut-square mapping (mirror of upper)
+// Lower pentagon: V₀=(1,0), V₇=(S2,-S2), V₆=(0,-1), V₅=(-S2,-S2), V₄=(-1,0)
+const lowerOctVerts = [[1,0], [S2,-S2], [0,-1], [-S2,-S2], [-1,0]];
+const lowerOctC = [lowerOctVerts.reduce((s,v)=>s+v[0],0)/5, lowerOctVerts.reduce((s,v)=>s+v[1],0)/5];
+
+function octToSqLower(ox, oy) {
+  for (let i = 0; i < 5; i++) {
+    const j = (i+1) % 5;
+    const b = bary(ox, oy, lowerOctC[0], lowerOctC[1],
+      lowerOctVerts[i][0], lowerOctVerts[i][1],
+      lowerOctVerts[j][0], lowerOctVerts[j][1]);
+    if (b && b[0] >= -0.05 && b[1] >= -0.05 && b[2] >= -0.05)
+      return [b[0]*sC[0] + b[1]*sqVerts[i][0] + b[2]*sqVerts[j][0],
+              b[0]*sC[1] + b[1]*sqVerts[i][1] + b[2]*sqVerts[j][1]];
+  }
+  return [sC[0], sC[1]];
+}
+
+// Lower triangles — full pipeline (same as upper, using lower mapping)
+const lowerPipeline = [];
+for (const ti of lowerIdx) {
+  const verts = [];
+  for (const [dx, dy] of FUND_TRIS[ti]) {
+    const [ex, ey] = hypToEuc(dx, dy);
+    const [sx, sy] = octToSqLower(ex, ey);
+    verts.push({
+      hyp: [dx * FLAT_S / OCT_R, dy * FLAT_S / OCT_R, 0],
+      euc: [ex * FLAT_S, ey * FLAT_S, 0],
+      sq:  [(sx-0.5)*FLAT_S, (sy-0.5)*FLAT_S, 0],
+      sqUV: [sx, sy]
+    });
+  }
+  lowerPipeline.push(verts);
+}
+
+// Separation offset: after the cut, the two halves drift apart
+const SEP = 2.0;  // final x-separation between the two tori
+
+// ══════════════════════════════════════════════════════════════
+//  Interpolation
+// ══════════════════════════════════════════════════════════════
+function lerp(a,b,t) { return a+(b-a)*t; }
+function smoothstep(t) { return t*t*(3-2*t); }
+
+// Phase boundaries
+const P = [0, 0.10, 0.16, 0.26, 0.38, 0.44, 0.56, 0.72, 0.90, 1.0];
+// 0→P1: hyp→euc  P1→P2: cut  P2→P3: half→sq  P3→P4: roll
+// P4→P5: grow  P5→P6: bend  P6→P7: twist  P7→P8: glue
+
+// Separation: grows after cut, shrinks during glue
+function getSep(t) {
+  if (t <= P[1]) return 0;
+  const full = SEP * smoothstep(Math.min(1, (t - P[1]) / (P[3] - P[1])));
+  if (t <= P[7]) return full;
+  // During glue: bring tori together until wounds touch
+  const targetSep = TORUS_R + TORUS_r;
+  const g = smoothstep((t - P[7]) / (P[8] - P[7]));
+  return lerp(full, targetSep, g);
+}
+
+// ── Torus position helper (used by both bend and glue) ──
+function torusPos(xn, yn, centerX) {
+  const u = 2 * Math.PI * xn;
+  const v = 2 * Math.PI * yn;
+  return [
+    (TORUS_R + TORUS_r * Math.cos(v)) * Math.cos(u) + centerX,
+    TORUS_r * Math.sin(v),
+    (TORUS_R + TORUS_r * Math.cos(v)) * Math.sin(u)
+  ];
+}
+
+// ── Glue: shrink wound to circle, then grow tube ──
+const NECK_WIDTH = 0.22;
+const HOLE_R = TORUS_r * 0.3;  // radius of the circular hole
+const TUBE_LEN = TORUS_r * 3;  // how far each tube extends
+
+function glueDeform(xn, yn, pos, sign, glueS, sep) {
+  const gashDist = xn + yn - CUT;
+  if (gashDist > NECK_WIDTH || gashDist < -0.001 || glueS < 0.001) return pos;
+
+  // Two sub-phases: shrink (0→0.5), then grow tube (0.5→1)
+  const shrinkS = smoothstep(Math.min(1, glueS * 2));
+  const tubeS = smoothstep(Math.max(0, glueS * 2 - 1));
+
+  // Blend: 1 at gash edge, 0 at NECK_WIDTH
+  const blend = smoothstep(1 - Math.max(0, gashDist) / NECK_WIDTH);
+
+  // Gash center point on this torus
+  const ctr = torusPos(CUT/2, CUT/2, sep);
+
+  // ── Shrink: pull vertices toward a circle of radius HOLE_R around gash center ──
+  const dx = pos[0] - ctr[0];
+  const dy = pos[1] - ctr[1];
+  const dz = pos[2] - ctr[2];
+  const dist = Math.sqrt(dx*dx + dy*dy + dz*dz);
+
+  // Target distance from center: lerp current distance toward HOLE_R
+  const targetDist = lerp(dist, HOLE_R, blend * shrinkS);
+  const sc = dist > 0.001 ? targetDist / dist : 1;
+
+  let rx = ctr[0] + dx * sc;
+  let ry = ctr[1] + dy * sc;
+  let rz = ctr[2] + dz * sc;
+
+  // ── Grow tube: extrude along x-axis toward the other torus ──
+  if (tubeS > 0.001) {
+    const extrudeLen = tubeS * blend * TUBE_LEN;
+    rx += -sign * extrudeLen;
+  }
+
+  return [rx, ry, rz];
+}
+
+function getHalfVertexPos(vert, t, sign) {
+  const {hyp, euc, sq, sqUV} = vert;
+  const sep = getSep(t) * sign;
+
+  if (t <= P[1]) {
+    const s = smoothstep(t / P[1]);
+    return [lerp(hyp[0],euc[0],s), lerp(hyp[1],euc[1],s), 0];
+  }
+  if (t <= P[2]) {
+    return [euc[0] + sep, euc[1], 0];
+  }
+  if (t <= P[3]) {
+    const s = smoothstep((t-P[2])/(P[3]-P[2]));
+    return [lerp(euc[0],sq[0],s) + sep, lerp(euc[1],sq[1],s), 0];
+  }
+
+  const THIN_R = FLAT_S / (2 * Math.PI);
+  const xn = sqUV[0], yn = sqUV[1];
+  const fy = sq[1];
+  const u = 2 * Math.PI * xn;
+
+  if (t <= P[4]) {
+    const s = smoothstep((t-P[3])/(P[4]-P[3]));
+    if (s < 0.001) return [sq[0] + sep, fy, 0];
+    const bendR = FLAT_S / (s * 2 * Math.PI);
+    const angle = s * 2 * Math.PI * xn;
+    const x = bendR * Math.sin(angle);
+    const z = bendR * (1 - Math.cos(angle));
+    const cx = -bendR * Math.sin(s * Math.PI);
+    const cz = -bendR * (1 - Math.cos(s * Math.PI));
+    return [x + cx + sep, fy, z + cz];
+  }
+
+  if (t <= P[5]) {
+    const s = smoothstep((t-P[4])/(P[5]-P[4]));
+    const curR = lerp(THIN_R, TORUS_R, s);
+    const phase = lerp(-Math.PI/2, 0, s);
+    const centerZ = lerp(-THIN_R, 0, s);
+    return [curR * Math.cos(u + phase) + sep, fy, curR * Math.sin(u + phase) + centerZ];
+  }
+
+  if (t <= P[6]) {
+    // Bend: fat cylinder → torus
+    const s = smoothstep((t-P[5])/(P[6]-P[5]));
+    if (s < 0.001) {
+      return [TORUS_R * Math.cos(u) + sep, fy, TORUS_R * Math.sin(u)];
+    }
+    const tubeR = FLAT_S / (s * 2 * Math.PI);
+    const bendV = s * 2 * Math.PI * yn;
+    const radialOffset = tubeR * (1 - Math.cos(bendV));
+    const yOffset = tubeR * Math.sin(bendV);
+    const cRad = -tubeR * (1 - Math.cos(s * Math.PI));
+    const cY = -tubeR * Math.sin(s * Math.PI);
+    const effR = TORUS_R + radialOffset + cRad;
+    return [effR * Math.cos(u) + sep, yOffset + cY, effR * Math.sin(u)];
+  }
+
+  // Twist (P6→P7): rotate right torus so wound faces inward
+  const twistS = smoothstep(Math.min(1, (t - P[6]) / (P[7] - P[6])));
+  const v = 2 * Math.PI * yn;
+
+  if (t <= P[7] || sign < 0) {
+    // Normal torus with twist (right only)
+    const twistAngle = sign > 0 ? twistS * Math.PI : 0;
+    const uTwist = u + twistAngle;
+    return [
+      (TORUS_R + TORUS_r * Math.cos(v)) * Math.cos(uTwist) + sep,
+      TORUS_r * Math.sin(v),
+      (TORUS_R + TORUS_r * Math.cos(v)) * Math.sin(uTwist)
+    ];
+  }
+
+  // Glue (P7→P8): slide right torus across to sit on top of the left
+  // Interpolate from twisted position at +sep to untwisted position at -sep
+  const glueS = smoothstep((t - P[7]) / (P[8] - P[7]));
+
+  // Current: twisted torus at +sep
+  const uTwisted = u + Math.PI;
+  const cx = (TORUS_R + TORUS_r * Math.cos(v)) * Math.cos(uTwisted) + sep;
+  const cy = TORUS_r * Math.sin(v);
+  const cz = (TORUS_R + TORUS_r * Math.cos(v)) * Math.sin(uTwisted);
+
+  // Target: untwisted torus at -sep (same position as left torus)
+  const leftSep = getSep(t) * (-1);
+  const tx = (TORUS_R + TORUS_r * Math.cos(v)) * Math.cos(u) + leftSep;
+  const ty = TORUS_r * Math.sin(v);
+  const tz = (TORUS_R + TORUS_r * Math.cos(v)) * Math.sin(u);
+
+  return [
+    lerp(cx, tx, glueS),
+    lerp(cy, ty, glueS),
+    lerp(cz, tz, glueS)
+  ];
+}
+
+// ══════════════════════════════════════════════════════════════
+//  Three.js scene
+// ══════════════════════════════════════════════════════════════
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x08080c);
+const cam = new THREE.PerspectiveCamera(40, innerWidth/innerHeight, 0.1, 100);
+cam.position.set(0, 0, 8);
+const ren = new THREE.WebGLRenderer({ antialias: true });
+ren.setSize(innerWidth, innerHeight);
+ren.setPixelRatio(Math.min(devicePixelRatio, 2));
+document.body.appendChild(ren.domElement);
+const ctl = new OrbitControls(cam, ren.domElement);
+ctl.enableDamping = true; ctl.dampingFactor = 0.05;
+
+scene.add(new THREE.AmbientLight(0x556677, 0.7));
+const dl1 = new THREE.DirectionalLight(0xffeedd, 1.0); dl1.position.set(5,8,5); scene.add(dl1);
+const dl2 = new THREE.DirectionalLight(0x99aacc, 0.4); dl2.position.set(-4,2,-3); scene.add(dl2);
+
+// HSL color
+function hslColor(i) {
+  const h = (i * 0.618034) % 1.0;
+  return new THREE.Color().setHSL(h, 0.6, 0.5);
+}
+
+// Subdivide a triangle for torus curvature
+const SUB = 6;
+function subTriCount() { return SUB * SUB; }
+function subTriVerts() { return SUB * SUB * 3; }
+
+// Build triangle meshes
+const upperMeshes = [];
+const upperEdges = [];
+for (let i = 0; i < vertexPipeline.length; i++) {
+  const color = hslColor(i);
+  const nv = subTriVerts();
+  const positions = new Float32Array(nv * 3);
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  const mesh = new THREE.Mesh(geo, new THREE.MeshPhongMaterial({
+    color, side: THREE.DoubleSide, shininess: 30
+  }));
+  scene.add(mesh);
+  upperMeshes.push({ mesh, geo, positions });
+
+  // Edges (3 per triangle, sampled)
+  const EPTS = 20;
+  for (let ei = 0; ei < 3; ei++) {
+    const pts = new Float32Array((EPTS+1) * 3);
+    const eg = new THREE.BufferGeometry();
+    eg.setAttribute('position', new THREE.BufferAttribute(pts, 3));
+    const line = new THREE.Line(eg, new THREE.LineBasicMaterial({ color: 0x111118 }));
+    scene.add(line);
+    upperEdges.push({ geo: eg, pts, triIdx: i, e0: ei, e1: (ei+1)%3 });
+  }
+}
+
+// Lower half — same subdivided meshes (they fold into their own torus)
+const lowerMeshes = [];
+const lowerEdges = [];
+for (let i = 0; i < lowerPipeline.length; i++) {
+  const color = hslColor(upperIdx.length + i);
+  const nv = subTriVerts();
+  const positions = new Float32Array(nv * 3);
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  const mesh = new THREE.Mesh(geo, new THREE.MeshPhongMaterial({
+    color, side: THREE.DoubleSide, shininess: 30
+  }));
+  scene.add(mesh);
+  lowerMeshes.push({ mesh, geo, positions });
+
+  const EPTS = 20;
+  for (let ei = 0; ei < 3; ei++) {
+    const pts = new Float32Array((EPTS+1) * 3);
+    const eg = new THREE.BufferGeometry();
+    eg.setAttribute('position', new THREE.BufferAttribute(pts, 3));
+    const line = new THREE.Line(eg, new THREE.LineBasicMaterial({ color: 0x111118 }));
+    scene.add(line);
+    lowerEdges.push({ geo: eg, pts, triIdx: i, e0: ei, e1: (ei+1)%3 });
+  }
+}
+
+// Ghost tori (one per half)
+const ghostTorusR = new THREE.Mesh(
+  new THREE.TorusGeometry(TORUS_R, TORUS_r, 48, 96),
+  new THREE.MeshPhongMaterial({ color: 0x5a6a80, side: THREE.DoubleSide, shininess: 25, transparent: true, opacity: 0 })
+);
+const ghostTorusL = ghostTorusR.clone();
+ghostTorusL.material = ghostTorusR.material.clone();
+scene.add(ghostTorusR);
+scene.add(ghostTorusL);
+
+// ── Wound boundary (thick red closed loop — 3 edges of the cut triangle) ──
+const GASH_N = 60;  // total sample points around the full boundary
+let woundTubes = [null, null];
+
+// The wound boundary is a closed triangle: (CUT,0) → (0,CUT) → (0,0) → (CUT,0)
+// Edge 1 (diagonal): (CUT,0) → (0,CUT)   — the gash
+// Edge 2 (left):     (0,CUT) → (0,0)      — which is u=0 on the torus
+// Edge 3 (bottom):   (0,0)   → (CUT,0)    — which is v=0 on the torus
+function woundPoint(frac) {
+  // frac ∈ [0, 1] around the closed loop
+  if (frac < 1/3) {
+    const f = frac * 3;
+    return [CUT*(1-f), CUT*f];         // diagonal
+  } else if (frac < 2/3) {
+    const f = (frac - 1/3) * 3;
+    return [0, CUT*(1-f)];             // left edge
+  } else {
+    const f = (frac - 2/3) * 3;
+    return [CUT*f, 0];                 // bottom edge
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+//  Update geometry — shared helper for both halves
+// ══════════════════════════════════════════════════════════════
+function updateHalf(pipeline, meshes, edges, t, sign) {
+  const EPTS = 20;
+
+  for (let i = 0; i < pipeline.length; i++) {
+    const vp = pipeline[i];
+    const pos = meshes[i].positions;
+    let idx = 0;
+    for (let a = 0; a < SUB; a++) {
+      for (let b = 0; b <= a; b++) {
+        const coords = [
+          [(SUB-a)/SUB, b/SUB, (a-b)/SUB],
+          [(SUB-a-1)/SUB, b/SUB, (a-b+1)/SUB],
+          [(SUB-a-1)/SUB, (b+1)/SUB, (a-b)/SUB]
+        ];
+        for (const [w0,w1,w2] of coords) {
+          const iv = {};
+          for (const key of ['hyp','euc','sq']) {
+            iv[key] = [w0*vp[0][key][0]+w1*vp[1][key][0]+w2*vp[2][key][0],
+                       w0*vp[0][key][1]+w1*vp[1][key][1]+w2*vp[2][key][1], 0];
+          }
+          iv.sqUV = [w0*vp[0].sqUV[0]+w1*vp[1].sqUV[0]+w2*vp[2].sqUV[0],
+                     w0*vp[0].sqUV[1]+w1*vp[1].sqUV[1]+w2*vp[2].sqUV[1]];
+          const p = getHalfVertexPos(iv, t, sign);
+          pos[idx++]=p[0]; pos[idx++]=p[1]; pos[idx++]=p[2];
+        }
+        if (b < a) {
+          const coords2 = [
+            [(SUB-a-1)/SUB, (b+1)/SUB, (a-b)/SUB],
+            [(SUB-a)/SUB, (b+1)/SUB, (a-b-1)/SUB],
+            [(SUB-a)/SUB, b/SUB, (a-b)/SUB]
+          ];
+          for (const [w0,w1,w2] of coords2) {
+            const iv = {};
+            for (const key of ['hyp','euc','sq']) {
+              iv[key] = [w0*vp[0][key][0]+w1*vp[1][key][0]+w2*vp[2][key][0],
+                         w0*vp[0][key][1]+w1*vp[1][key][1]+w2*vp[2][key][1], 0];
+            }
+            iv.sqUV = [w0*vp[0].sqUV[0]+w1*vp[1].sqUV[0]+w2*vp[2].sqUV[0],
+                       w0*vp[0].sqUV[1]+w1*vp[1].sqUV[1]+w2*vp[2].sqUV[1]];
+            const p = getHalfVertexPos(iv, t, sign);
+            pos[idx++]=p[0]; pos[idx++]=p[1]; pos[idx++]=p[2];
+          }
+        }
+      }
+    }
+    meshes[i].geo.attributes.position.needsUpdate = true;
+    meshes[i].geo.computeVertexNormals();
+  }
+
+  for (const edge of edges) {
+    const vp = pipeline[edge.triIdx];
+    for (let k = 0; k <= EPTS; k++) {
+      const f = k/EPTS;
+      const v0 = vp[edge.e0], v1 = vp[edge.e1];
+      const iv = {};
+      for (const key of ['hyp','euc','sq']) {
+        iv[key] = [lerp(v0[key][0],v1[key][0],f), lerp(v0[key][1],v1[key][1],f), 0];
+      }
+      iv.sqUV = [lerp(v0.sqUV[0],v1.sqUV[0],f), lerp(v0.sqUV[1],v1.sqUV[1],f)];
+      const p = getHalfVertexPos(iv, t, sign);
+      edge.pts[k*3]=p[0]; edge.pts[k*3+1]=p[1]; edge.pts[k*3+2]=p[2];
+    }
+    edge.geo.attributes.position.needsUpdate = true;
+  }
+}
+
+function updateScene(t) {
+  updateHalf(vertexPipeline, upperMeshes, upperEdges, t, +1);
+  updateHalf(lowerPipeline, lowerMeshes, lowerEdges, t, -1);
+
+  // Wound boundary — closed red loop around the hole on each torus
+  for (let h = 0; h < 2; h++) {
+    const sign = h === 0 ? 1 : -1;
+    const tubePts = [];
+    for (let k = 0; k <= GASH_N; k++) {
+      const frac = k / GASH_N;
+      const [gxn, gyn] = woundPoint(frac);
+      const gy = (gyn - 0.5) * FLAT_S;
+      const gx = (gxn - 0.5) * FLAT_S;
+      const sep = getSep(t) * sign;
+      const vert = {
+        hyp: [gx + sep, gy, 0],
+        euc: [gx + sep, gy, 0],
+        sq: [gx, gy, 0],
+        sqUV: [gxn, gyn]
+      };
+      const p = getHalfVertexPos(vert, t, sign);
+      tubePts.push(new THREE.Vector3(p[0], p[1], p[2]));
+    }
+    if (woundTubes[h]) { pivot.remove(woundTubes[h]); woundTubes[h].geometry.dispose(); }
+    if (t > P[2]) {
+      const curve = new THREE.CatmullRomCurve3(tubePts, true);  // closed loop
+      const tubeGeo = new THREE.TubeGeometry(curve, GASH_N * 2, 0.04, 8, true);
+      woundTubes[h] = new THREE.Mesh(tubeGeo, new THREE.MeshPhongMaterial({
+        color: 0xff3333, emissive: 0x441111
+      }));
+      pivot.add(woundTubes[h]);
+    }
+  }
+
+  ghostTorusR.visible = false;
+  ghostTorusL.visible = false;
+
+  // Stage label
+  const label = document.getElementById('stageLabel');
+  if (t < P[1]*0.1) label.textContent = 'Hyperbolic octagon (Poincaré disk)';
+  else if (t < P[1]) label.textContent = 'Straightening geodesics → Euclidean';
+  else if (t < P[2]) label.textContent = 'Cutting along V₀→V₄ — two pentagons';
+  else if (t < P[3]) label.textContent = 'Half-octagons → cut squares';
+  else if (t < P[4]) label.textContent = 'Rolling into cylinders (identifying a ↔ a⁻¹)';
+  else if (t < P[5]) label.textContent = 'Cylinders growing to torus scale';
+  else if (t < P[6]) label.textContent = 'Bending into tori (identifying b ↔ b⁻¹)';
+  else if (t < P[7]) label.textContent = 'Twisting — wound faces inward';
+  else if (t < P[8]) label.textContent = 'Gluing wounds together';
+  else label.textContent = 'Bolza surface — genus 2, χ = −2, Aut = GL(2,3)';
+}
+
+// ══════════════════════════════════════════════════════════════
+//  Controls
+// ══════════════════════════════════════════════════════════════
+const slider = document.getElementById('slider');
+const phaseEl = document.getElementById('phase');
+const playBtn = document.getElementById('playBtn');
+let currentT = 0, autoTime = 0, playing = false;
+
+playBtn.addEventListener('click', () => {
+  playing = !playing;
+  playBtn.innerHTML = playing ? '&#9646;&#9646; Pause' : '&#9654; Play';
+  if (playing) autoTime = currentT;
+});
+
+slider.addEventListener('input', () => {
+  currentT = slider.value / 1000;
+  playing = false;
+  playBtn.innerHTML = '&#9654; Play';
+  updateScene(currentT);
+  phaseEl.textContent = `t = ${currentT.toFixed(2)}`;
+});
+
+window.addEventListener('resize', () => {
+  cam.aspect = innerWidth/innerHeight;
+  cam.updateProjectionMatrix();
+  ren.setSize(innerWidth, innerHeight);
+});
+
+// Pivot group for rotating the whole scene during torus hold
+const pivot = new THREE.Group();
+scene.add(pivot);
+// Reparent everything into pivot
+const toReparent = [...scene.children].filter(c => c !== pivot && c.type !== 'AmbientLight' && c.type !== 'DirectionalLight');
+for (const c of toReparent) { scene.remove(c); pivot.add(c); }
+
+let holdRotation = 0;
+
+updateScene(0);
+
+(function animate() {
+  requestAnimationFrame(animate);
+  if (playing) {
+    autoTime += 0.0015;
+    const T_END = P[8];
+    const FOLD_UP = 1.5, HOLD = 2.5, FOLD_DOWN = 1.5, HOLD_FLAT = 0.6;
+    const TOTAL = FOLD_UP + HOLD + FOLD_DOWN + HOLD_FLAT;
+    const cycle = autoTime % TOTAL;
+
+    if (cycle < FOLD_UP) {
+      currentT = (cycle / FOLD_UP) * T_END;
+      // Ease rotation in during fold-up (0 → small amount)
+      holdRotation = smoothstep(cycle / FOLD_UP) * Math.PI * 0.3;
+    } else if (cycle < FOLD_UP + HOLD) {
+      currentT = T_END;
+      // Full rotation during hold
+      const holdFrac = (cycle - FOLD_UP) / HOLD;
+      holdRotation = Math.PI * 0.3 + holdFrac * Math.PI * 1.4;
+    } else if (cycle < FOLD_UP + HOLD + FOLD_DOWN) {
+      const downFrac = (cycle - FOLD_UP - HOLD) / FOLD_DOWN;
+      currentT = (1 - downFrac) * T_END;
+      // Ease rotation back to 2π (= 0) during unfold
+      holdRotation = Math.PI * 1.7 + smoothstep(downFrac) * Math.PI * 0.3;
+    } else {
+      currentT = 0;
+      holdRotation = 0;
+    }
+
+    currentT = Math.max(0, Math.min(1, currentT));
+    slider.value = currentT * 1000;
+    phaseEl.textContent = `t = ${currentT.toFixed(2)}`;
+    updateScene(currentT);
+  }
+
+  // Apply hold rotation to pivot (around x-axis for a tumble view)
+  pivot.rotation.x = holdRotation;
+  pivot.rotation.y = 0;
+
+  ctl.update();
+  ren.render(scene, cam);
+})();
+</script>
+</body></html>
