@@ -90,8 +90,8 @@ geo.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
 geo.setIndex(indices);
 
 const mat = new THREE.MeshPhongMaterial({
-  color: 0x3a4a60, side: THREE.DoubleSide, shininess: 20,
-  transparent: true, opacity: 0.8
+  color: 0x5a6a80, side: THREE.DoubleSide, shininess: 25,
+  transparent: true, opacity: 0.85
 });
 const mesh = new THREE.Mesh(geo, mat);
 scene.add(mesh);
