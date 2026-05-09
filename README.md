@@ -59,3 +59,25 @@ python3 draw_all.py
 ```
 
 Requires [GAP](https://www.gap-system.org/) with the GRAPE package, Python 3, and pdflatex.
+
+## Interactive visualizations
+
+### [Square → Torus folding](https://raggedr.github.io/symmetric-graphs/bolza-surface/square_to_torus.html)
+
+Watch a unit square fold into a torus in two phases: rolling into a cylinder (identifying a ↔ a⁻¹), then bending into a torus (identifying b ↔ b⁻¹). Grid lines and colored loops show how the square's coordinate system wraps onto the surface. Drag the slider or hit Play.
+
+### Bolza surface (genus 2)
+
+Cohomology and Poincaré disk tiling of the Bolza surface — the most symmetric genus-2 Riemann surface, with Aut = GL(2,3) of order 48. The (2,3,8) triangle group tiles the hyperbolic plane with 48 fundamental domains per copy of the surface.
+
+- `bolza-surface/bolza_cohomology.py` — oriented Lefschetz traces, H¹ = V₂ ⊕ V̄₂
+- `bolza-surface/bolza_3d.html` — Poincaré disk tiling + 3D genus-2 surface
+- `bolza-surface/bolza_disk.pdf` — publication-quality TikZ rendering of the tiling
+
+### Klein quartic (genus 3)
+
+Cohomology of the Klein quartic via dual PSL(2,7) cell decompositions. The (2,3,7) triangle group gives the Hurwitz-maximal automorphism group of order 168.
+
+- `klein-quartic/klein_quartic_cohomology.py` — H¹ = V₃ ⊕ V̄₃, oriented Lefschetz traces
+- `klein-quartic/klein_quartic_3d.html` — Poincaré disk tiling + 3D genus-3 surface
+- `klein-quartic/verify_cohomology.g` — GAP verification
