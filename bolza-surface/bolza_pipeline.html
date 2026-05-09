@@ -452,26 +452,20 @@ ghostTorusL.material = ghostTorusR.material.clone();
 scene.add(ghostTorusR);
 scene.add(ghostTorusL);
 
-// ── Wound boundary (thick red closed loop — 3 edges of the cut triangle) ──
-const GASH_N = 60;  // total sample points around the full boundary
+// ── Red boundary — starts as full pentagon (half-octagon), visible from t=0 ──
+const GASH_N = 80;
 let woundTubes = [null, null];
 
-// The wound boundary is a closed triangle: (CUT,0) → (0,CUT) → (0,0) → (CUT,0)
-// Edge 1 (diagonal): (CUT,0) → (0,CUT)   — the gash
-// Edge 2 (left):     (0,CUT) → (0,0)      — which is u=0 on the torus
-// Edge 3 (bottom):   (0,0)   → (CUT,0)    — which is v=0 on the torus
-function woundPoint(frac) {
-  // frac ∈ [0, 1] around the closed loop
-  if (frac < 1/3) {
-    const f = frac * 3;
-    return [CUT*(1-f), CUT*f];         // diagonal
-  } else if (frac < 2/3) {
-    const f = (frac - 1/3) * 3;
-    return [0, CUT*(1-f)];             // left edge
-  } else {
-    const f = (frac - 2/3) * 3;
-    return [CUT*f, 0];                 // bottom edge
-  }
+// Full pentagon boundary in cut-square coords (5 edges, closed loop):
+// S₀(CUT,0) → S₁(1,0) → S₂(1,1) → S₃(0,1) → S₄(0,CUT) → S₀(CUT,0)
+const PENT_VERTS = [[CUT,0], [1,0], [1,1], [0,1], [0,CUT]];
+
+function boundaryPoint(frac) {
+  const e = frac * 5;
+  const ei = Math.min(4, Math.floor(e));
+  const f = e - ei;
+  const v0 = PENT_VERTS[ei], v1 = PENT_VERTS[(ei+1)%5];
+  return [lerp(v0[0], v1[0], f), lerp(v0[1], v1[1], f)];
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -547,34 +541,77 @@ function updateScene(t) {
   updateHalf(vertexPipeline, upperMeshes, upperEdges, t, +1);
   updateHalf(lowerPipeline, lowerMeshes, lowerEdges, t, -1);
 
-  // Wound boundary — closed red loop around the hole on each torus
+  // Red boundary — full pentagon outline, visible from the start
+  // In octagon phase: shows as half-octagon outline
+  // In fold phase: morphs into wound boundary on the torus
   for (let h = 0; h < 2; h++) {
     const sign = h === 0 ? 1 : -1;
+    const pipeline = sign > 0 ? vertexPipeline : lowerPipeline;
     const tubePts = [];
     for (let k = 0; k <= GASH_N; k++) {
       const frac = k / GASH_N;
-      const [gxn, gyn] = woundPoint(frac);
-      const gy = (gyn - 0.5) * FLAT_S;
+      const [gxn, gyn] = boundaryPoint(frac);
+      // Build vertex with all pipeline stages from sqUV coords
+      // For hyp/euc stages, we need the octagon-space position
+      // Use sqToOct (inverse mapping) to get octagon coords, then scale
       const gx = (gxn - 0.5) * FLAT_S;
-      const sep = getSep(t) * sign;
+      const gy = (gyn - 0.5) * FLAT_S;
+
+      // Approximate hyp/euc positions from the square coords
+      // (octToSq was used to build the pipeline, here we go backward approximately)
+      // For the boundary, the euc coords are just the half-octagon boundary
+      // which the pipeline handles via interpolation
       const vert = {
-        hyp: [gx + sep, gy, 0],
-        euc: [gx + sep, gy, 0],
+        hyp: [gx, gy, 0],  // will be overridden by pipeline interpolation
+        euc: [gx, gy, 0],
         sq: [gx, gy, 0],
         sqUV: [gxn, gyn]
       };
+
+      // For early phases, compute proper octagon-space coords
+      // by using the nearest pipeline triangle vertices
+      // Simpler: just use sqToOct inverse for the boundary
+      if (sign > 0) {
+        // Upper half: use sqToOct inverse (octagon coords from sq coords)
+        // halfOctVerts and sqVerts define the mapping
+        for (let i = 0; i < 5; i++) {
+          const j = (i+1) % 5;
+          const b = bary(gxn, gyn, sC[0], sC[1],
+            sqVerts[i][0], sqVerts[i][1], sqVerts[j][0], sqVerts[j][1]);
+          if (b && b[0] >= -0.05 && b[1] >= -0.05 && b[2] >= -0.05) {
+            const ox = b[0]*hC[0] + b[1]*halfOctVerts[i][0] + b[2]*halfOctVerts[j][0];
+            const oy = b[0]*hC[1] + b[1]*halfOctVerts[i][1] + b[2]*halfOctVerts[j][1];
+            vert.euc = [ox * FLAT_S, oy * FLAT_S, 0];
+            vert.hyp = [ox * FLAT_S, oy * FLAT_S, 0]; // approximate
+            break;
+          }
+        }
+      } else {
+        // Lower half
+        for (let i = 0; i < 5; i++) {
+          const j = (i+1) % 5;
+          const b = bary(gxn, gyn, sC[0], sC[1],
+            sqVerts[i][0], sqVerts[i][1], sqVerts[j][0], sqVerts[j][1]);
+          if (b && b[0] >= -0.05 && b[1] >= -0.05 && b[2] >= -0.05) {
+            const ox = b[0]*lowerOctC[0] + b[1]*lowerOctVerts[i][0] + b[2]*lowerOctVerts[j][0];
+            const oy = b[0]*lowerOctC[1] + b[1]*lowerOctVerts[i][1] + b[2]*lowerOctVerts[j][1];
+            vert.euc = [ox * FLAT_S, oy * FLAT_S, 0];
+            vert.hyp = [ox * FLAT_S, oy * FLAT_S, 0];
+            break;
+          }
+        }
+      }
+
       const p = getHalfVertexPos(vert, t, sign);
       tubePts.push(new THREE.Vector3(p[0], p[1], p[2]));
     }
     if (woundTubes[h]) { pivot.remove(woundTubes[h]); woundTubes[h].geometry.dispose(); }
-    if (t > P[2]) {
-      const curve = new THREE.CatmullRomCurve3(tubePts, true);  // closed loop
-      const tubeGeo = new THREE.TubeGeometry(curve, GASH_N * 2, 0.04, 8, true);
-      woundTubes[h] = new THREE.Mesh(tubeGeo, new THREE.MeshPhongMaterial({
-        color: 0xff3333, emissive: 0x441111
-      }));
-      pivot.add(woundTubes[h]);
-    }
+    const curve = new THREE.CatmullRomCurve3(tubePts, true);
+    const tubeGeo = new THREE.TubeGeometry(curve, GASH_N * 2, 0.04, 8, true);
+    woundTubes[h] = new THREE.Mesh(tubeGeo, new THREE.MeshPhongMaterial({
+      color: 0xff3333, emissive: 0x441111
+    }));
+    pivot.add(woundTubes[h]);
   }
 
   ghostTorusR.visible = false;
