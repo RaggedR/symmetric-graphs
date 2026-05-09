@@ -10,6 +10,9 @@ canvas { display:block; }
 #controls { position:absolute; bottom:20px; left:50%; transform:translateX(-50%); color:#8899aa; font-size:12px; text-align:center; }
 #controls input[type=range] { width:300px; cursor:pointer; }
 #phase { color:#e8b84d; font-size:13px; margin-top:4px; }
+#playBtn { background:none; border:1px solid #667788; color:#ccd0d8; padding:4px 16px;
+  cursor:pointer; font-family:inherit; font-size:13px; border-radius:3px; margin-right:12px; }
+#playBtn:hover { border-color:#99aabb; }
 </style>
 </head><body>
 
@@ -21,9 +24,7 @@ canvas { display:block; }
 <div id="controls">
   <input type="range" id="slider" min="0" max="1000" value="0">
   <div id="phase">t = 0.00 — drag to fold</div>
-  <label style="margin-top:6px;display:inline-block;cursor:pointer">
-    <input type="checkbox" id="autoplay" checked> auto-animate
-  </label>
+  <button id="playBtn">&#9654; Play</button>
 </div>
 
 <script type="importmap">
@@ -89,8 +90,8 @@ geo.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
 geo.setIndex(indices);
 
 const mat = new THREE.MeshPhongMaterial({
-  color: 0x2a3545, side: THREE.DoubleSide, shininess: 20,
-  transparent: true, opacity: 0.75
+  color: 0x3a4a60, side: THREE.DoubleSide, shininess: 20,
+  transparent: true, opacity: 0.8
 });
 const mesh = new THREE.Mesh(geo, mat);
 scene.add(mesh);
@@ -252,13 +253,21 @@ updateGeometry(0);
 // Slider
 const slider = document.getElementById('slider');
 const phaseEl = document.getElementById('phase');
-const autoCheck = document.getElementById('autoplay');
+const playBtn = document.getElementById('playBtn');
 let currentT = 0;
 let autoTime = 0;
+let playing = false;
+
+playBtn.addEventListener('click', () => {
+  playing = !playing;
+  playBtn.innerHTML = playing ? '&#9646;&#9646; Pause' : '&#9654; Play';
+  if (playing) autoTime = currentT;
+});
 
 slider.addEventListener('input', () => {
   currentT = slider.value / 1000;
-  autoCheck.checked = false;
+  playing = false;
+  playBtn.innerHTML = '&#9654; Play';
   updateGeometry(currentT);
   phaseEl.textContent = `t = ${currentT.toFixed(2)}`;
 });
@@ -272,7 +281,7 @@ window.addEventListener('resize', () => {
 (function animate() {
   requestAnimationFrame(animate);
 
-  if (autoCheck.checked) {
+  if (playing) {
     autoTime += 0.003;
     // Oscillate: 0→1→pause→1→0→pause
     const cycle = autoTime % 4;
