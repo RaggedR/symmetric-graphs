@@ -311,8 +311,10 @@ function updateLabel() {
     phaseEl.textContent = 'Clifford torus in S³ ⊂ ℝ⁴  —  K = 0  —  τ = i';
   } else {
     if (Math.abs(t - T_CUSP) < 0.01) {
-      phaseEl.textContent = 'Cusp singularity at t = 1/(1+π√2)  —  linear pull balances circular curl  —  γ\'(u) = 0';
+      phaseEl.style.color = '#ff6644';
+      phaseEl.textContent = '⚠ Cusp singularity at t = 1/(1+π√2)  —  linear pull balances circular curl  —  γ\'(u) = 0';
     } else {
+      phaseEl.style.color = '#888';
       phaseEl.textContent = 'Product of curves in ⊥ planes  —  K = 0  —  τ = i';
     }
   }
@@ -325,7 +327,8 @@ function animate() {
   if (playing) {
     if (dwellTimer > 0) {
       dwellTimer--;
-      controls.autoRotateSpeed = DWELL_ROTATE_SPEED;
+      // Spin faster at endpoints, normal at cusp
+      controls.autoRotateSpeed = cuspTriggered && t < 0.5 ? NORMAL_ROTATE_SPEED : DWELL_ROTATE_SPEED;
       if (dwellTimer === 0) {
         controls.autoRotateSpeed = NORMAL_ROTATE_SPEED;
       }
