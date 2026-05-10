@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Holomorphic Torus Family</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0a0a1a; color: #ccc; font-family: 'Georgia', serif; overflow: hidden; }
+  #canvas { display: block; width: 100vw; height: 100vh; }
+  #controls {
+    position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
+    display: flex; align-items: center; gap: 16px;
+    background: rgba(10,10,26,0.85); border: 1px solid #333; border-radius: 8px;
+    padding: 12px 24px; backdrop-filter: blur(8px);
+  }
+  #t-slider { width: 300px; accent-color: #22ccff; cursor: pointer; }
+  #play-btn {
+    background: #1a1a2e; border: 1px solid #444; border-radius: 4px;
+    color: #ccc; font-family: Georgia, serif; font-size: 0.9em;
+    padding: 6px 16px; cursor: pointer; min-width: 60px;
+  }
+  #play-btn:hover { border-color: #888; }
+  #t-label { font-size: 1em; color: #22ccff; font-family: monospace; min-width: 90px; }
+  #title {
+    position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
+    font-size: 1.15em; color: #aaa; letter-spacing: 0.5px;
+    background: rgba(10,10,26,0.7); padding: 8px 20px; border-radius: 6px;
+  }
+  #info {
+    position: absolute; top: 20px; right: 20px;
+    font-size: 0.8em; color: #555; text-align: right; line-height: 1.8;
+  }
+  #phase {
+    position: absolute; bottom: 90px; left: 50%; transform: translateX(-50%);
+    font-size: 0.95em; color: #888; text-align: center;
+  }
+  #tau-display {
+    position: absolute; top: 80px; left: 50%; transform: translateX(-50%);
+    font-size: 1.1em; color: #22ccff; font-family: monospace;
+    background: rgba(10,10,26,0.7); padding: 6px 16px; border-radius: 6px;
+  }
+</style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+<div id="title">Holomorphic family: &nbsp;(a(t)·e^(2πiu), &nbsp;b(t)·e^(2πiv)) &nbsp;on S³</div>
+<div id="tau-display"></div>
+<div id="phase"></div>
+<div id="controls">
+  <button id="play-btn">Play</button>
+  <input type="range" id="t-slider" min="0" max="1" step="0.001" value="0">
+  <span id="t-label">t = 0.000</span>
+</div>
+<div id="info">
+  drag to rotate · scroll to zoom<br>
+  always holomorphic · always smooth<br>
+  no cusp · K = 0 · τ varies<br>
+  <span style="display:inline-block;width:20px;height:2px;background:#22ccff;vertical-align:middle"></span> u-lines &nbsp;
+  <span style="display:inline-block;width:20px;height:2px;background:#ff6644;vertical-align:middle"></span> v-lines
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.163.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.163.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+// ─── Constants ───────────────────────────────────
+const TAU   = 2 * Math.PI;
+const NU = 100, NV = 100;
+const N_GRID = 16;
+const N_LINE_PTS = 200;
+
+// Alpha interpolation: from thin torus to Clifford torus
+const ALPHA_MIN = 0.18;          // thin eccentric torus
+const ALPHA_MAX = Math.PI / 4;   // Clifford torus (a = b)
+
+function alpha(t) {
+  // Smooth ease-in-out
+  const s = t * t * (3 - 2 * t);
+  return ALPHA_MIN + (ALPHA_MAX - ALPHA_MIN) * s;
+}
+
+// ─── Holomorphic embedding + stereographic ───────
+function holoStereo(u, v, t) {
+  const al = alpha(t);
+  const a = Math.cos(al), b = Math.sin(al);
+  const theta = TAU * u, phi = TAU * v;
+  // 4D point on S^3 (a^2 + b^2 = 1)
+  const x1 = a * Math.cos(theta);
+  const x2 = a * Math.sin(theta);
+  const x3 = b * Math.cos(phi);
+  const x4 = b * Math.sin(phi);
+  // Stereographic projection from (0,0,0,1)
+  const s = 0.5 / (1 - x4);
+  return [x1 * s, x3 * s, x2 * s];
+}
+
+// Current tau value
+function tauValue(t) {
+  const al = alpha(t);
+  return Math.sin(al) / Math.cos(al); // tan(alpha) = b/a
+}
+
+// ─── Three.js setup ──────────────────────────────
+const canvas = document.getElementById('canvas');
+const scene  = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(50, innerWidth / innerHeight, 0.1, 100);
+camera.position.set(2.5, 2, 2.5);
+
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(devicePixelRatio);
+
+const controls = new OrbitControls(camera, canvas);
+controls.enableDamping = true;
+controls.dampingFactor = 0.08;
+controls.autoRotate = true;
+controls.autoRotateSpeed = 0.5;
+
+// ─── Lighting ────────────────────────────────────
+scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+const dl1 = new THREE.DirectionalLight(0xffffff, 0.7);
+dl1.position.set(5, 5, 5);
+scene.add(dl1);
+const dl2 = new THREE.DirectionalLight(0x8888ff, 0.3);
+dl2.position.set(-3, -2, -4);
+scene.add(dl2);
+
+// ─── Surface mesh ────────────────────────────────
+const nVerts = (NU + 1) * (NV + 1);
+const positions = new Float32Array(nVerts * 3);
+const normals   = new Float32Array(nVerts * 3);
+const indices   = [];
+
+for (let j = 0; j < NV; j++) {
+  for (let i = 0; i < NU; i++) {
+    const a = j * (NU + 1) + i, b = a + 1;
+    const c = a + (NU + 1),    d = c + 1;
+    indices.push(a, b, d, a, d, c);
+  }
+}
+
+const surfGeom = new THREE.BufferGeometry();
+surfGeom.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+surfGeom.setAttribute('normal',   new THREE.BufferAttribute(normals, 3));
+surfGeom.setIndex(indices);
+
+const surfMat = new THREE.MeshPhongMaterial({
+  color: 0x1a2266, transparent: true, opacity: 0.15,
+  side: THREE.DoubleSide, depthWrite: false
+});
+scene.add(new THREE.Mesh(surfGeom, surfMat));
+
+// ─── Grid lines ──────────────────────────────────
+function lerpRGB(a, b, t) {
+  return (
+    (Math.round(a[0] + (b[0] - a[0]) * t) << 16) |
+    (Math.round(a[1] + (b[1] - a[1]) * t) << 8)  |
+     Math.round(a[2] + (b[2] - a[2]) * t)
+  );
+}
+
+const U_A = [34, 204, 255], U_B = [34, 102, 221];
+const V_A = [255, 100, 68],  V_B = [255, 204, 51];
+
+const gridLines = [];
+
+for (let i = 0; i < N_GRID; i++) {
+  const f = i / N_GRID;
+  const uPosArr = new Float32Array(N_LINE_PTS * 3);
+  const uGeom = new THREE.BufferGeometry();
+  uGeom.setAttribute('position', new THREE.BufferAttribute(uPosArr, 3));
+  scene.add(new THREE.Line(uGeom, new THREE.LineBasicMaterial({ color: lerpRGB(U_A, U_B, f) })));
+  gridLines.push({ posArr: uPosArr, geom: uGeom, type: 'u', param: f });
+
+  const vPosArr = new Float32Array(N_LINE_PTS * 3);
+  const vGeom = new THREE.BufferGeometry();
+  vGeom.setAttribute('position', new THREE.BufferAttribute(vPosArr, 3));
+  scene.add(new THREE.Line(vGeom, new THREE.LineBasicMaterial({ color: lerpRGB(V_A, V_B, f) })));
+  gridLines.push({ posArr: vPosArr, geom: vGeom, type: 'v', param: f });
+}
+
+// ─── Update geometry ─────────────────────────────
+function updateGeometry(t) {
+  const eps = 0.0005;
+  for (let j = 0; j <= NV; j++) {
+    for (let i = 0; i <= NU; i++) {
+      const idx = (j * (NU + 1) + i) * 3;
+      const u = i / NU, v = j / NV;
+      const [px, py, pz] = holoStereo(u, v, t);
+      positions[idx] = px; positions[idx+1] = py; positions[idx+2] = pz;
+
+      const [ax, ay, az] = holoStereo(u+eps, v, t);
+      const [bx, by, bz] = holoStereo(u-eps, v, t);
+      const [cx, cy, cz] = holoStereo(u, v+eps, t);
+      const [dx, dy, dz] = holoStereo(u, v-eps, t);
+      const dux = ax-bx, duy = ay-by, duz = az-bz;
+      const dvx = cx-dx, dvy = cy-dy, dvz = cz-dz;
+      let nx = duy*dvz - duz*dvy;
+      let ny = duz*dvx - dux*dvz;
+      let nz = dux*dvy - duy*dvx;
+      const len = Math.sqrt(nx*nx + ny*ny + nz*nz) || 1;
+      normals[idx] = nx/len; normals[idx+1] = ny/len; normals[idx+2] = nz/len;
+    }
+  }
+  surfGeom.attributes.position.needsUpdate = true;
+  surfGeom.attributes.normal.needsUpdate = true;
+
+  for (const gl of gridLines) {
+    for (let k = 0; k < N_LINE_PTS; k++) {
+      const s = k / (N_LINE_PTS - 1);
+      const p = gl.type === 'u' ? holoStereo(s, gl.param, t) : holoStereo(gl.param, s, t);
+      gl.posArr[k*3] = p[0]; gl.posArr[k*3+1] = p[1]; gl.posArr[k*3+2] = p[2];
+    }
+    gl.geom.attributes.position.needsUpdate = true;
+  }
+}
+
+// ─── Controls ────────────────────────────────────
+const slider   = document.getElementById('t-slider');
+const playBtn  = document.getElementById('play-btn');
+const tLabel   = document.getElementById('t-label');
+const phaseEl  = document.getElementById('phase');
+const tauEl    = document.getElementById('tau-display');
+
+let t = 0, playing = false, playDir = 1;
+let dwellTimer = 0;
+const DWELL_FRAMES = 180;
+const DWELL_ROTATE_SPEED = 3.0;
+const NORMAL_ROTATE_SPEED = 0.5;
+
+slider.addEventListener('input', () => { t = parseFloat(slider.value); updateLabel(); });
+playBtn.addEventListener('click', () => { playing = !playing; playBtn.textContent = playing ? 'Pause' : 'Play'; });
+
+function updateLabel() {
+  tLabel.textContent = `t = ${t.toFixed(3)}`;
+  slider.value = t;
+
+  const tau = tauValue(t);
+  tauEl.textContent = `τ = ${tau.toFixed(3)}i`;
+
+  const al = alpha(t);
+  const a = Math.cos(al).toFixed(3), b = Math.sin(al).toFixed(3);
+
+  if (t > 0.99) {
+    phaseEl.textContent = `Clifford torus  —  a = b = 1/√2  —  τ = i  —  square lattice`;
+  } else if (t < 0.01) {
+    phaseEl.textContent = `Eccentric torus  —  a = ${a}, b = ${b}  —  τ = ${tau.toFixed(3)}i  —  rectangular lattice`;
+  } else {
+    phaseEl.textContent = `a = ${a}, b = ${b}  —  holomorphic embedding  —  K = 0  —  no singularities`;
+  }
+}
+
+// ─── Animation ───────────────────────────────────
+function animate() {
+  requestAnimationFrame(animate);
+  if (playing) {
+    if (dwellTimer > 0) {
+      dwellTimer--;
+      controls.autoRotateSpeed = DWELL_ROTATE_SPEED;
+      if (dwellTimer === 0) controls.autoRotateSpeed = NORMAL_ROTATE_SPEED;
+    } else {
+      t += 0.0012 * playDir;
+      if (t >= 1) { t = 1; playDir = -1; dwellTimer = DWELL_FRAMES; }
+      if (t <= 0) { t = 0; playDir = 1;  dwellTimer = DWELL_FRAMES / 2; }
+    }
+    updateLabel();
+  }
+  updateGeometry(t);
+  controls.update();
+  renderer.render(scene, camera);
+}
+
+updateGeometry(0);
+updateLabel();
+animate();
+
+window.addEventListener('resize', () => {
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+</script>
+</body>
+</html>
