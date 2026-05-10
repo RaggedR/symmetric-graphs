@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Square → Clifford Torus Homotopy</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0a0a1a; color: #ccc; font-family: 'Georgia', serif; overflow: hidden; }
+  #canvas { display: block; width: 100vw; height: 100vh; }
+  #controls {
+    position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
+    display: flex; align-items: center; gap: 16px;
+    background: rgba(10,10,26,0.85); border: 1px solid #333; border-radius: 8px;
+    padding: 12px 24px; backdrop-filter: blur(8px);
+  }
+  #t-slider {
+    width: 300px; accent-color: #22ccff; cursor: pointer;
+  }
+  #play-btn {
+    background: #1a1a2e; border: 1px solid #444; border-radius: 4px;
+    color: #ccc; font-family: Georgia, serif; font-size: 0.9em;
+    padding: 6px 16px; cursor: pointer; min-width: 60px;
+  }
+  #play-btn:hover { border-color: #888; }
+  #t-label { font-size: 1em; color: #22ccff; font-family: monospace; min-width: 90px; }
+  #title {
+    position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
+    font-size: 1.15em; color: #aaa; letter-spacing: 0.5px;
+    background: rgba(10,10,26,0.7); padding: 8px 20px; border-radius: 6px;
+  }
+  #info {
+    position: absolute; top: 20px; right: 20px;
+    font-size: 0.8em; color: #555; text-align: right; line-height: 1.8;
+  }
+  #phase {
+    position: absolute; bottom: 90px; left: 50%; transform: translateX(-50%);
+    font-size: 0.95em; color: #888; text-align: center;
+    transition: opacity 0.3s;
+  }
+</style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+<div id="title">Homotopy: &nbsp;F(u, v, t) &nbsp;= &nbsp;(1−t) · square &nbsp;+ &nbsp;t · Clifford torus</div>
+<div id="phase"></div>
+<div id="controls">
+  <button id="play-btn">Play</button>
+  <input type="range" id="t-slider" min="0" max="1" step="0.001" value="0">
+  <span id="t-label">t = 0.000</span>
+</div>
+<div id="info">
+  drag to rotate · scroll to zoom<br>
+  4D → 3D stereographic projection<br>
+  K = 0 throughout (product of curves)<br>
+  <span class="swatch" style="display:inline-block;width:20px;height:2px;background:#22ccff;vertical-align:middle"></span> u-lines &nbsp;
+  <span class="swatch" style="display:inline-block;width:20px;height:2px;background:#ff6644;vertical-align:middle"></span> v-lines
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.163.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.163.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+// ─── Constants ───────────────────────────────────
+const TAU   = 2 * Math.PI;
+const SQRT2 = Math.sqrt(2);
+const NU = 100, NV = 100;   // mesh resolution
+const N_GRID = 16;           // grid lines per family
+const N_LINE_PTS = 200;      // points per grid line
+
+// ─── 4D homotopy + projection to 3D ─────────────
+// At t=0: flat square in (x1, x3) plane, centered at origin
+// At t=1: Clifford torus in R^4
+// Project: perspective from x4 axis
+
+function homotopy3D(u, v, t) {
+  const theta = TAU * u, phi = TAU * v;
+  // 4D coordinates
+  const x1 = (1 - t) * (u - 0.5) + t * Math.cos(theta) / SQRT2;
+  const x2 =                        t * Math.sin(theta) / SQRT2;
+  const x3 = (1 - t) * (v - 0.5) + t * Math.cos(phi)   / SQRT2;
+  const x4 =                        t * Math.sin(phi)   / SQRT2;
+  // 4D → 3D stereographic projection (same as clifford-torus.html)
+  const s = 0.5 / (1 - x4);
+  return [x1 * s, x3 * s, x2 * s]; // Y=x3 so square is upright
+}
+
+// ─── Three.js setup ──────────────────────────────
+const canvas = document.getElementById('canvas');
+const scene  = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(50, innerWidth / innerHeight, 0.1, 100);
+camera.position.set(2.5, 2, 2.5);
+
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(devicePixelRatio);
+
+const controls = new OrbitControls(camera, canvas);
+controls.enableDamping = true;
+controls.dampingFactor = 0.08;
+controls.autoRotate = true;
+controls.autoRotateSpeed = 0.5;
+
+// ─── Lighting ────────────────────────────────────
+scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+const dl1 = new THREE.DirectionalLight(0xffffff, 0.7);
+dl1.position.set(5, 5, 5);
+scene.add(dl1);
+const dl2 = new THREE.DirectionalLight(0x8888ff, 0.3);
+dl2.position.set(-3, -2, -4);
+scene.add(dl2);
+
+// ─── Surface mesh ────────────────────────────────
+const nVerts = (NU + 1) * (NV + 1);
+const positions = new Float32Array(nVerts * 3);
+const normals   = new Float32Array(nVerts * 3);
+const indices   = [];
+
+for (let j = 0; j < NV; j++) {
+  for (let i = 0; i < NU; i++) {
+    const a = j * (NU + 1) + i;
+    const b = a + 1;
+    const c = a + (NU + 1);
+    const d = c + 1;
+    indices.push(a, b, d, a, d, c);
+  }
+}
+
+const surfGeom = new THREE.BufferGeometry();
+surfGeom.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+surfGeom.setAttribute('normal',   new THREE.BufferAttribute(normals, 3));
+surfGeom.setIndex(indices);
+
+const surfMat = new THREE.MeshPhongMaterial({
+  color: 0x1a2266, transparent: true, opacity: 0.15,
+  side: THREE.DoubleSide, depthWrite: false
+});
+scene.add(new THREE.Mesh(surfGeom, surfMat));
+
+// ─── Grid lines ──────────────────────────────────
+function lerpRGB(a, b, t) {
+  return (
+    (Math.round(a[0] + (b[0] - a[0]) * t) << 16) |
+    (Math.round(a[1] + (b[1] - a[1]) * t) << 8)  |
+     Math.round(a[2] + (b[2] - a[2]) * t)
+  );
+}
+
+const U_A = [34, 204, 255], U_B = [34, 102, 221];
+const V_A = [255, 100, 68],  V_B = [255, 204, 51];
+
+const gridLines = [];
+
+for (let i = 0; i < N_GRID; i++) {
+  const f = i / N_GRID;
+
+  // u-line (v = f, vary u)
+  const uPosArr = new Float32Array(N_LINE_PTS * 3);
+  const uGeom = new THREE.BufferGeometry();
+  uGeom.setAttribute('position', new THREE.BufferAttribute(uPosArr, 3));
+  const uLine = new THREE.Line(uGeom, new THREE.LineBasicMaterial({ color: lerpRGB(U_A, U_B, f) }));
+  scene.add(uLine);
+  gridLines.push({ posArr: uPosArr, geom: uGeom, type: 'u', param: f });
+
+  // v-line (u = f, vary v)
+  const vPosArr = new Float32Array(N_LINE_PTS * 3);
+  const vGeom = new THREE.BufferGeometry();
+  vGeom.setAttribute('position', new THREE.BufferAttribute(vPosArr, 3));
+  const vLine = new THREE.Line(vGeom, new THREE.LineBasicMaterial({ color: lerpRGB(V_A, V_B, f) }));
+  scene.add(vLine);
+  gridLines.push({ posArr: vPosArr, geom: vGeom, type: 'v', param: f });
+}
+
+// ─── Edge highlight (shows gluing) ───────────────
+const edgeColor = 0xffffff;
+const edgeOpacity = 0.4;
+const edgeNames = ['u0', 'u1', 'v0', 'v1'];
+const edgeLines = {};
+
+for (const name of edgeNames) {
+  const arr = new Float32Array(N_LINE_PTS * 3);
+  const geom = new THREE.BufferGeometry();
+  geom.setAttribute('position', new THREE.BufferAttribute(arr, 3));
+  const line = new THREE.Line(geom, new THREE.LineBasicMaterial({
+    color: edgeColor, transparent: true, opacity: edgeOpacity, linewidth: 2
+  }));
+  scene.add(line);
+  edgeLines[name] = { posArr: arr, geom };
+}
+
+// ─── Update geometry for a given t ───────────────
+function updateGeometry(t) {
+  const eps = 0.0005;
+
+  // Surface vertices + normals
+  for (let j = 0; j <= NV; j++) {
+    for (let i = 0; i <= NU; i++) {
+      const idx = (j * (NU + 1) + i) * 3;
+      const u = i / NU, v = j / NV;
+      const [px, py, pz] = homotopy3D(u, v, t);
+      positions[idx]     = px;
+      positions[idx + 1] = py;
+      positions[idx + 2] = pz;
+
+      // numerical normal
+      const [ax, ay, az] = homotopy3D(u + eps, v, t);
+      const [bx, by, bz] = homotopy3D(u - eps, v, t);
+      const [cx, cy, cz] = homotopy3D(u, v + eps, t);
+      const [dx, dy, dz] = homotopy3D(u, v - eps, t);
+      const dux = ax - bx, duy = ay - by, duz = az - bz;
+      const dvx = cx - dx, dvy = cy - dy, dvz = cz - dz;
+      let nx = duy * dvz - duz * dvy;
+      let ny = duz * dvx - dux * dvz;
+      let nz = dux * dvy - duy * dvx;
+      const len = Math.sqrt(nx * nx + ny * ny + nz * nz) || 1;
+      normals[idx]     = nx / len;
+      normals[idx + 1] = ny / len;
+      normals[idx + 2] = nz / len;
+    }
+  }
+  surfGeom.attributes.position.needsUpdate = true;
+  surfGeom.attributes.normal.needsUpdate = true;
+
+  // Grid lines
+  for (const gl of gridLines) {
+    for (let k = 0; k < N_LINE_PTS; k++) {
+      const s = k / (N_LINE_PTS - 1);
+      let p;
+      if (gl.type === 'u') {
+        p = homotopy3D(s, gl.param, t);
+      } else {
+        p = homotopy3D(gl.param, s, t);
+      }
+      gl.posArr[k * 3]     = p[0];
+      gl.posArr[k * 3 + 1] = p[1];
+      gl.posArr[k * 3 + 2] = p[2];
+    }
+    gl.geom.attributes.position.needsUpdate = true;
+  }
+
+  // Edges
+  for (let k = 0; k < N_LINE_PTS; k++) {
+    const s = k / (N_LINE_PTS - 1);
+    const e = (name, p) => {
+      edgeLines[name].posArr[k*3]   = p[0];
+      edgeLines[name].posArr[k*3+1] = p[1];
+      edgeLines[name].posArr[k*3+2] = p[2];
+    };
+    e('u0', homotopy3D(s, 0, t));
+    e('u1', homotopy3D(s, 1, t));
+    e('v0', homotopy3D(0, s, t));
+    e('v1', homotopy3D(1, s, t));
+  }
+  for (const name of edgeNames) {
+    edgeLines[name].geom.attributes.position.needsUpdate = true;
+  }
+
+  // Fade edges as they merge (gap → 0)
+  const p0 = homotopy3D(0, 0.5, t);
+  const p1 = homotopy3D(1, 0.5, t);
+  const gap = Math.sqrt((p0[0]-p1[0])**2 + (p0[1]-p1[1])**2 + (p0[2]-p1[2])**2);
+  const edgeAlpha = Math.min(gap * 2, 0.5);
+  for (const name of edgeNames) {
+    edgeLines[name].geom.parent?.children.forEach(c => {
+      if (c.material) c.material.opacity = edgeAlpha;
+    });
+  }
+}
+
+// ─── Controls ────────────────────────────────────
+const slider   = document.getElementById('t-slider');
+const playBtn  = document.getElementById('play-btn');
+const tLabel   = document.getElementById('t-label');
+const phaseEl  = document.getElementById('phase');
+
+let t = 0;
+let playing = false;
+let playDir = 1;
+let dwellTimer = 0;
+const DWELL_FRAMES = 180;       // ~3 seconds pause at endpoints
+const DWELL_ROTATE_SPEED = 3.0; // faster spin while dwelling
+const NORMAL_ROTATE_SPEED = 0.5;
+
+slider.addEventListener('input', () => {
+  t = parseFloat(slider.value);
+  updateLabel();
+});
+
+playBtn.addEventListener('click', () => {
+  playing = !playing;
+  playBtn.textContent = playing ? 'Pause' : 'Play';
+});
+
+function updateLabel() {
+  tLabel.textContent = `t = ${t.toFixed(3)}`;
+  slider.value = t;
+
+  if (t < 0.01) {
+    phaseEl.textContent = 'Flat square in ℝ⁴  —  K = 0  —  τ = i';
+  } else if (t > 0.99) {
+    phaseEl.textContent = 'Clifford torus in S³ ⊂ ℝ⁴  —  K = 0  —  τ = i';
+  } else {
+    const tCusp = 1 / (1 + Math.PI * Math.SQRT2);
+    if (Math.abs(t - tCusp) < 0.01) {
+      phaseEl.textContent = 'Cusp singularity  —  curve derivative vanishes  —  metric degenerates';
+    } else {
+      phaseEl.textContent = 'Product of curves in ⊥ planes  —  K = 0  —  τ = i';
+    }
+  }
+}
+
+// ─── Animation loop ──────────────────────────────
+function animate() {
+  requestAnimationFrame(animate);
+
+  if (playing) {
+    if (dwellTimer > 0) {
+      dwellTimer--;
+      controls.autoRotateSpeed = DWELL_ROTATE_SPEED;
+      if (dwellTimer === 0) {
+        controls.autoRotateSpeed = NORMAL_ROTATE_SPEED;
+      }
+    } else {
+      t += 0.0015 * playDir;
+      if (t >= 1) { t = 1; playDir = -1; dwellTimer = DWELL_FRAMES; }
+      if (t <= 0) { t = 0; playDir = 1;  dwellTimer = DWELL_FRAMES / 2; }
+    }
+    updateLabel();
+  }
+
+  updateGeometry(t);
+  controls.update();
+  renderer.render(scene, camera);
+}
+
+updateGeometry(0);
+updateLabel();
+animate();
+
+// ─── Resize ──────────────────────────────────────
+window.addEventListener('resize', () => {
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+</script>
+</body>
+</html>
