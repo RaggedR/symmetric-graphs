@@ -285,8 +285,11 @@ let playing = false;
 let playDir = 1;
 let dwellTimer = 0;
 const DWELL_FRAMES = 180;       // ~3 seconds pause at endpoints
+const CUSP_DWELL = 90;          // ~1.5 seconds pause at cusp
 const DWELL_ROTATE_SPEED = 3.0; // faster spin while dwelling
 const NORMAL_ROTATE_SPEED = 0.5;
+const T_CUSP = 1 / (1 + Math.PI * Math.SQRT2);
+let cuspTriggered = false;
 
 slider.addEventListener('input', () => {
   t = parseFloat(slider.value);
@@ -307,9 +310,8 @@ function updateLabel() {
   } else if (t > 0.99) {
     phaseEl.textContent = 'Clifford torus in S³ ⊂ ℝ⁴  —  K = 0  —  τ = i';
   } else {
-    const tCusp = 1 / (1 + Math.PI * Math.SQRT2);
-    if (Math.abs(t - tCusp) < 0.01) {
-      phaseEl.textContent = 'Cusp singularity  —  curve derivative vanishes  —  metric degenerates';
+    if (Math.abs(t - T_CUSP) < 0.01) {
+      phaseEl.textContent = 'Cusp singularity at t = 1/(1+π√2)  —  linear pull balances circular curl  —  γ\'(u) = 0';
     } else {
       phaseEl.textContent = 'Product of curves in ⊥ planes  —  K = 0  —  τ = i';
     }
@@ -329,8 +331,12 @@ function animate() {
       }
     } else {
       t += 0.0015 * playDir;
-      if (t >= 1) { t = 1; playDir = -1; dwellTimer = DWELL_FRAMES; }
-      if (t <= 0) { t = 0; playDir = 1;  dwellTimer = DWELL_FRAMES / 2; }
+      // Pause at cusp singularity (forward pass only)
+      if (playDir > 0 && !cuspTriggered && t >= T_CUSP) {
+        t = T_CUSP; cuspTriggered = true; dwellTimer = CUSP_DWELL;
+      }
+      if (t >= 1) { t = 1; playDir = -1; dwellTimer = DWELL_FRAMES; cuspTriggered = false; }
+      if (t <= 0) { t = 0; playDir = 1;  dwellTimer = DWELL_FRAMES / 2; cuspTriggered = false; }
     }
     updateLabel();
   }
