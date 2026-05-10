@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Square → Clifford Torus</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0a0a1a; color: #ccc; font-family: 'Georgia', serif; overflow: hidden; }
+  #container { display: flex; width: 100vw; height: 100vh; }
+  #left {
+    width: 32%; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    border-right: 1px solid #222;
+  }
+  #right { width: 68%; position: relative; }
+  #square-canvas { cursor: crosshair; }
+  h2 { font-weight: normal; font-size: 1.05em; color: #aaa; margin-bottom: 12px; letter-spacing: 0.5px; }
+  #info {
+    position: absolute; bottom: 16px; right: 20px;
+    font-size: 0.8em; color: #555; text-align: right; line-height: 1.6;
+  }
+  #legend {
+    margin-top: 16px; font-size: 0.85em; color: #888; line-height: 1.8;
+  }
+  .swatch { display: inline-block; width: 28px; height: 3px; vertical-align: middle; margin-right: 6px; border-radius: 1px; }
+</style>
+</head>
+<body>
+<div id="container">
+  <div id="left">
+    <h2>Flat square &nbsp;[0, 1]²</h2>
+    <canvas id="square-canvas" width="380" height="380"></canvas>
+    <div id="legend">
+      <span class="swatch" style="background:linear-gradient(90deg,#22ccff,#2266dd)"></span> u-lines (v = const)<br>
+      <span class="swatch" style="background:linear-gradient(90deg,#ff6644,#ffcc33)"></span> v-lines (u = const)<br>
+      <span style="color:#00ff88">●</span> &nbsp;travelling point
+    </div>
+  </div>
+  <div id="right">
+    <h2 style="text-align:center; padding-top:10px;">
+      Clifford torus &nbsp; S³ → ℝ³ &nbsp;(stereographic)
+    </h2>
+    <canvas id="torus-canvas"></canvas>
+    <div id="info">
+      drag to rotate · scroll to zoom<br>
+      conformal map — angles preserved<br>
+      both families of curves are circles
+    </div>
+  </div>
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.163.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.163.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+// ─── Constants ───────────────────────────────────
+const N_GRID = 16;
+const N_PTS  = 256;
+const SQRT2  = Math.sqrt(2);
+const TAU    = 2 * Math.PI;
+const PHI    = (1 + Math.sqrt(5)) / 2; // golden ratio for dense winding
+
+// ─── Clifford torus → stereographic projection ──
+function cliffordStereo(u, v) {
+  const theta = TAU * u;
+  const phi   = TAU * v;
+  const d = SQRT2 - Math.sin(phi);
+  return new THREE.Vector3(
+    Math.cos(theta) / d,
+    Math.cos(phi)   / d,
+    Math.sin(theta) / d
+  );
+}
+
+// ─── Color helpers ───────────────────────────────
+function lerpRGB(a, b, t) {
+  return [
+    Math.round(a[0] + (b[0] - a[0]) * t),
+    Math.round(a[1] + (b[1] - a[1]) * t),
+    Math.round(a[2] + (b[2] - a[2]) * t)
+  ];
+}
+function rgbToHex([r, g, b]) { return (r << 16) | (g << 8) | b; }
+function rgbToCSS([r, g, b]) { return `rgb(${r},${g},${b})`; }
+
+const U_COL_A = [34, 204, 255];  // cyan
+const U_COL_B = [34, 102, 221];  // blue
+const V_COL_A = [255, 100, 68];  // red-orange
+const V_COL_B = [255, 204, 51];  // gold
+
+// ─── Three.js scene ──────────────────────────────
+const torusCanvas = document.getElementById('torus-canvas');
+const rightDiv = document.getElementById('right');
+let W3 = rightDiv.clientWidth;
+let H3 = rightDiv.clientHeight - 50;
+torusCanvas.width  = W3 * devicePixelRatio;
+torusCanvas.height = H3 * devicePixelRatio;
+torusCanvas.style.width  = W3 + 'px';
+torusCanvas.style.height = H3 + 'px';
+
+const scene    = new THREE.Scene();
+const camera   = new THREE.PerspectiveCamera(45, W3 / H3, 0.1, 100);
+camera.position.set(4.5, 3, 4.5);
+
+const renderer = new THREE.WebGLRenderer({ canvas: torusCanvas, antialias: true, alpha: true });
+renderer.setSize(W3, H3);
+renderer.setPixelRatio(devicePixelRatio);
+
+const controls = new OrbitControls(camera, torusCanvas);
+controls.enableDamping = true;
+controls.dampingFactor = 0.08;
+controls.autoRotate = true;
+controls.autoRotateSpeed = 0.8;
+
+// ─── Build torus mesh (manual BufferGeometry) ────
+function buildTorusMesh(nu, nv) {
+  const pos = [], norm = [], idx = [];
+  const eps = 0.001;
+  for (let j = 0; j <= nv; j++) {
+    for (let i = 0; i <= nu; i++) {
+      const u = i / nu, v = j / nv;
+      const p = cliffordStereo(u, v);
+      pos.push(p.x, p.y, p.z);
+      // numerical normal
+      const du = cliffordStereo(u + eps, v).sub(cliffordStereo(u - eps, v));
+      const dv = cliffordStereo(u, v + eps).sub(cliffordStereo(u, v - eps));
+      const n = new THREE.Vector3().crossVectors(du, dv).normalize();
+      norm.push(n.x, n.y, n.z);
+    }
+  }
+  for (let j = 0; j < nv; j++) {
+    for (let i = 0; i < nu; i++) {
+      const a = j * (nu + 1) + i, b = a + 1;
+      const c = a + (nu + 1),    d = c + 1;
+      idx.push(a, b, d, a, d, c);
+    }
+  }
+  const geom = new THREE.BufferGeometry();
+  geom.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  geom.setAttribute('normal',   new THREE.Float32BufferAttribute(norm, 3));
+  geom.setIndex(idx);
+  return geom;
+}
+
+const torusGeom = buildTorusMesh(128, 128);
+const torusMat  = new THREE.MeshPhongMaterial({
+  color: 0x1a2266, transparent: true, opacity: 0.12,
+  side: THREE.DoubleSide, depthWrite: false
+});
+scene.add(new THREE.Mesh(torusGeom, torusMat));
+
+// ─── Grid curves on torus ────────────────────────
+function makeCurve(paramFn, color) {
+  const pts = [];
+  for (let i = 0; i <= N_PTS; i++) pts.push(paramFn(i / N_PTS));
+  const geom = new THREE.BufferGeometry().setFromPoints(pts);
+  const mat  = new THREE.LineBasicMaterial({ color, linewidth: 1 });
+  return new THREE.Line(geom, mat);
+}
+
+for (let i = 0; i < N_GRID; i++) {
+  const f = i / N_GRID;
+  scene.add(makeCurve(t => cliffordStereo(t, f), rgbToHex(lerpRGB(U_COL_A, U_COL_B, f))));
+  scene.add(makeCurve(t => cliffordStereo(f, t), rgbToHex(lerpRGB(V_COL_A, V_COL_B, f))));
+}
+
+// ─── Travelling point on torus ───────────────────
+const dotGeo = new THREE.SphereGeometry(0.055, 16, 16);
+const dotMat = new THREE.MeshBasicMaterial({ color: 0x00ff88 });
+const dot3D  = new THREE.Mesh(dotGeo, dotMat);
+scene.add(dot3D);
+
+// glow
+const glowGeo = new THREE.SphereGeometry(0.12, 16, 16);
+const glowMat = new THREE.MeshBasicMaterial({ color: 0x00ff88, transparent: true, opacity: 0.25 });
+const glow3D  = new THREE.Mesh(glowGeo, glowMat);
+scene.add(glow3D);
+
+// ─── Trail on torus ─────────────────────────────
+const TRAIL_LEN = 400;
+const trailPositions = new Float32Array(TRAIL_LEN * 3);
+const trailGeom = new THREE.BufferGeometry();
+trailGeom.setAttribute('position', new THREE.BufferAttribute(trailPositions, 3));
+trailGeom.setDrawRange(0, 0);
+const trailMat = new THREE.LineBasicMaterial({ color: 0x00ff88, transparent: true, opacity: 0.35 });
+const trailLine = new THREE.Line(trailGeom, trailMat);
+scene.add(trailLine);
+let trailIdx = 0;
+let trailCount = 0;
+
+// ─── Lighting ────────────────────────────────────
+scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+const dl = new THREE.DirectionalLight(0xffffff, 0.7);
+dl.position.set(5, 5, 5);
+scene.add(dl);
+const dl2 = new THREE.DirectionalLight(0x8888ff, 0.3);
+dl2.position.set(-3, -2, -4);
+scene.add(dl2);
+
+// ─── Flat square (2D canvas) ─────────────────────
+const sqCanvas = document.getElementById('square-canvas');
+const ctx = sqCanvas.getContext('2d');
+const SW = sqCanvas.width, SH = sqCanvas.height;
+const pad = 30;
+const drawW = SW - 2 * pad, drawH = SH - 2 * pad;
+
+// Trail on square
+const sqTrail = [];
+const SQ_TRAIL_LEN = 600;
+
+function drawSquare(uP, vP) {
+  ctx.clearRect(0, 0, SW, SH);
+
+  // Coordinate grid
+  for (let i = 0; i < N_GRID; i++) {
+    const f = i / N_GRID;
+    ctx.strokeStyle = rgbToCSS(lerpRGB(U_COL_A, U_COL_B, f));
+    ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    ctx.moveTo(pad, pad + f * drawH);
+    ctx.lineTo(pad + drawW, pad + f * drawH);
+    ctx.stroke();
+    ctx.strokeStyle = rgbToCSS(lerpRGB(V_COL_A, V_COL_B, f));
+    ctx.beginPath();
+    ctx.moveTo(pad + f * drawW, pad);
+    ctx.lineTo(pad + f * drawW, pad + drawH);
+    ctx.stroke();
+  }
+
+  // Border with gluing markers
+  ctx.strokeStyle = '#555';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(pad, pad, drawW, drawH);
+
+  // Gluing arrows — top/bottom
+  ctx.fillStyle = '#666';
+  ctx.font = '11px Georgia';
+  ctx.textAlign = 'center';
+  for (let i = 0; i < 3; i++) {
+    const x = pad + drawW * (0.25 + 0.25 * i);
+    ctx.fillText('▶', x, pad - 6);
+    ctx.fillText('▶', x, pad + drawH + 14);
+  }
+  // left/right
+  for (let i = 0; i < 3; i++) {
+    const y = pad + drawH * (0.25 + 0.25 * i);
+    ctx.save(); ctx.translate(pad - 8, y); ctx.rotate(-Math.PI/2);
+    ctx.fillText('▶', 0, 0); ctx.restore();
+    ctx.save(); ctx.translate(pad + drawW + 14, y); ctx.rotate(-Math.PI/2);
+    ctx.fillText('▶', 0, 0); ctx.restore();
+  }
+
+  // Trail on square
+  if (sqTrail.length > 1) {
+    ctx.strokeStyle = 'rgba(0, 255, 136, 0.2)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    // Draw segments, but skip when wrapping
+    for (let i = 1; i < sqTrail.length; i++) {
+      const [px, py] = sqTrail[i - 1];
+      const [cx, cy] = sqTrail[i];
+      if (Math.abs(cx - px) > 0.5 || Math.abs(cy - py) > 0.5) {
+        ctx.moveTo(pad + cx * drawW, pad + cy * drawH);
+      } else {
+        ctx.lineTo(pad + cx * drawW, pad + cy * drawH);
+      }
+    }
+    ctx.stroke();
+  }
+
+  // Dot
+  const dx = pad + uP * drawW, dy = pad + vP * drawH;
+  ctx.fillStyle = '#00ff88';
+  ctx.shadowColor = '#00ff88';
+  ctx.shadowBlur = 12;
+  ctx.beginPath();
+  ctx.arc(dx, dy, 5, 0, TAU);
+  ctx.fill();
+  ctx.shadowBlur = 0;
+
+  // Labels
+  ctx.fillStyle = '#666';
+  ctx.font = '13px Georgia';
+  ctx.textAlign = 'center';
+  ctx.fillText('u', pad + drawW / 2, pad + drawH + 32);
+  ctx.save();
+  ctx.translate(pad - 22, pad + drawH / 2);
+  ctx.rotate(-Math.PI / 2);
+  ctx.fillText('v', 0, 0);
+  ctx.restore();
+
+  // Coordinates
+  ctx.fillStyle = '#00ff88';
+  ctx.font = '12px monospace';
+  ctx.textAlign = 'left';
+  ctx.fillText(`(${uP.toFixed(3)}, ${vP.toFixed(3)})`, pad + 4, pad + drawH + 32);
+}
+
+// ─── Animation loop ──────────────────────────────
+let time = 0;
+function animate() {
+  requestAnimationFrame(animate);
+  time += 0.002;
+
+  // Dense irrational winding — the point never repeats
+  const u = (time * 1.0) % 1;
+  const v = (time * PHI) % 1;
+
+  // Update 3D dot
+  const p = cliffordStereo(u, v);
+  dot3D.position.copy(p);
+  glow3D.position.copy(p);
+
+  // Trail on torus
+  trailPositions[trailIdx * 3]     = p.x;
+  trailPositions[trailIdx * 3 + 1] = p.y;
+  trailPositions[trailIdx * 3 + 2] = p.z;
+  trailIdx = (trailIdx + 1) % TRAIL_LEN;
+  trailCount = Math.min(trailCount + 1, TRAIL_LEN);
+  trailGeom.attributes.position.needsUpdate = true;
+  trailGeom.setDrawRange(0, trailCount);
+
+  // Trail on square
+  sqTrail.push([u, v]);
+  if (sqTrail.length > SQ_TRAIL_LEN) sqTrail.shift();
+
+  // Draw 2D
+  drawSquare(u, v);
+
+  controls.update();
+  renderer.render(scene, camera);
+}
+animate();
+
+// ─── Resize ──────────────────────────────────────
+window.addEventListener('resize', () => {
+  W3 = rightDiv.clientWidth;
+  H3 = rightDiv.clientHeight - 50;
+  camera.aspect = W3 / H3;
+  camera.updateProjectionMatrix();
+  renderer.setSize(W3, H3);
+});
+</script>
+</body>
+</html>
