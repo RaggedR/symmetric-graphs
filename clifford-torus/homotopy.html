@@ -331,8 +331,11 @@ function animate() {
       }
     } else {
       t += 0.0015 * playDir;
-      // Pause at cusp singularity (forward pass only)
+      // Pause at cusp singularity (both directions)
       if (playDir > 0 && !cuspTriggered && t >= T_CUSP) {
+        t = T_CUSP; cuspTriggered = true; dwellTimer = CUSP_DWELL;
+      }
+      if (playDir < 0 && !cuspTriggered && t <= T_CUSP) {
         t = T_CUSP; cuspTriggered = true; dwellTimer = CUSP_DWELL;
       }
       if (t >= 1) { t = 1; playDir = -1; dwellTimer = DWELL_FRAMES; cuspTriggered = false; }
