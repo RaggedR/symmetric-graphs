@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<title>Weierstrass ℘ — Square to Elliptic Curve</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#08080c; overflow:hidden; font-family:'Courier New',monospace; }
+canvas { display:block; }
+#info { position:absolute; top:12px; left:16px; color:#8899aa; font-size:13px; line-height:1.6; pointer-events:none; max-width:340px; }
+#info h2 { color:#ccd0d8; font-size:16px; margin-bottom:4px; font-weight:normal; }
+#math { color:#6688aa; font-size:11px; margin-top:8px; line-height:1.7; }
+#math .v { color:#e8b84d; }
+#math .label { color:#8899aa; }
+#controls { position:absolute; bottom:20px; left:50%; transform:translateX(-50%);
+  color:#8899aa; font-size:12px; text-align:center; }
+#controls input[type=range] { width:260px; cursor:pointer; margin:0 6px; }
+#phase { color:#e8b84d; font-size:13px; margin-top:4px; }
+button { background:none; border:1px solid #667788; color:#ccd0d8; padding:4px 14px;
+  cursor:pointer; font-family:inherit; font-size:12px; border-radius:3px; margin:0 4px; }
+button:hover { border-color:#99aabb; }
+#domain { position:absolute; top:12px; right:16px; border:1px solid #334455; background:#0c0c14;
+  image-rendering: auto; }
+</style>
+</head><body>
+
+<div id="info">
+  <h2>Weierstrass ℘ — Square → Elliptic Curve</h2>
+  <span id="stageLabel">Computing lattice sums...</span>
+  <div id="math"></div>
+</div>
+
+<div id="controls">
+  <button id="playBtn">&#9654; Play</button>
+  <input type="range" id="slider" min="0" max="1000" value="1000">
+  <div id="phase">t = 1.00</div>
+  <div style="margin-top:6px;">
+    <span style="color:#667788;">R⁴ rotation:</span>
+    <input type="range" id="rotSlider" min="0" max="628" value="52" style="width:140px;">
+    <span id="rotLabel" style="color:#e8b84d;">θ = 0.52</span>
+  </div>
+</div>
+
+<canvas id="domain" width="200" height="200"></canvas>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+// ===== Complex arithmetic =====
+const cmul = (ar,ai,br,bi) => [ar*br-ai*bi, ar*bi+ai*br];
+
+// ===== Weierstrass ℘ for lattice Z + iZ =====
+function wp(zr, zi, N) {
+  const [z2r, z2i] = cmul(zr,zi,zr,zi);
+  const z2m = z2r*z2r + z2i*z2i;
+  let pr = z2r/z2m, pi = -z2i/z2m; // 1/z²
+  for (let m = -N; m <= N; m++) {
+    for (let n = -N; n <= N; n++) {
+      if (m===0 && n===0) continue;
+      const dr = zr-m, di = zi-n;
+      const [d2r, d2i] = cmul(dr,di,dr,di);
+      const dm = d2r*d2r + d2i*d2i;
+      const [w2r, w2i] = cmul(m,n,m,n);
+      const wm = w2r*w2r + w2i*w2i;
+      pr += d2r/dm - w2r/wm;
+      pi += -d2i/dm + w2i/wm;
+    }
+  }
+  return [pr, pi];
+}
+
+function wpp(zr, zi, N) {
+  let pr = 0, pi = 0;
+  for (let m = -N; m <= N; m++) {
+    for (let n = -N; n <= N; n++) {
+      const dr = zr-m, di = zi-n;
+      const [d2r, d2i] = cmul(dr,di,dr,di);
+      const [d3r, d3i] = cmul(d2r,d2i,dr,di);
+      const mag = d3r*d3r + d3i*d3i;
+      pr += -2*d3r/mag;
+      pi += 2*d3i/mag;
+    }
+  }
+  return [pr, pi];
+}
+
+// Eisenstein invariants g₂, g₃
+function eisenstein(N) {
+  let g2r=0, g3r=0, g3i=0;
+  for (let m = -N; m <= N; m++) {
+    for (let n = -N; n <= N; n++) {
+      if (m===0 && n===0) continue;
+      const [w2r, w2i] = cmul(m,n,m,n);
+      const [w4r, w4i] = cmul(w2r,w2i,w2r,w2i);
+      const w4m = w4r*w4r + w4i*w4i;
+      g2r += w4r/w4m;  // Im part vanishes by 4-fold symmetry
+      const [w6r, w6i] = cmul(w4r,w4i,w2r,w2i);
+      const w6m = w6r*w6r + w6i*w6i;
+      g3r += w6r/w6m;
+      g3i += -w6i/w6m;
+    }
+  }
+  return { g2: 60*g2r, g3r: 140*g3r, g3i: 140*g3i };
+}
+
+// ===== Precompute =====
+const G = 64;      // mesh resolution
+const LN = 15;     // lattice sum truncation
+const EPS = 0.02;  // avoid pole at corners
+
+const { g2, g3r, g3i } = eisenstein(30);
+const e1 = Math.sqrt(g2/4);  // ℘(1/2) = e₁ = √(g₂/4)
+
+// Store R⁴ embedding data for each vertex
+const numVerts = (G+1)*(G+1);
+const r4data = new Float32Array(numVerts * 4);  // (Re℘, Im℘, Re℘', Im℘')
+const flatXYZ = new Float32Array(numVerts * 3);
+const uvArr = new Float32Array(numVerts * 2);
+const colArr = new Float32Array(numVerts * 3);
+
+const FLAT_S = 2.5;
+let maxErr = 0;
+
+const t0 = performance.now();
+for (let j = 0; j <= G; j++) {
+  for (let i = 0; i <= G; i++) {
+    const idx = j*(G+1)+i;
+    const u = EPS + (1-2*EPS)*i/G;
+    const v = EPS + (1-2*EPS)*j/G;
+    uvArr[idx*2] = u; uvArr[idx*2+1] = v;
+
+    // Flat position
+    flatXYZ[idx*3]   = (u-0.5)*FLAT_S;
+    flatXYZ[idx*3+1] = (v-0.5)*FLAT_S;
+    flatXYZ[idx*3+2] = 0;
+
+    // ℘(z) and ℘'(z) for z = u + iv
+    const [pr, pi] = wp(u, v, LN);
+    const [ppr, ppi] = wpp(u, v, LN);
+    r4data[idx*4]   = pr;
+    r4data[idx*4+1] = pi;
+    r4data[idx*4+2] = ppr;
+    r4data[idx*4+3] = ppi;
+
+    // Verify curve equation: ℘'² = 4℘³ - g₂℘
+    const [y2r, y2i] = cmul(ppr,ppi,ppr,ppi);
+    const [x2r, x2i] = cmul(pr,pi,pr,pi);
+    const [x3r, x3i] = cmul(x2r,x2i,pr,pi);
+    const rhsR = 4*x3r - g2*pr;
+    const rhsI = 4*x3i - g2*pi;
+    const err = Math.sqrt((y2r-rhsR)**2 + (y2i-rhsI)**2);
+    maxErr = Math.max(maxErr, err);
+
+    // Vertex color: hue from u, brightness from v
+    const hue = u;
+    const sat = 0.55 + 0.35*v;
+    const lit = 0.25 + 0.45*v;
+    const c = new THREE.Color().setHSL(hue, sat, lit);
+    colArr[idx*3] = c.r; colArr[idx*3+1] = c.g; colArr[idx*3+2] = c.b;
+  }
+}
+const dt = ((performance.now()-t0)/1000).toFixed(2);
+console.log(`Precomputed ${numVerts} points in ${dt}s, max curve error: ${maxErr.toExponential(3)}`);
+
+// ===== R⁴ → R³ projection =====
+const C = 3.0; // compactification scale
+const squash = x => C * Math.tanh(x / C);
+
+function projectR4toR3(idx, theta) {
+  const a = r4data[idx*4];    // Re ℘
+  const b = r4data[idx*4+1];  // Im ℘
+  const c = r4data[idx*4+2];  // Re ℘'
+  const d = r4data[idx*4+3];  // Im ℘'
+  // Rotate in (c,d) plane by theta, then drop d
+  const ct = Math.cos(theta), st = Math.sin(theta);
+  const c2 = c*ct - d*st;
+  // const d2 = c*st + d*ct;  // dropped
+  return [squash(a), squash(b), squash(c2)];
+}
+
+// Build embedded positions for a given rotation angle
+const embedXYZ = new Float32Array(numVerts * 3);
+function rebuildEmbedding(theta) {
+  for (let k = 0; k < numVerts; k++) {
+    const [x,y,z] = projectR4toR3(k, theta);
+    embedXYZ[k*3] = x; embedXYZ[k*3+1] = y; embedXYZ[k*3+2] = z;
+  }
+}
+let currentTheta = 0.52;
+rebuildEmbedding(currentTheta);
+
+// ===== THREE.js scene =====
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x08080c);
+const cam = new THREE.PerspectiveCamera(40, innerWidth/innerHeight, 0.1, 100);
+cam.position.set(6, 4, 6);
+const ren = new THREE.WebGLRenderer({ antialias: true });
+ren.setSize(innerWidth, innerHeight);
+ren.setPixelRatio(Math.min(devicePixelRatio, 2));
+document.body.appendChild(ren.domElement);
+const ctl = new OrbitControls(cam, ren.domElement);
+ctl.enableDamping = true; ctl.dampingFactor = 0.05;
+
+scene.add(new THREE.AmbientLight(0x556677, 0.6));
+let dl;
+dl = new THREE.DirectionalLight(0xffeedd, 1.0); dl.position.set(5,8,5); scene.add(dl);
+dl = new THREE.DirectionalLight(0x99aacc, 0.4); dl.position.set(-4,2,-3); scene.add(dl);
+dl = new THREE.DirectionalLight(0xaabbdd, 0.3); dl.position.set(0,-5,5); scene.add(dl);
+
+// ===== Mesh =====
+const positions = new Float32Array(numVerts * 3);
+const normals = new Float32Array(numVerts * 3);
+const indices = [];
+for (let j = 0; j < G; j++) {
+  for (let i = 0; i < G; i++) {
+    const a = j*(G+1)+i, b = a+1, c = (j+1)*(G+1)+i, d = c+1;
+    indices.push(a,c,b, b,c,d);
+  }
+}
+
+const geo = new THREE.BufferGeometry();
+geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+geo.setAttribute('normal', new THREE.BufferAttribute(normals, 3));
+geo.setAttribute('color', new THREE.BufferAttribute(colArr, 3));
+geo.setIndex(indices);
+
+const mat = new THREE.MeshPhongMaterial({
+  vertexColors: true, side: THREE.DoubleSide, shininess: 20,
+  transparent: true, opacity: 0.85
+});
+const mesh = new THREE.Mesh(geo, mat);
+scene.add(mesh);
+
+// Wireframe overlay
+const wireMat = new THREE.MeshBasicMaterial({
+  vertexColors: true, wireframe: true, transparent: true, opacity: 0.08
+});
+const wireMesh = new THREE.Mesh(geo, wireMat);
+scene.add(wireMesh);
+
+// ===== Grid lines (parameter curves) =====
+const NGRID = 8;
+const NPTS = 129;
+const gridLines = [];
+
+function makeGridLine(color) {
+  const pts = new Float32Array(NPTS * 3);
+  const geom = new THREE.BufferGeometry();
+  geom.setAttribute('position', new THREE.BufferAttribute(pts, 3));
+  const line = new THREE.Line(geom, new THREE.LineBasicMaterial({
+    color, transparent: true, opacity: 0.5
+  }));
+  scene.add(line);
+  return { pts, geom, line };
+}
+
+// u-constant lines
+for (let k = 0; k <= NGRID; k++) {
+  const u = EPS + (1-2*EPS)*k/NGRID;
+  const hue = u;
+  const c = new THREE.Color().setHSL(hue, 0.7, 0.5);
+  gridLines.push({ ...makeGridLine(c), type: 'u', param: u });
+}
+// v-constant lines
+for (let k = 0; k <= NGRID; k++) {
+  const v = EPS + (1-2*EPS)*k/NGRID;
+  const c = new THREE.Color().setHSL(0.6, 0.3, 0.3 + 0.3*v);
+  gridLines.push({ ...makeGridLine(c), type: 'v', param: v });
+}
+
+// Precompute grid line R⁴ data
+const gridR4 = [];
+for (const gl of gridLines) {
+  const data = new Float32Array(NPTS * 4);
+  const flat = new Float32Array(NPTS * 3);
+  for (let k = 0; k < NPTS; k++) {
+    let u, v;
+    if (gl.type === 'u') { u = gl.param; v = EPS + (1-2*EPS)*k/(NPTS-1); }
+    else { u = EPS + (1-2*EPS)*k/(NPTS-1); v = gl.param; }
+    const [pr, pi] = wp(u, v, LN);
+    const [ppr, ppi] = wpp(u, v, LN);
+    data[k*4] = pr; data[k*4+1] = pi; data[k*4+2] = ppr; data[k*4+3] = ppi;
+    flat[k*3] = (u-0.5)*FLAT_S; flat[k*3+1] = (v-0.5)*FLAT_S; flat[k*3+2] = 0;
+  }
+  gridR4.push({ data, flat });
+}
+
+// ===== Weierstrass point markers =====
+const wpSphereGeo = new THREE.SphereGeometry(0.06, 16, 16);
+const wpPoints = [
+  { u: 0.5, v: 0,   label: 'e₁', color: 0x44aaff },   // ℘(1/2) = e₁
+  { u: 0,   v: 0.5, label: 'e₂', color: 0xff6644 },   // ℘(i/2) = -e₁
+  { u: 0.5, v: 0.5, label: 'e₃', color: 0x44ff88 },   // ℘((1+i)/2) = 0
+];
+const wpSpheres = [];
+for (const wp_ of wpPoints) {
+  const sph = new THREE.Mesh(wpSphereGeo, new THREE.MeshPhongMaterial({
+    color: wp_.color, emissive: wp_.color, emissiveIntensity: 0.3
+  }));
+  scene.add(sph);
+  // Precompute R⁴ data
+  const u = Math.max(EPS, Math.min(1-EPS, wp_.u));
+  const v = Math.max(EPS, Math.min(1-EPS, wp_.v));
+  const [pr, pi] = wp(u, v, LN);
+  const [ppr, ppi] = wpp(u, v, LN);
+  wpSpheres.push({
+    sph,
+    r4: [pr, pi, ppr, ppi],
+    flat: [(wp_.u-0.5)*FLAT_S, (wp_.v-0.5)*FLAT_S, 0]
+  });
+}
+
+// ===== Update geometry for animation =====
+function updateScene(t, theta) {
+  const pos = geo.attributes.position.array;
+  for (let k = 0; k < numVerts; k++) {
+    const ct = Math.cos(theta), st = Math.sin(theta);
+    const a = r4data[k*4], b = r4data[k*4+1];
+    const c_ = r4data[k*4+2], d = r4data[k*4+3];
+    const c2 = c_*ct - d*st;
+    const ex = squash(a), ey = squash(b), ez = squash(c2);
+    pos[k*3]   = (1-t)*flatXYZ[k*3]   + t*ex;
+    pos[k*3+1] = (1-t)*flatXYZ[k*3+1] + t*ey;
+    pos[k*3+2] = (1-t)*flatXYZ[k*3+2] + t*ez;
+  }
+  geo.attributes.position.needsUpdate = true;
+  geo.computeVertexNormals();
+
+  // Grid lines
+  for (let g = 0; g < gridLines.length; g++) {
+    const gl = gridLines[g];
+    const { data, flat } = gridR4[g];
+    const ct = Math.cos(theta), st = Math.sin(theta);
+    for (let k = 0; k < NPTS; k++) {
+      const a = data[k*4], b = data[k*4+1];
+      const c_ = data[k*4+2], d = data[k*4+3];
+      const c2 = c_*ct - d*st;
+      const ex = squash(a), ey = squash(b), ez = squash(c2);
+      gl.pts[k*3]   = (1-t)*flat[k*3]   + t*ex;
+      gl.pts[k*3+1] = (1-t)*flat[k*3+1] + t*ey;
+      gl.pts[k*3+2] = (1-t)*flat[k*3+2] + t*ez;
+    }
+    gl.geom.attributes.position.needsUpdate = true;
+  }
+
+  // Weierstrass point spheres
+  const ct = Math.cos(theta), st = Math.sin(theta);
+  for (const ws of wpSpheres) {
+    const [a,b,c_,d] = ws.r4;
+    const c2 = c_*ct - d*st;
+    const ex = squash(a), ey = squash(b), ez = squash(c2);
+    ws.sph.position.set(
+      (1-t)*ws.flat[0] + t*ex,
+      (1-t)*ws.flat[1] + t*ey,
+      (1-t)*ws.flat[2] + t*ez
+    );
+  }
+}
+
+// ===== 2D domain overlay =====
+const domCvs = document.getElementById('domain');
+const ctx = domCvs.getContext('2d');
+function drawDomain() {
+  const W = 200, H = 200, pad = 10;
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#0c0c14';
+  ctx.fillRect(0, 0, W, H);
+
+  const sx = (u) => pad + u*(W-2*pad);
+  const sy = (v) => H - pad - v*(H-2*pad);
+
+  // Grid
+  ctx.lineWidth = 0.5;
+  for (let k = 0; k <= NGRID; k++) {
+    const u = k/NGRID;
+    const hsl = `hsl(${u*360}, 70%, 50%)`;
+    ctx.strokeStyle = hsl; ctx.globalAlpha = 0.4;
+    ctx.beginPath(); ctx.moveTo(sx(u), sy(0)); ctx.lineTo(sx(u), sy(1)); ctx.stroke();
+  }
+  for (let k = 0; k <= NGRID; k++) {
+    const v = k/NGRID;
+    ctx.strokeStyle = `hsl(216, 30%, ${30+30*v}%)`; ctx.globalAlpha = 0.4;
+    ctx.beginPath(); ctx.moveTo(sx(0), sy(v)); ctx.lineTo(sx(1), sy(v)); ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
+
+  // Boundary with identification arrows
+  ctx.strokeStyle = '#556677'; ctx.lineWidth = 1.5;
+  ctx.strokeRect(sx(0), sy(1), sx(1)-sx(0), sy(0)-sy(1));
+
+  // Identification arrows
+  ctx.fillStyle = '#4488ff'; ctx.font = '14px serif';
+  // Bottom edge a →
+  ctx.fillText('a →', sx(0.42), sy(0)+14);
+  // Top edge a →
+  ctx.fillText('a →', sx(0.42), sy(1)-4);
+  ctx.fillStyle = '#ff6644';
+  // Left edge b ↑
+  ctx.save(); ctx.translate(sx(0)-4, sy(0.5)); ctx.rotate(-Math.PI/2);
+  ctx.fillText('b →', -10, 0); ctx.restore();
+  // Right edge b ↑
+  ctx.save(); ctx.translate(sx(1)+14, sy(0.5)); ctx.rotate(-Math.PI/2);
+  ctx.fillText('b →', -10, 0); ctx.restore();
+
+  // Weierstrass points
+  const wps = [
+    { u:0.5, v:0, c:'#4488ff', label:'e₁' },
+    { u:0, v:0.5, c:'#ff6644', label:'e₂' },
+    { u:0.5, v:0.5, c:'#44ff88', label:'e₃' },
+  ];
+  for (const p of wps) {
+    ctx.fillStyle = p.c;
+    ctx.beginPath(); ctx.arc(sx(p.u), sy(p.v), 5, 0, 2*Math.PI); ctx.fill();
+    ctx.fillStyle = '#ccd0d8'; ctx.font = '10px monospace';
+    ctx.fillText(p.label, sx(p.u)+7, sy(p.v)+4);
+  }
+
+  // Pole marker at corners
+  ctx.strokeStyle = '#ff4444'; ctx.lineWidth = 1;
+  for (const [u,v] of [[0,0],[1,0],[0,1],[1,1]]) {
+    ctx.beginPath(); ctx.arc(sx(u), sy(v), 4, 0, 2*Math.PI); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(sx(u)-3,sy(v)-3); ctx.lineTo(sx(u)+3,sy(v)+3); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(sx(u)+3,sy(v)-3); ctx.lineTo(sx(u)-3,sy(v)+3); ctx.stroke();
+  }
+
+  // Labels
+  ctx.fillStyle = '#667788'; ctx.font = '9px monospace';
+  ctx.fillText('C/(Z+iZ)', sx(0), sy(1)-14);
+  ctx.fillText('pole ∞', sx(0)+2, sy(0)+25);
+}
+drawDomain();
+
+// ===== Math info panel =====
+document.getElementById('math').innerHTML = `
+  <span class="label">Lattice:</span> L = Z + iZ<br>
+  <span class="label">g₂ =</span> <span class="v">${g2.toFixed(6)}</span><br>
+  <span class="label">g₃ =</span> <span class="v">${g3r.toFixed(2)} + ${g3i.toFixed(2)}i ≈ 0</span> <span class="label">(4-fold symmetry)</span><br>
+  <span class="label">Curve:</span> y² = 4x³ − ${g2.toFixed(2)}x<br>
+  <span class="label">e₁ = ℘(½) =</span> <span class="v">${e1.toFixed(4)}</span>,
+  <span class="label">e₂ =</span> <span class="v">−${e1.toFixed(4)}</span>,
+  <span class="label">e₃ =</span> <span class="v">0</span><br>
+  <span class="label">Max |℘'² − (4℘³−g₂℘)|:</span> <span class="v">${maxErr.toExponential(2)}</span><br>
+  <span class="label">Grid: ${G}×${G}, lattice sum N=${LN}, computed in ${dt}s</span>
+`;
+document.getElementById('stageLabel').textContent = 'z ↦ (℘(z), ℘\'(z)) ∈ C² ≅ R⁴ → R³';
+
+// ===== Controls =====
+const slider = document.getElementById('slider');
+const phaseEl = document.getElementById('phase');
+const playBtn = document.getElementById('playBtn');
+const rotSlider = document.getElementById('rotSlider');
+const rotLabel = document.getElementById('rotLabel');
+
+let currentT = 1.0;
+let playing = false;
+let autoTime = 1.0;
+
+playBtn.addEventListener('click', () => {
+  playing = !playing;
+  playBtn.innerHTML = playing ? '&#9646;&#9646; Pause' : '&#9654; Play';
+  if (playing) autoTime = currentT;
+});
+
+slider.addEventListener('input', () => {
+  currentT = slider.value / 1000;
+  playing = false;
+  playBtn.innerHTML = '&#9654; Play';
+  phaseEl.textContent = `t = ${currentT.toFixed(2)}`;
+});
+
+rotSlider.addEventListener('input', () => {
+  currentTheta = rotSlider.value / 100;
+  rotLabel.textContent = `θ = ${currentTheta.toFixed(2)}`;
+});
+
+window.addEventListener('resize', () => {
+  cam.aspect = innerWidth/innerHeight;
+  cam.updateProjectionMatrix();
+  ren.setSize(innerWidth, innerHeight);
+});
+
+// Initialize
+updateScene(1.0, currentTheta);
+
+(function animate() {
+  requestAnimationFrame(animate);
+
+  if (playing) {
+    autoTime += 0.004;
+    const cycle = autoTime % 4;
+    if (cycle < 1.2) currentT = Math.min(cycle / 1.2, 1);
+    else if (cycle < 2) currentT = 1;
+    else if (cycle < 3.2) currentT = Math.max(1 - (cycle - 2) / 1.2, 0);
+    else currentT = 0;
+    slider.value = currentT * 1000;
+    phaseEl.textContent = `t = ${currentT.toFixed(2)}`;
+  }
+
+  updateScene(currentT, currentTheta);
+  ctl.update();
+  ren.render(scene, cam);
+})();
+</script>
+</body></html>
