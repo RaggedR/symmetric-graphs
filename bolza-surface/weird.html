@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html><head><meta charset="utf-8">
-<title>Weierstrass ℘ — Square to Elliptic Curve</title>
+<title>Square Torus — Clifford & Weierstrass Embeddings</title>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
 body { background:#08080c; overflow:hidden; font-family:'Courier New',monospace; }
 canvas { display:block; }
-#info { position:absolute; top:12px; left:16px; color:#8899aa; font-size:13px; line-height:1.6; pointer-events:none; max-width:340px; }
+#info { position:absolute; top:12px; left:16px; color:#8899aa; font-size:13px; line-height:1.6; pointer-events:none; max-width:360px; }
 #info h2 { color:#ccd0d8; font-size:16px; margin-bottom:4px; font-weight:normal; }
 #math { color:#6688aa; font-size:11px; margin-top:8px; line-height:1.7; }
 #math .v { color:#e8b84d; }
@@ -17,25 +17,30 @@ canvas { display:block; }
 button { background:none; border:1px solid #667788; color:#ccd0d8; padding:4px 14px;
   cursor:pointer; font-family:inherit; font-size:12px; border-radius:3px; margin:0 4px; }
 button:hover { border-color:#99aabb; }
+button.active { border-color:#e8b84d; color:#e8b84d; }
 #domain { position:absolute; top:12px; right:16px; border:1px solid #334455; background:#0c0c14;
   image-rendering: auto; }
 </style>
 </head><body>
 
 <div id="info">
-  <h2>Weierstrass ℘ — Square → Elliptic Curve</h2>
-  <span id="stageLabel">Computing lattice sums...</span>
+  <h2 id="titleLabel">Clifford Torus — Square → S³ → R³</h2>
+  <span id="stageLabel">Computing...</span>
   <div id="math"></div>
 </div>
 
 <div id="controls">
+  <div style="margin-bottom:8px;">
+    <button id="cliffordBtn" class="active">Clifford Torus</button>
+    <button id="weierstrassBtn">Elliptic Curve (℘)</button>
+  </div>
   <button id="playBtn">&#9654; Play</button>
   <input type="range" id="slider" min="0" max="1000" value="500">
   <div id="phase">t = 0.50</div>
   <div style="margin-top:6px;">
     <span style="color:#667788;">R⁴ rotation:</span>
-    <input type="range" id="rotSlider" min="0" max="628" value="314" style="width:140px;">
-    <span id="rotLabel" style="color:#e8b84d;">θ = 3.14</span>
+    <input type="range" id="rotSlider" min="0" max="628" value="0" style="width:140px;">
+    <span id="rotLabel" style="color:#e8b84d;">θ = 0.00</span>
   </div>
 </div>
 
@@ -53,6 +58,9 @@ button:hover { border-color:#99aabb; }
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
+// ===== Mode =====
+let embedMode = 'clifford';  // 'clifford' or 'weierstrass'
+
 // ===== Complex arithmetic =====
 const cmul = (ar,ai,br,bi) => [ar*br-ai*bi, ar*bi+ai*br];
 
@@ -60,7 +68,7 @@ const cmul = (ar,ai,br,bi) => [ar*br-ai*bi, ar*bi+ai*br];
 function wp(zr, zi, N) {
   const [z2r, z2i] = cmul(zr,zi,zr,zi);
   const z2m = z2r*z2r + z2i*z2i;
-  let pr = z2r/z2m, pi = -z2i/z2m; // 1/z²
+  let pr = z2r/z2m, pi = -z2i/z2m;
   for (let m = -N; m <= N; m++) {
     for (let n = -N; n <= N; n++) {
       if (m===0 && n===0) continue;
@@ -91,7 +99,6 @@ function wpp(zr, zi, N) {
   return [pr, pi];
 }
 
-// Eisenstein invariants g₂, g₃
 function eisenstein(N) {
   let g2r=0, g3r=0, g3i=0;
   for (let m = -N; m <= N; m++) {
@@ -100,7 +107,7 @@ function eisenstein(N) {
       const [w2r, w2i] = cmul(m,n,m,n);
       const [w4r, w4i] = cmul(w2r,w2i,w2r,w2i);
       const w4m = w4r*w4r + w4i*w4i;
-      g2r += w4r/w4m;  // Im part vanishes by 4-fold symmetry
+      g2r += w4r/w4m;
       const [w6r, w6i] = cmul(w4r,w4i,w2r,w2i);
       const w6m = w6r*w6r + w6i*w6i;
       g3r += w6r/w6m;
@@ -111,16 +118,16 @@ function eisenstein(N) {
 }
 
 // ===== Precompute =====
-const G = 64;      // mesh resolution
-const LN = 15;     // lattice sum truncation
-const EPS = 0.02;  // avoid pole at corners
+const G = 64;
+const LN = 15;
+const EPS = 0.02;
 
 const { g2, g3r, g3i } = eisenstein(30);
-const e1 = Math.sqrt(g2/4);  // ℘(1/2) = e₁ = √(g₂/4)
+const e1 = Math.sqrt(g2/4);
 
-// Store R⁴ embedding data for each vertex
 const numVerts = (G+1)*(G+1);
-const r4data = new Float32Array(numVerts * 4);  // (Re℘, Im℘, Re℘', Im℘')
+const weierR4 = new Float32Array(numVerts * 4);   // (Re℘, Im℘, Re℘', Im℘')
+const cliffordR4 = new Float32Array(numVerts * 4); // Clifford torus on S³
 const flatXYZ = new Float32Array(numVerts * 3);
 const uvArr = new Float32Array(numVerts * 2);
 const colArr = new Float32Array(numVerts * 3);
@@ -132,24 +139,32 @@ const t0 = performance.now();
 for (let j = 0; j <= G; j++) {
   for (let i = 0; i <= G; i++) {
     const idx = j*(G+1)+i;
-    const u = EPS + (1-2*EPS)*i/G;
-    const v = EPS + (1-2*EPS)*j/G;
+    const uRaw = i/G, vRaw = j/G;
+    const u = EPS + (1-2*EPS)*uRaw;
+    const v = EPS + (1-2*EPS)*vRaw;
     uvArr[idx*2] = u; uvArr[idx*2+1] = v;
 
     // Flat position
-    flatXYZ[idx*3]   = (u-0.5)*FLAT_S;
-    flatXYZ[idx*3+1] = (v-0.5)*FLAT_S;
+    flatXYZ[idx*3]   = (uRaw-0.5)*FLAT_S;
+    flatXYZ[idx*3+1] = (vRaw-0.5)*FLAT_S;
     flatXYZ[idx*3+2] = 0;
 
-    // ℘(z) and ℘'(z) for z = u + iv
+    // Clifford torus: (cos 2πu, sin 2πu, cos 2πv, sin 2πv) / √2 ∈ S³
+    const s = 1/Math.SQRT2;
+    cliffordR4[idx*4]   = s * Math.cos(2*Math.PI*uRaw);
+    cliffordR4[idx*4+1] = s * Math.sin(2*Math.PI*uRaw);
+    cliffordR4[idx*4+2] = s * Math.cos(2*Math.PI*vRaw);
+    cliffordR4[idx*4+3] = s * Math.sin(2*Math.PI*vRaw);
+
+    // Weierstrass ℘(z) and ℘'(z) for z = u + iv
     const [pr, pi] = wp(u, v, LN);
     const [ppr, ppi] = wpp(u, v, LN);
-    r4data[idx*4]   = pr;
-    r4data[idx*4+1] = pi;
-    r4data[idx*4+2] = ppr;
-    r4data[idx*4+3] = ppi;
+    weierR4[idx*4]   = pr;
+    weierR4[idx*4+1] = pi;
+    weierR4[idx*4+2] = ppr;
+    weierR4[idx*4+3] = ppi;
 
-    // Verify curve equation: ℘'² = 4℘³ - g₂℘
+    // Verify curve equation
     const [y2r, y2i] = cmul(ppr,ppi,ppr,ppi);
     const [x2r, x2i] = cmul(pr,pi,pr,pi);
     const [x3r, x3i] = cmul(x2r,x2i,pr,pi);
@@ -158,10 +173,10 @@ for (let j = 0; j <= G; j++) {
     const err = Math.sqrt((y2r-rhsR)**2 + (y2i-rhsI)**2);
     maxErr = Math.max(maxErr, err);
 
-    // Vertex color: hue from u, brightness from v
-    const hue = u;
-    const sat = 0.55 + 0.35*v;
-    const lit = 0.25 + 0.45*v;
+    // Vertex color
+    const hue = uRaw;
+    const sat = 0.55 + 0.35*vRaw;
+    const lit = 0.25 + 0.45*vRaw;
     const c = new THREE.Color().setHSL(hue, sat, lit);
     colArr[idx*3] = c.r; colArr[idx*3+1] = c.g; colArr[idx*3+2] = c.b;
   }
@@ -170,31 +185,34 @@ const dt = ((performance.now()-t0)/1000).toFixed(2);
 console.log(`Precomputed ${numVerts} points in ${dt}s, max curve error: ${maxErr.toExponential(3)}`);
 
 // ===== R⁴ → R³ projection =====
-const C = 3.0; // compactification scale
+
+// Stereographic projection from S³ to R³ (from south pole (0,0,0,-1))
+const STEREO_SCALE = 2.5;
+function stereoProject(a, b, c, d) {
+  const denom = 1 + d;
+  if (denom < 0.01) return [0, 0, STEREO_SCALE * 8];
+  return [STEREO_SCALE*a/denom, STEREO_SCALE*b/denom, STEREO_SCALE*c/denom];
+}
+
+// Weierstrass: orthographic with tanh squash
+const C = 3.0;
 const squash = x => C * Math.tanh(x / C);
 
-function projectR4toR3(idx, theta) {
-  const a = r4data[idx*4];    // Re ℘
-  const b = r4data[idx*4+1];  // Im ℘
-  const c = r4data[idx*4+2];  // Re ℘'
-  const d = r4data[idx*4+3];  // Im ℘'
-  // Rotate in (c,d) plane by theta, then drop d
+function project4(a, b, c, d, theta) {
   const ct = Math.cos(theta), st = Math.sin(theta);
   const c2 = c*ct - d*st;
-  // const d2 = c*st + d*ct;  // dropped
-  return [squash(a), squash(b), squash(c2)];
-}
-
-// Build embedded positions for a given rotation angle
-const embedXYZ = new Float32Array(numVerts * 3);
-function rebuildEmbedding(theta) {
-  for (let k = 0; k < numVerts; k++) {
-    const [x,y,z] = projectR4toR3(k, theta);
-    embedXYZ[k*3] = x; embedXYZ[k*3+1] = y; embedXYZ[k*3+2] = z;
+  const d2 = c*st + d*ct;
+  if (embedMode === 'clifford') {
+    return stereoProject(a, b, c2, d2);
+  } else {
+    return [squash(a), squash(b), squash(c2)];
   }
 }
-let currentTheta = 3.14;
-rebuildEmbedding(currentTheta);
+
+function getR4(idx) {
+  const src = embedMode === 'clifford' ? cliffordR4 : weierR4;
+  return [src[idx*4], src[idx*4+1], src[idx*4+2], src[idx*4+3]];
+}
 
 // ===== THREE.js scene =====
 const scene = new THREE.Scene();
@@ -238,14 +256,13 @@ const mat = new THREE.MeshPhongMaterial({
 const mesh = new THREE.Mesh(geo, mat);
 scene.add(mesh);
 
-// Wireframe overlay
 const wireMat = new THREE.MeshBasicMaterial({
   vertexColors: true, wireframe: true, transparent: true, opacity: 0.08
 });
 const wireMesh = new THREE.Mesh(geo, wireMat);
 scene.add(wireMesh);
 
-// ===== Grid lines (parameter curves) =====
+// ===== Grid lines =====
 const NGRID = 8;
 const NPTS = 129;
 const gridLines = [];
@@ -263,41 +280,57 @@ function makeGridLine(color) {
 
 // u-constant lines
 for (let k = 0; k <= NGRID; k++) {
-  const u = EPS + (1-2*EPS)*k/NGRID;
+  const u = k/NGRID;
   const hue = u;
   const c = new THREE.Color().setHSL(hue, 0.7, 0.5);
   gridLines.push({ ...makeGridLine(c), type: 'u', param: u });
 }
 // v-constant lines
 for (let k = 0; k <= NGRID; k++) {
-  const v = EPS + (1-2*EPS)*k/NGRID;
+  const v = k/NGRID;
   const c = new THREE.Color().setHSL(0.6, 0.3, 0.3 + 0.3*v);
   gridLines.push({ ...makeGridLine(c), type: 'v', param: v });
 }
 
-// Precompute grid line R⁴ data
-const gridR4 = [];
+// Precompute grid line R⁴ data for BOTH embeddings
+const gridWeier = [];
+const gridClifford = [];
 for (const gl of gridLines) {
-  const data = new Float32Array(NPTS * 4);
+  const wData = new Float32Array(NPTS * 4);
+  const cData = new Float32Array(NPTS * 4);
   const flat = new Float32Array(NPTS * 3);
   for (let k = 0; k < NPTS; k++) {
-    let u, v;
-    if (gl.type === 'u') { u = gl.param; v = EPS + (1-2*EPS)*k/(NPTS-1); }
-    else { u = EPS + (1-2*EPS)*k/(NPTS-1); v = gl.param; }
+    let uRaw, vRaw;
+    if (gl.type === 'u') { uRaw = gl.param; vRaw = k/(NPTS-1); }
+    else { uRaw = k/(NPTS-1); vRaw = gl.param; }
+
+    // Flat
+    flat[k*3] = (uRaw-0.5)*FLAT_S; flat[k*3+1] = (vRaw-0.5)*FLAT_S; flat[k*3+2] = 0;
+
+    // Clifford
+    const s = 1/Math.SQRT2;
+    cData[k*4]   = s * Math.cos(2*Math.PI*uRaw);
+    cData[k*4+1] = s * Math.sin(2*Math.PI*uRaw);
+    cData[k*4+2] = s * Math.cos(2*Math.PI*vRaw);
+    cData[k*4+3] = s * Math.sin(2*Math.PI*vRaw);
+
+    // Weierstrass (with EPS padding to avoid poles)
+    const u = EPS + (1-2*EPS)*uRaw;
+    const v = EPS + (1-2*EPS)*vRaw;
     const [pr, pi] = wp(u, v, LN);
     const [ppr, ppi] = wpp(u, v, LN);
-    data[k*4] = pr; data[k*4+1] = pi; data[k*4+2] = ppr; data[k*4+3] = ppi;
-    flat[k*3] = (u-0.5)*FLAT_S; flat[k*3+1] = (v-0.5)*FLAT_S; flat[k*3+2] = 0;
+    wData[k*4] = pr; wData[k*4+1] = pi; wData[k*4+2] = ppr; wData[k*4+3] = ppi;
   }
-  gridR4.push({ data, flat });
+  gridWeier.push({ data: wData, flat });
+  gridClifford.push({ data: cData, flat });
 }
 
-// ===== Weierstrass point markers =====
+// ===== Half-period markers =====
 const wpSphereGeo = new THREE.SphereGeometry(0.06, 16, 16);
 const wpPoints = [
-  { u: 0.5, v: 0,   label: 'e₁', color: 0x44aaff },   // ℘(1/2) = e₁
-  { u: 0,   v: 0.5, label: 'e₂', color: 0xff6644 },   // ℘(i/2) = -e₁
-  { u: 0.5, v: 0.5, label: 'e₃', color: 0x44ff88 },   // ℘((1+i)/2) = 0
+  { u: 0.5, v: 0,   label: 'e₁', color: 0x44aaff },
+  { u: 0,   v: 0.5, label: 'e₂', color: 0xff6644 },
+  { u: 0.5, v: 0.5, label: 'e₃', color: 0x44ff88 },
 ];
 const wpSpheres = [];
 for (const wp_ of wpPoints) {
@@ -305,27 +338,33 @@ for (const wp_ of wpPoints) {
     color: wp_.color, emissive: wp_.color, emissiveIntensity: 0.3
   }));
   scene.add(sph);
-  // Precompute R⁴ data
-  const u = Math.max(EPS, Math.min(1-EPS, wp_.u));
-  const v = Math.max(EPS, Math.min(1-EPS, wp_.v));
+  const uRaw = wp_.u, vRaw = wp_.v;
+  const u = Math.max(EPS, Math.min(1-EPS, EPS + (1-2*EPS)*uRaw));
+  const v = Math.max(EPS, Math.min(1-EPS, EPS + (1-2*EPS)*vRaw));
   const [pr, pi] = wp(u, v, LN);
   const [ppr, ppi] = wpp(u, v, LN);
+
+  const s = 1/Math.SQRT2;
   wpSpheres.push({
     sph,
-    r4: [pr, pi, ppr, ppi],
-    flat: [(wp_.u-0.5)*FLAT_S, (wp_.v-0.5)*FLAT_S, 0]
+    weierR4: [pr, pi, ppr, ppi],
+    cliffordR4: [
+      s * Math.cos(2*Math.PI*uRaw),
+      s * Math.sin(2*Math.PI*uRaw),
+      s * Math.cos(2*Math.PI*vRaw),
+      s * Math.sin(2*Math.PI*vRaw)
+    ],
+    flat: [(uRaw-0.5)*FLAT_S, (vRaw-0.5)*FLAT_S, 0]
   });
 }
 
-// ===== Update geometry for animation =====
+// ===== Update geometry =====
 function updateScene(t, theta) {
   const pos = geo.attributes.position.array;
+  const src = embedMode === 'clifford' ? cliffordR4 : weierR4;
+
   for (let k = 0; k < numVerts; k++) {
-    const ct = Math.cos(theta), st = Math.sin(theta);
-    const a = r4data[k*4], b = r4data[k*4+1];
-    const c_ = r4data[k*4+2], d = r4data[k*4+3];
-    const c2 = c_*ct - d*st;
-    const ex = squash(a), ey = squash(b), ez = squash(c2);
+    const [ex, ey, ez] = project4(src[k*4], src[k*4+1], src[k*4+2], src[k*4+3], theta);
     pos[k*3]   = (1-t)*flatXYZ[k*3]   + t*ex;
     pos[k*3+1] = (1-t)*flatXYZ[k*3+1] + t*ey;
     pos[k*3+2] = (1-t)*flatXYZ[k*3+2] + t*ez;
@@ -334,15 +373,12 @@ function updateScene(t, theta) {
   geo.computeVertexNormals();
 
   // Grid lines
+  const gridData = embedMode === 'clifford' ? gridClifford : gridWeier;
   for (let g = 0; g < gridLines.length; g++) {
     const gl = gridLines[g];
-    const { data, flat } = gridR4[g];
-    const ct = Math.cos(theta), st = Math.sin(theta);
+    const { data, flat } = gridData[g];
     for (let k = 0; k < NPTS; k++) {
-      const a = data[k*4], b = data[k*4+1];
-      const c_ = data[k*4+2], d = data[k*4+3];
-      const c2 = c_*ct - d*st;
-      const ex = squash(a), ey = squash(b), ez = squash(c2);
+      const [ex, ey, ez] = project4(data[k*4], data[k*4+1], data[k*4+2], data[k*4+3], theta);
       gl.pts[k*3]   = (1-t)*flat[k*3]   + t*ex;
       gl.pts[k*3+1] = (1-t)*flat[k*3+1] + t*ey;
       gl.pts[k*3+2] = (1-t)*flat[k*3+2] + t*ez;
@@ -350,12 +386,10 @@ function updateScene(t, theta) {
     gl.geom.attributes.position.needsUpdate = true;
   }
 
-  // Weierstrass point spheres
-  const ct = Math.cos(theta), st = Math.sin(theta);
+  // Half-period spheres
   for (const ws of wpSpheres) {
-    const [a,b,c_,d] = ws.r4;
-    const c2 = c_*ct - d*st;
-    const ex = squash(a), ey = squash(b), ez = squash(c2);
+    const r4 = embedMode === 'clifford' ? ws.cliffordR4 : ws.weierR4;
+    const [ex, ey, ez] = project4(r4[0], r4[1], r4[2], r4[3], theta);
     ws.sph.position.set(
       (1-t)*ws.flat[0] + t*ex,
       (1-t)*ws.flat[1] + t*ey,
@@ -376,7 +410,6 @@ function drawDomain() {
   const sx = (u) => pad + u*(W-2*pad);
   const sy = (v) => H - pad - v*(H-2*pad);
 
-  // Grid
   ctx.lineWidth = 0.5;
   for (let k = 0; k <= NGRID; k++) {
     const u = k/NGRID;
@@ -391,25 +424,20 @@ function drawDomain() {
   }
   ctx.globalAlpha = 1;
 
-  // Boundary with identification arrows
   ctx.strokeStyle = '#556677'; ctx.lineWidth = 1.5;
   ctx.strokeRect(sx(0), sy(1), sx(1)-sx(0), sy(0)-sy(1));
 
   // Identification arrows
   ctx.fillStyle = '#4488ff'; ctx.font = '14px serif';
-  // Bottom edge a →
   ctx.fillText('a →', sx(0.42), sy(0)+14);
-  // Top edge a →
   ctx.fillText('a →', sx(0.42), sy(1)-4);
   ctx.fillStyle = '#ff6644';
-  // Left edge b ↑
   ctx.save(); ctx.translate(sx(0)-4, sy(0.5)); ctx.rotate(-Math.PI/2);
   ctx.fillText('b →', -10, 0); ctx.restore();
-  // Right edge b ↑
   ctx.save(); ctx.translate(sx(1)+14, sy(0.5)); ctx.rotate(-Math.PI/2);
   ctx.fillText('b →', -10, 0); ctx.restore();
 
-  // Weierstrass points
+  // Half-period points
   const wps = [
     { u:0.5, v:0, c:'#4488ff', label:'e₁' },
     { u:0, v:0.5, c:'#ff6644', label:'e₂' },
@@ -422,7 +450,7 @@ function drawDomain() {
     ctx.fillText(p.label, sx(p.u)+7, sy(p.v)+4);
   }
 
-  // Pole marker at corners
+  // Pole markers at corners (Weierstrass only, but show regardless)
   ctx.strokeStyle = '#ff4444'; ctx.lineWidth = 1;
   for (const [u,v] of [[0,0],[1,0],[0,1],[1,1]]) {
     ctx.beginPath(); ctx.arc(sx(u), sy(v), 4, 0, 2*Math.PI); ctx.stroke();
@@ -430,26 +458,42 @@ function drawDomain() {
     ctx.beginPath(); ctx.moveTo(sx(u)+3,sy(v)-3); ctx.lineTo(sx(u)-3,sy(v)+3); ctx.stroke();
   }
 
-  // Labels
   ctx.fillStyle = '#667788'; ctx.font = '9px monospace';
   ctx.fillText('C/(Z+iZ)', sx(0), sy(1)-14);
-  ctx.fillText('pole ∞', sx(0)+2, sy(0)+25);
+  ctx.fillText(embedMode === 'clifford' ? 'corners identified' : 'pole ∞', sx(0)+2, sy(0)+25);
 }
 drawDomain();
 
-// ===== Math info panel =====
-document.getElementById('math').innerHTML = `
-  <span class="label">Lattice:</span> L = Z + iZ<br>
-  <span class="label">g₂ =</span> <span class="v">${g2.toFixed(6)}</span><br>
-  <span class="label">g₃ =</span> <span class="v">${g3r.toFixed(2)} + ${g3i.toFixed(2)}i ≈ 0</span> <span class="label">(4-fold symmetry)</span><br>
-  <span class="label">Curve:</span> y² = 4x³ − ${g2.toFixed(2)}x<br>
-  <span class="label">e₁ = ℘(½) =</span> <span class="v">${e1.toFixed(4)}</span>,
-  <span class="label">e₂ =</span> <span class="v">−${e1.toFixed(4)}</span>,
-  <span class="label">e₃ =</span> <span class="v">0</span><br>
-  <span class="label">Max |℘'² − (4℘³−g₂℘)|:</span> <span class="v">${maxErr.toExponential(2)}</span><br>
-  <span class="label">Grid: ${G}×${G}, lattice sum N=${LN}, computed in ${dt}s</span>
-`;
-document.getElementById('stageLabel').textContent = 'z ↦ (℘(z), ℘\'(z)) ∈ C² ≅ R⁴ → R³';
+// ===== Info panel =====
+function updateInfoPanel() {
+  if (embedMode === 'clifford') {
+    document.getElementById('titleLabel').textContent = 'Clifford Torus — Square → S³ → R³';
+    document.getElementById('stageLabel').textContent = '(u,v) ↦ (cos2πu, sin2πu, cos2πv, sin2πv)/√2 ∈ S³';
+    document.getElementById('math').innerHTML = `
+      <span class="label">Embedding:</span> Clifford torus in S³ ⊂ R⁴<br>
+      <span class="label">Projection:</span> stereographic from south pole (0,0,0,−1)<br>
+      <span class="label">Result:</span> torus of revolution in R³<br>
+      <span class="label">Metric:</span> flat (isometric to square)<br>
+      <span class="label">R⁴ rotation:</span> <span class="v">rotates in (x₃,x₄) plane</span><br>
+      <span class="label">Grid: ${G}×${G}, computed in ${dt}s</span>
+    `;
+  } else {
+    document.getElementById('titleLabel').textContent = 'Weierstrass ℘ — Square → Elliptic Curve';
+    document.getElementById('stageLabel').textContent = 'z ↦ (℘(z), ℘\'(z)) ∈ C² ≅ R⁴ → R³';
+    document.getElementById('math').innerHTML = `
+      <span class="label">Lattice:</span> L = Z + iZ<br>
+      <span class="label">g₂ =</span> <span class="v">${g2.toFixed(6)}</span><br>
+      <span class="label">g₃ =</span> <span class="v">${g3r.toFixed(2)} + ${g3i.toFixed(2)}i ≈ 0</span> <span class="label">(4-fold symmetry)</span><br>
+      <span class="label">Curve:</span> y² = 4x³ − ${g2.toFixed(2)}x<br>
+      <span class="label">e₁ = ℘(½) =</span> <span class="v">${e1.toFixed(4)}</span>,
+      <span class="label">e₂ =</span> <span class="v">−${e1.toFixed(4)}</span>,
+      <span class="label">e₃ =</span> <span class="v">0</span><br>
+      <span class="label">Max |℘'² − (4℘³−g₂℘)|:</span> <span class="v">${maxErr.toExponential(2)}</span><br>
+      <span class="label">Grid: ${G}×${G}, lattice sum N=${LN}, computed in ${dt}s</span>
+    `;
+  }
+}
+updateInfoPanel();
 
 // ===== Controls =====
 const slider = document.getElementById('slider');
@@ -457,10 +501,29 @@ const phaseEl = document.getElementById('phase');
 const playBtn = document.getElementById('playBtn');
 const rotSlider = document.getElementById('rotSlider');
 const rotLabel = document.getElementById('rotLabel');
+const cliffordBtn = document.getElementById('cliffordBtn');
+const weierstrassBtn = document.getElementById('weierstrassBtn');
 
 let currentT = 0.5;
+let currentTheta = 0;
 let playing = false;
 let autoTime = 1.0;
+
+cliffordBtn.addEventListener('click', () => {
+  embedMode = 'clifford';
+  cliffordBtn.classList.add('active');
+  weierstrassBtn.classList.remove('active');
+  updateInfoPanel();
+  drawDomain();
+});
+
+weierstrassBtn.addEventListener('click', () => {
+  embedMode = 'weierstrass';
+  weierstrassBtn.classList.add('active');
+  cliffordBtn.classList.remove('active');
+  updateInfoPanel();
+  drawDomain();
+});
 
 playBtn.addEventListener('click', () => {
   playing = !playing;
