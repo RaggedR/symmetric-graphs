@@ -200,17 +200,140 @@ theorem d1_rank_eq (hconn : S.toSimpleGraph.Connected) (hV : 1 < S.nV) :
   have hge := S.d1_rank_ge hconn hV
   omega
 
+/-! ### Lower bound: rank(d2) ≥ F - 1 via dual kernel characterisation
+
+Same approach as d1: show `ker(d2.mulVecLin) = span{1_F}` using dual connectivity.
+Requires the hypothesis that each edge borders exactly 2 faces, so that
+dual-adjacent faces have equal kernel values.
+-/
+
+/-- d2 entries are indicator functions: d2(e,f) = 1 iff edge e is on face f's boundary. -/
+theorem d2_entry (f : Fin S.nF) (e : Fin S.nE) :
+    S.d2 e f = if ∃ i, S.face_edge f i = e then 1 else 0 := by
+  simp only [d2]
+  split_ifs with h
+  · obtain ⟨i, hi⟩ := h
+    rw [Finset.sum_eq_single_of_mem i (Finset.mem_univ _) (fun k _ hki =>
+      if_neg (fun hk => hki (S.face_inj f (hk.trans hi.symm))))]
+    simp [hi]
+  · push_neg at h
+    exact Finset.sum_eq_zero (fun i _ => if_neg (h i))
+
+/-- For y in ker(d2) and dual-adjacent faces f₁ ≠ f₂ sharing edge e,
+    only f₁ and f₂ contribute to the sum at e, giving y(f₁) = y(f₂). -/
+theorem ker_d2_dual_adj_eq {y : Fin S.nF → ZMod 2}
+    (hy : y ∈ LinearMap.ker S.d2.mulVecLin)
+    (htwo : ∀ e, (Finset.univ.filter fun f : Fin S.nF => S.d2 e f ≠ 0).card = 2)
+    {f₁ f₂ : Fin S.nF} (hadj : S.toDualSimpleGraph.Adj f₁ f₂) :
+    y f₁ = y f₂ := by
+  obtain ⟨hne, e, ⟨i, hi⟩, ⟨j, hj⟩⟩ := hadj
+  -- d2(e, f₁) = 1 and d2(e, f₂) = 1
+  have hd₁ : S.d2 e f₁ = 1 := by rw [S.d2_entry]; exact if_pos ⟨i, hi⟩
+  have hd₂ : S.d2 e f₂ = 1 := by rw [S.d2_entry]; exact if_pos ⟨j, hj⟩
+  -- The support {f | d2(e,f) ≠ 0} = {a, b} for some a ≠ b
+  obtain ⟨a, b, hab, hFe_eq⟩ := Finset.card_eq_two.mp (htwo e)
+  -- f₁, f₂ ∈ {a, b}
+  have hf₁_mem : f₁ ∈ ({a, b} : Finset _) := by
+    rw [← hFe_eq]; exact Finset.mem_filter.mpr ⟨Finset.mem_univ _, by simp [hd₁]⟩
+  have hf₂_mem : f₂ ∈ ({a, b} : Finset _) := by
+    rw [← hFe_eq]; exact Finset.mem_filter.mpr ⟨Finset.mem_univ _, by simp [hd₂]⟩
+  -- Kernel at e: ∑_f d2(e,f) * y(f) = 0
+  have hker_e : ∑ f, S.d2 e f * y f = 0 := by
+    have := congr_fun (LinearMap.mem_ker.mp hy) e
+    simpa [mulVecLin_apply, mulVec, dotProduct] using this
+  -- Filter to support {a, b} and simplify to y(a) + y(b) = 0
+  have hpair : y a + y b = 0 := by
+    have hsplit : ∑ f, S.d2 e f * y f =
+        ∑ f ∈ Finset.univ.filter (fun f => S.d2 e f ≠ 0), S.d2 e f * y f := by
+      symm; apply Finset.sum_subset (Finset.filter_subset _ _)
+      intro f _ hf
+      simp only [Finset.mem_filter, Finset.mem_univ, true_and, not_not] at hf
+      rw [hf, zero_mul]
+    rw [hsplit, hFe_eq, Finset.sum_pair hab] at hker_e
+    have hzmod2 : ∀ (x : ZMod 2), x ≠ 0 → x = 1 := by decide
+    have ha_ne := (Finset.mem_filter.mp (hFe_eq ▸ Finset.mem_insert_self a {b})).2
+    have hb_ne := (Finset.mem_filter.mp (hFe_eq ▸ Finset.mem_insert.mpr
+      (Or.inr (Finset.mem_singleton.mpr rfl)))).2
+    rwa [hzmod2 _ ha_ne, hzmod2 _ hb_ne, one_mul, one_mul] at hker_e
+  -- y(a) = y(b)
+  have hab_eq : y a = y b := by
+    have : ∀ (x z : ZMod 2), x + z = 0 → x = z := by decide
+    exact this _ _ hpair
+  -- Relate a, b to f₁, f₂
+  simp only [Finset.mem_insert, Finset.mem_singleton] at hf₁_mem hf₂_mem
+  rcases hf₁_mem with rfl | rfl <;> rcases hf₂_mem with rfl | rfl
+  · exact absurd rfl hne
+  · exact hab_eq
+  · exact hab_eq.symm
+  · exact absurd rfl hne
+
+/-- Dual walks preserve kernel element values. -/
+theorem dual_walk_preserves_ker {y : Fin S.nF → ZMod 2}
+    (hy : y ∈ LinearMap.ker S.d2.mulVecLin)
+    (htwo : ∀ e, (Finset.univ.filter fun f : Fin S.nF => S.d2 e f ≠ 0).card = 2)
+    {f₁ f₂ : Fin S.nF} (w : S.toDualSimpleGraph.Walk f₁ f₂) :
+    y f₁ = y f₂ := by
+  induction w with
+  | nil => rfl
+  | cons hadj _ ih => exact (S.ker_d2_dual_adj_eq hy htwo hadj).trans ih
+
+/-- For connected dual graphs, `ker(d2.mulVecLin) ≤ span{1_F}`. -/
+theorem ker_d2_le_span_one (hconn_dual : S.toDualSimpleGraph.Connected)
+    (htwo : ∀ e, (Finset.univ.filter fun f : Fin S.nF => S.d2 e f ≠ 0).card = 2) :
+    LinearMap.ker S.d2.mulVecLin ≤ Submodule.span (ZMod 2) {1} := by
+  intro y hy
+  rw [Submodule.mem_span_singleton]
+  have hF : 0 < S.nF := by obtain ⟨⟨_, hlt⟩⟩ := hconn_dual.nonempty; omega
+  have hconst : ∀ a b : Fin S.nF, y a = y b := fun a b =>
+    S.dual_walk_preserves_ker hy htwo (hconn_dual.preconnected a b).some
+  exact ⟨y ⟨0, hF⟩, funext fun v => by
+    simp [Pi.smul_apply, Pi.one_apply, smul_eq_mul, mul_one, hconst ⟨0, hF⟩ v]⟩
+
+/-- The two-sides hypothesis implies `d2 *ᵥ 1 = 0`. -/
+theorem d2_mulVec_one_of_two_sides
+    (htwo : ∀ e, (Finset.univ.filter fun f : Fin S.nF => S.d2 e f ≠ 0).card = 2) :
+    S.d2 *ᵥ 1 = 0 := by
+  ext e
+  simp only [mulVec, dotProduct, Pi.one_apply, mul_one, Pi.zero_apply]
+  rw [show ∑ f, S.d2 e f = ∑ f ∈ Finset.univ.filter (fun f => S.d2 e f ≠ 0), S.d2 e f from by
+    symm; apply Finset.sum_subset (Finset.filter_subset _ _)
+    intro f _ hf; simpa using hf]
+  obtain ⟨a, b, hab, hFe_eq⟩ := Finset.card_eq_two.mp (htwo e)
+  rw [hFe_eq, Finset.sum_pair hab]
+  have hzmod2 : ∀ (x : ZMod 2), x ≠ 0 → x = 1 := by decide
+  have ha := (Finset.mem_filter.mp (hFe_eq ▸ Finset.mem_insert_self a {b})).2
+  have hb := (Finset.mem_filter.mp (hFe_eq ▸ Finset.mem_insert.mpr
+    (Or.inr (Finset.mem_singleton.mpr rfl)))).2
+  rw [hzmod2 _ ha, hzmod2 _ hb]; decide
+
 /-- **Lower bound**: `rank(d2) ≥ nF - 1` for connected dual graphs. -/
 theorem d2_rank_ge (hconn_dual : S.toDualSimpleGraph.Connected) (hF : 1 < S.nF)
-    (htwo : S.d2 *ᵥ 1 = 0) :
+    (htwo : ∀ e, (Finset.univ.filter fun f : Fin S.nF => S.d2 e f ≠ 0).card = 2) :
     S.nF - 1 ≤ S.d2.rank := by
-  sorry
+  -- ker(d2) = span{1_F}, dim = 1
+  have hF_pos : 0 < S.nF := by omega
+  have hmem : (1 : Fin S.nF → ZMod 2) ∈ LinearMap.ker S.d2.mulVecLin := by
+    rw [LinearMap.mem_ker, mulVecLin_apply]
+    exact S.d2_mulVec_one_of_two_sides htwo
+  have heq : LinearMap.ker S.d2.mulVecLin =
+      Submodule.span (ZMod 2) {(1 : Fin S.nF → ZMod 2)} :=
+    le_antisymm (S.ker_d2_le_span_one hconn_dual htwo)
+      ((Submodule.span_singleton_le_iff_mem _ _).mpr hmem)
+  -- finrank(ker) = 1
+  have hker : Module.finrank (ZMod 2) (LinearMap.ker S.d2.mulVecLin) = 1 := by
+    rw [heq]; exact finrank_span_singleton (fun h => absurd (congr_fun h ⟨0, hF_pos⟩) (by simp))
+  -- rank-nullity: rank + 1 = nF
+  have hrn := LinearMap.finrank_range_add_finrank_ker S.d2.mulVecLin
+  simp only [rank, Module.finrank_pi_fintype, Module.finrank_self, Finset.sum_const,
+    Finset.card_univ, Fintype.card_fin, smul_eq_mul, mul_one] at hrn ⊢
+  rw [hker] at hrn
+  omega
 
 /-- **Rank theorem for d2**: `rank(d2) = nF - 1`. -/
 theorem d2_rank_eq (hconn_dual : S.toDualSimpleGraph.Connected) (hF : 1 < S.nF)
-    (htwo : S.d2 *ᵥ 1 = 0) :
+    (htwo : ∀ e, (Finset.univ.filter fun f : Fin S.nF => S.d2 e f ≠ 0).card = 2) :
     (S.d2.rank : ℤ) = S.nF - 1 := by
-  have hle := S.d2_rank_le (by omega : 0 < S.nF) htwo
+  have hle := S.d2_rank_le (by omega : 0 < S.nF) (S.d2_mulVec_one_of_two_sides htwo)
   have hge := S.d2_rank_ge hconn_dual hF htwo
   omega
 

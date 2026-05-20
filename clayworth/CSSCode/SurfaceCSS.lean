@@ -56,7 +56,7 @@ def CellularSurface.toCSSFromTiling (S : CellularSurface) (g : ℕ)
     Given a `CellularSurface` satisfying:
     - primal graph is connected
     - dual graph is connected
-    - each edge borders exactly 2 faces (`d2 *ᵥ 1 = 0`)
+    - each edge borders exactly 2 faces (two-sides condition)
     - Euler's formula holds with genus g
 
     the resulting CSS quantum code encodes exactly `2g` logical qubits. -/
@@ -65,11 +65,9 @@ theorem CellularSurface.css_k_eq_2g_from_surface (S : CellularSurface) (g : ℕ)
     (euler : (S.nV : ℤ) - S.nE + S.nF = 2 - 2 * g)
     (hconn : S.toSimpleGraph.Connected)
     (hconn_dual : S.toDualSimpleGraph.Connected)
-    (htwo : S.d2 *ᵥ 1 = 0) :
+    (htwo : ∀ e, (Finset.univ.filter fun f : Fin S.nF => S.d2 e f ≠ 0).card = 2) :
     (S.toCSSFromTiling g (by omega) (by omega) euler).k = 2 * g := by
   apply css_k_eq_2g
-  · -- rank(H_X) = rank(d1) = V - 1
-    exact S.d1_rank_eq hconn hV
-  · -- rank(H_Z) = rank(d2ᵀ) = rank(d2) = F - 1
-    simp only [toCSSFromTiling, rank_transpose]
+  · exact S.d1_rank_eq hconn hV
+  · simp only [toCSSFromTiling, rank_transpose]
     exact S.d2_rank_eq hconn_dual hF htwo
