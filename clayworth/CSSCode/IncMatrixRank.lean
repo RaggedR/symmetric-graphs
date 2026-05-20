@@ -111,12 +111,87 @@ def toDualSimpleGraph : SimpleGraph (Fin S.nF) where
   symm _ _ := fun ⟨hne, e, h1, h2⟩ => ⟨hne.symm, e, h2, h1⟩
   loopless := ⟨fun _ ⟨hne, _⟩ => hne rfl⟩
 
-/-! ### Lower bounds (sorry'd) -/
+/-! ### Lower bound: rank(d1) ≥ V - 1 via kernel characterisation
+
+The key idea: `ker(d1ᵀ) = span{1_V}` for connected graphs. Every element
+of the kernel assigns equal values to adjacent vertices (since `d1ᵀ *ᵥ x = 0`
+means `x(src e) + x(tgt e) = 0` for all edges, i.e., `x(src e) = x(tgt e)`).
+By connectivity, this propagates along walks to give `x` constant on all
+vertices. Over F₂, constant means `x = 0` or `x = 1_V`, so `ker = span{1_V}`
+has dimension 1. Rank-nullity then gives `rank = V - 1`.
+-/
+
+/-- Each entry of `d1ᵀ *ᵥ x` equals `x(src e) + x(tgt e)`. -/
+theorem d1T_mulVec_entry (x : Fin S.nV → ZMod 2) (e : Fin S.nE) :
+    (S.d1ᵀ *ᵥ x) e = x (S.edge_src e) + x (S.edge_tgt e) := by
+  simp only [mulVec, dotProduct, transpose_apply, d1, add_mul, Finset.sum_add_distrib]
+  have hsum : ∀ (a : Fin S.nV),
+      ∑ v : Fin S.nV, (if a = v then (1 : ZMod 2) else 0) * x v = x a := fun a => by
+    rw [Finset.sum_eq_single_of_mem a (Finset.mem_univ _)
+      (fun b _ hne => by simp [Ne.symm hne])]
+    simp
+  simp only [hsum]
+
+/-- Elements of `ker(d1ᵀ)` assign equal values to adjacent vertices. -/
+theorem ker_d1T_edge_eq {x : Fin S.nV → ZMod 2}
+    (hx : x ∈ LinearMap.ker S.d1ᵀ.mulVecLin) (e : Fin S.nE) :
+    x (S.edge_src e) = x (S.edge_tgt e) := by
+  have h := congr_fun (LinearMap.mem_ker.mp hx) e
+  simp only [mulVecLin_apply, Pi.zero_apply] at h
+  rw [S.d1T_mulVec_entry x e] at h
+  have : ∀ (a b : ZMod 2), a + b = 0 → a = b := by decide
+  exact this _ _ h
+
+/-- Walks in the graph preserve values of kernel elements. -/
+theorem walk_preserves_ker {x : Fin S.nV → ZMod 2}
+    (hx : x ∈ LinearMap.ker S.d1ᵀ.mulVecLin)
+    {u v : Fin S.nV} (w : S.toSimpleGraph.Walk u v) :
+    x u = x v := by
+  induction w with
+  | nil => rfl
+  | cons hadj _ ih =>
+    obtain ⟨e, h | h⟩ := hadj
+    · -- src e = u, tgt e = w: x u = x(src e) = x(tgt e) = x w
+      have := S.ker_d1T_edge_eq hx e
+      rw [h.1, h.2] at this
+      exact this.trans ih
+    · -- src e = w, tgt e = u: x u = x(tgt e) = x(src e) = x w
+      have := S.ker_d1T_edge_eq hx e
+      rw [h.1, h.2] at this
+      exact this.symm.trans ih
+
+/-- For connected graphs, `ker(d1ᵀ) ≤ span{1_V}`: kernel elements are constant. -/
+theorem ker_d1T_le_span_one (hconn : S.toSimpleGraph.Connected) :
+    LinearMap.ker S.d1ᵀ.mulVecLin ≤ Submodule.span (ZMod 2) {1} := by
+  intro x hx
+  rw [Submodule.mem_span_singleton]
+  have hV : 0 < S.nV := by obtain ⟨⟨_, hlt⟩⟩ := hconn.nonempty; omega
+  -- x is constant on all vertices (by connectivity + walk preservation)
+  have hconst : ∀ u v : Fin S.nV, x u = x v := fun u v =>
+    S.walk_preserves_ker hx (hconn.preconnected u v).some
+  -- x = x(0) • 1, so x ∈ span{1}
+  exact ⟨x ⟨0, hV⟩, funext fun v => by
+    simp [Pi.smul_apply, Pi.one_apply, smul_eq_mul, mul_one, hconst ⟨0, hV⟩ v]⟩
+
+/-- For connected graphs, `ker(d1ᵀ)` has dimension exactly 1. -/
+theorem ker_d1T_finrank_eq_one (hconn : S.toSimpleGraph.Connected) (hV : 0 < S.nV) :
+    Module.finrank (ZMod 2) (LinearMap.ker S.d1ᵀ.mulVecLin) = 1 := by
+  -- ker = span{1_V} by antisymmetry
+  have heq : LinearMap.ker S.d1ᵀ.mulVecLin = Submodule.span (ZMod 2) {(1 : Fin S.nV → ZMod 2)} :=
+    le_antisymm (S.ker_d1T_le_span_one hconn)
+      ((Submodule.span_singleton_le_iff_mem _ _).mpr S.one_mem_ker_d1T)
+  rw [heq]
+  exact finrank_span_singleton (S.one_ne_zero_fin hV)
 
 /-- **Lower bound**: `rank(d1) ≥ nV - 1` for connected graphs. -/
 theorem d1_rank_ge (hconn : S.toSimpleGraph.Connected) (hV : 1 < S.nV) :
     S.nV - 1 ≤ S.d1.rank := by
-  sorry
+  rw [← rank_transpose S.d1]
+  have hrn := LinearMap.finrank_range_add_finrank_ker S.d1ᵀ.mulVecLin
+  simp only [rank, Module.finrank_pi_fintype, Module.finrank_self, Finset.sum_const,
+    Finset.card_univ, Fintype.card_fin, smul_eq_mul, mul_one] at hrn ⊢
+  rw [S.ker_d1T_finrank_eq_one hconn (by omega)] at hrn
+  omega
 
 /-- **Rank theorem for d1**: `rank(d1) = nV - 1` for connected graphs. -/
 theorem d1_rank_eq (hconn : S.toSimpleGraph.Connected) (hV : 1 < S.nV) :
