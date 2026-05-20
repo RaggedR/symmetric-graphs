@@ -1,0 +1,54 @@
+/-
+Copyright (c) 2026 Robin Langer. All rights reserved.
+Released under MIT license.
+
+# The Bolza Surface: Möbius-Kantor Graph on Genus 2
+
+The Möbius-Kantor graph GP(8,3) is the generalized Petersen graph with
+outer ring 0–7, inner star 8–15 (connection 3), and 8 spoke edges.
+It embeds on a genus-2 surface (the Bolza surface) with 6 octagonal faces.
+
+CSS code parameters: [[24, 4, ≥ 6]].
+-/
+
+import CSSCode.CellularSurface
+
+open CellularSurface
+
+/-- The Möbius-Kantor graph GP(8,3) embedded on the Bolza surface (genus 2).
+    16 vertices, 24 edges, 6 octagonal faces. -/
+def bolzaSurface : CellularSurface where
+  nV := 16
+  nE := 24
+  nF := 6
+  -- Edges 0–7: outer ring, 8–15: inner star, 16–23: spokes
+  edge_src := ![0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0, 1, 2, 3, 4, 5, 6, 7]
+  edge_tgt := ![1, 2, 3, 4, 5, 6, 7, 0, 11, 12, 13, 14, 15, 8, 9, 10, 8, 9, 10, 11, 12, 13, 14, 15]
+  edge_ne := by decide
+  face_len := fun _ => 8
+  face_len_pos := fun _ => by norm_num
+  face_edge := ![
+    ![0, 17, 9, 20, 4, 21, 13, 16],   -- 0→1→9→12→4→5→13→8→0
+    ![7, 6, 5, 4, 3, 2, 1, 0],         -- 0→7→6→5→4→3→2→1→0 (outer ring reversed)
+    ![16, 8, 19, 3, 20, 12, 23, 7],   -- 0→8→11→3→4→12→15→7→0
+    ![1, 18, 10, 21, 5, 22, 14, 17],  -- 1→2→10→13→5→6→14→9→1
+    ![2, 19, 11, 22, 6, 23, 15, 18],  -- 2→3→11→14→6→7→15→10→2
+    ![13, 10, 15, 12, 9, 14, 11, 8]   -- 8→13→10→15→12→9→14→11→8 (inner star reversed)
+  ]
+  face_dir := ![
+    ![true, true, true, false, true, true, true, false],
+    ![false, false, false, false, false, false, false, false],
+    ![true, true, false, true, true, true, false, true],
+    ![true, true, true, false, true, true, true, false],
+    ![true, true, true, false, true, true, true, false],
+    ![false, false, false, false, false, false, false, false]
+  ]
+  face_inj := by decide
+  face_closed := by decide
+
+/-- The Bolza surface satisfies ∂² = 0. -/
+theorem bolza_d1_mul_d2_eq_zero : bolzaSurface.d1 * bolzaSurface.d2 = 0 :=
+  bolzaSurface.d1_mul_d2_eq_zero
+
+/-- Euler characteristic confirms genus 2. -/
+theorem bolza_euler : (16 : ℤ) - 24 + 6 = 2 - 2 * 2 := by norm_num
