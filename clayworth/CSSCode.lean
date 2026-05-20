@@ -6,3 +6,4 @@ import CSSCode.IncMatrixRank
 import CSSCode.SurfaceCSS
 import CSSCode.Heawood
 import CSSCode.Bolza
+import CSSCode.KleinQuartic
