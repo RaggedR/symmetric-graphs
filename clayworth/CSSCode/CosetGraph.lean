@@ -110,3 +110,60 @@ theorem adj_mk (x y : G) :
   Iff.rfl
 
 end SimpleGraph.cosetGraph
+
+/-! ## Coset projection: H ≤ K gives Sab(G,H,D) → Sab(G,K,D)
+
+When H ≤ K, the natural projection G/H → G/K sends gH ↦ gK. If D is
+a connection set for both H and K, then this projection is a graph
+homomorphism: adjacency in Sab(G,H,D) implies adjacency in Sab(G,K,D).
+
+This is the Sabidussi analogue of "quotient by a block system": the
+block system {gK/H : g ∈ G} on G/H has blocks of size [K:H], and the
+quotient graph is Sab(G,K,D).
+
+**Application**: Zhou-3 (Sab(PSL(2,13), S₃), 182v, cubic) projects to
+Zhou-6 (Sab(PSL(2,13), D₁₂), 91v, 6-regular) via S₃ ≤ D₁₂ with [D₁₂:S₃] = 2.
+Each Zhou-6 vertex has exactly 2 preimages, each of degree 3, whose 6
+projected edges give the 6-regular structure. -/
+
+/-- The natural projection G/H → G/K when H ≤ K, sending ⟦g⟧_H to ⟦g⟧_K. -/
+def cosetProjection {G : Type*} [Group G] (H K : Subgroup G) (hle : H ≤ K) :
+    G ⧸ H → G ⧸ K :=
+  Quotient.map id fun a b hab => by
+    change (QuotientGroup.leftRel K).r a b
+    have hab' : (QuotientGroup.leftRel H).r a b := hab
+    rw [QuotientGroup.leftRel_apply] at hab' ⊢
+    exact hle hab'
+
+@[simp]
+theorem cosetProjection_mk {G : Type*} [Group G] (H K : Subgroup G) (hle : H ≤ K)
+    (g : G) : cosetProjection H K hle ⟦g⟧ = ⟦g⟧ :=
+  rfl
+
+/-- **Coset projection is a graph homomorphism**: if H ≤ K and D is a
+    connection set for both, then adjacency in Sab(G,H,D) implies
+    adjacency in Sab(G,K,D).
+
+    The proof is trivial: adjacency is `x⁻¹y ∈ D` in both graphs.
+    The only difference is the coset equivalence, which is coarser for K. -/
+theorem SimpleGraph.cosetGraph.proj_adj {G : Type*} [Group G]
+    {H K : Subgroup G} (hle : H ≤ K) {D : Set G}
+    (hDH : IsConnectionSet H D) (hDK : IsConnectionSet K D) :
+    ∀ q₁ q₂ : G ⧸ H,
+      (cosetGraph H D hDH).Adj q₁ q₂ →
+      (cosetGraph K D hDK).Adj (cosetProjection H K hle q₁)
+                                (cosetProjection H K hle q₂) := by
+  intro q₁ q₂
+  refine Quotient.inductionOn₂ q₁ q₂ ?_
+  intro x y
+  simp only [cosetProjection_mk]
+  exact fun h => h
+
+/-- The coset projection is surjective. -/
+theorem cosetProjection_surjective {G : Type*} [Group G]
+    (H K : Subgroup G) (hle : H ≤ K) :
+    Function.Surjective (cosetProjection H K hle) := by
+  intro q
+  refine Quotient.inductionOn q ?_
+  intro g
+  exact ⟨⟦g⟧, by simp⟩
