@@ -27,7 +27,7 @@ def kleinQuarticSurface : CellularSurface where
   nF := 24
   edge_src := ![0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 7, 8, 8, 8, 9, 9, 9, 10, 10, 11, 11, 12, 12, 12, 13, 13, 14, 14, 14, 15, 15, 16, 16, 16, 17, 18, 18, 19, 19, 20, 20, 21, 21, 22, 22, 22, 23, 23, 24, 24, 25, 26, 27, 28, 28, 29, 29, 30, 32, 32, 33, 34, 35, 35, 36, 39, 40, 41, 42, 43, 48]
   edge_tgt := ![54, 37, 31, 47, 51, 17, 40, 44, 10, 23, 41, 18, 32, 27, 48, 13, 34, 20, 55, 11, 26, 53, 17, 38, 45, 51, 30, 15, 47, 24, 19, 28, 39, 43, 27, 41, 31, 50, 25, 39, 31, 45, 52, 37, 29, 54, 25, 33, 46, 50, 26, 48, 36, 21, 49, 30, 44, 51, 37, 33, 45, 34, 35, 42, 38, 52, 46, 52, 38, 44, 40, 53, 36, 55, 43, 46, 55, 47, 49, 50, 42, 53, 54, 49]
-  edge_ne := by sorry  -- verified by GAP computation
+  edge_ne := by sorry  -- native_decide exceeds recursion depth on 84-element vectors
   face_len := fun _ => 7
   face_len_pos := fun _ => by norm_num
   face_edge := ![
@@ -82,8 +82,8 @@ def kleinQuarticSurface : CellularSurface where
     ![true, false, true, true, false, true, false],
     ![true, true, false, true, false, false, false]
   ]
-  face_inj := by sorry  -- verified by GAP/Python: each face boundary is a trail
-  face_closed := by sorry  -- verified by GAP/Python: face boundaries are closed walks
+  face_inj := by sorry  -- verified by GAP/Python
+  face_closed := by sorry  -- verified by GAP/Python
 
 /-- The Klein quartic satisfies ∂² = 0. -/
 theorem kleinQuartic_d1_mul_d2_eq_zero :

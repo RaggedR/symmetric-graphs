@@ -20,7 +20,7 @@ Sabidussi coset construction:
   | Heawood (F014A) | Sab(G₄₂, C₃) | Δ(2,3,6) | 1 | [[21, 2]] |
   | Möbius-Kantor (F016A) | Sab(GL(2,3), C₃) | Δ(2,3,8) | 2 | [[24, 4]] |
   | Klein (F056A) | Sab(PSL(2,7), C₃) | Δ(2,3,7) | 3 | [[84, 6]] |
-  | Zhou (F182A) | Sab(PSL(2,13), S₃) | — | — | — |
+  | Zhou (F182A) | Sab(PSL(2,13), S₃) | — | — (no tiling) | — |
   | Langer (63v, 6-reg) | quotient of Clayworth | — | — | — |
   | Clayworth (4032v) | Sab(G₂(2), C₃) | Δ(2,3,12) | 505 | [[6048, 1010]] |
 
