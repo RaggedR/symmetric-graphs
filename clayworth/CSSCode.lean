@@ -7,3 +7,4 @@ import CSSCode.SurfaceCSS
 import CSSCode.Heawood
 import CSSCode.Bolza
 import CSSCode.KleinQuartic
+import CSSCode.NamedGraphs
