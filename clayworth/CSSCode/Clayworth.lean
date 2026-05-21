@@ -2,16 +2,25 @@
 Copyright (c) 2026 Robin Langer. All rights reserved.
 Released under MIT license.
 
-# The Clayworth CSS Code
+# The Clayworth CSS Code (G₂(2)/C₃)
 
 The Clayworth graphs are a dual pair of tilings of a genus-505 surface,
 constructed from the exceptional Lie group G₂(2) (order 12096) via the
 Sabidussi coset construction:
 
-  Clayworth-3:  Sab(G₂(2), C₃)  — {12,3} tiling — 4032 vertices, degree 3, girth 12
-  Clayworth-12: Sab(G₂(2), C₁₂) — {3,12} tiling — 1008 vertices, degree 12, girth 4
+  - **Sabidussi**: Sab(G₂(2), C₃, a), from Δ(2,3,12)
+  - **Primal**: Clayworth-3 = Sab(G₂(2), C₃) — {12,3} tiling — 4032 vertices, degree 3, girth 12
+  - **Dual**: Clayworth-12 = Sab(G₂(2), C₁₂) — {3,12} tiling — 1008 vertices, degree 12, girth 4
+  - **CSS code**: [[6048, 1010, ≥ 4]]
 
-Together they give a CSS quantum code [[6048, 1010, ≥ 4]].
+## Summary of all surface code instances
+
+  | Graph (Foster) | Sabidussi | Triangle grp | g | CSS code |
+  |----------------|-----------|-------------|---|----------|
+  | Heawood (F014A) | Sab(G₄₂, C₃) | Δ(2,3,6) | 1 | [[21, 2]] |
+  | Möbius-Kantor (F016A) | Sab(GL(2,3), C₃) | Δ(2,3,8) | 2 | [[24, 4]] |
+  | F056A | Sab(PSL(2,7), C₃) | Δ(2,3,7) | 3 | [[84, 6]] |
+  | Clayworth | Sab(G₂(2), C₃) | Δ(2,3,12) | 505 | [[6048, 1010]] |
 
 This file defines the tiling parameters, verifies Euler's formula by computation,
 and proves that the CSS code encodes exactly 1010 = 2 × 505 logical qubits

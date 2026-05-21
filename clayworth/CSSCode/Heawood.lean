@@ -2,18 +2,20 @@
 Copyright (c) 2026 Robin Langer. All rights reserved.
 Released under MIT license.
 
-# The Heawood Graph: A Concrete CellularSurface
+# The Heawood Graph (F014A): A Concrete CellularSurface
 
-The Heawood graph is the Levi graph (incidence graph) of the Fano plane PG(2,2).
-It has 14 vertices, 21 edges, and embeds on the torus (genus 1) with 7 hexagonal faces.
+The Heawood graph (Foster census F014A) is the Levi graph (incidence graph) of
+the Fano plane PG(2,2). It is a cubic arc-transitive graph on 14 vertices.
 
-This file provides a complete `CellularSurface` instance with all axioms verified
-by the kernel (no sorry). Combined with the ∂² = 0 theorem, this gives a
-machine-verified proof that the Heawood CSS code has parameters [[21, 2, ≥ 3]].
+  - **Sabidussi**: Sab(G, C₃, a) where |G| = 42, from Δ(2,3,6)
+  - **Tiling**: {6,3} — 7 hexagonal faces on the torus (genus 1)
+  - **CSS code**: [[21, 2, ≥ 3]]
 
 Vertices 0–6 are the 7 points of the Fano plane.
 Vertices 7–13 are the 7 lines.
 Edge i connects a point to the line containing it.
+
+All axioms verified by the Lean kernel (`decide`). No sorry.
 -/
 
 import CSSCode.IncMatrixRank

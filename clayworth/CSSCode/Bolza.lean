@@ -2,13 +2,16 @@
 Copyright (c) 2026 Robin Langer. All rights reserved.
 Released under MIT license.
 
-# The Bolza Surface: Möbius-Kantor Graph on Genus 2
+# The Bolza Surface: Möbius-Kantor Graph (F016A) on Genus 2
 
-The Möbius-Kantor graph GP(8,3) is the generalized Petersen graph with
-outer ring 0–7, inner star 8–15 (connection 3), and 8 spoke edges.
-It embeds on a genus-2 surface (the Bolza surface) with 6 octagonal faces.
+The Möbius-Kantor graph (Foster census F016A) = generalized Petersen graph
+GP(8,3). It is a cubic arc-transitive graph on 16 vertices.
 
-CSS code parameters: [[24, 4, ≥ 6]].
+  - **Sabidussi**: Sab(GL(2,3), C₃, a), |GL(2,3)| = 48, from Δ(2,3,8)
+  - **Tiling**: {8,3} — 6 octagonal faces on the Bolza surface (genus 2)
+  - **CSS code**: [[24, 4, ≥ 6]]
+
+All axioms verified by the Lean kernel (`decide`). No sorry.
 -/
 
 import CSSCode.CellularSurface

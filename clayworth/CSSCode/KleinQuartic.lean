@@ -2,17 +2,17 @@
 Copyright (c) 2026 Robin Langer. All rights reserved.
 Released under MIT license.
 
-# The Klein Quartic: PSL(2,7) on Genus 3
+# The Klein Quartic: F056A (PSL(2,7)/C₃) on Genus 3
 
-The Klein quartic is the Hurwitz surface of smallest genus: PSL(2,7) achieves
-the 84(g-1) bound on |Aut|. The {7,3} tiling by 24 heptagons comes from the
-(2,3,7) triangle group Δ(2,3,7) with quotient PSL(2,7).
+The {7,3} Klein quartic graph (Foster census F056A) is the smallest Hurwitz
+surface code: PSL(2,7) achieves the 84(g-1) bound on |Aut|.
 
-Vertices are cosets of the vertex stabiliser ⟨S⟩ ≅ C₃ in PSL(2,7), where
-S is the vertex rotation from the (2,3,7) presentation R⁷ = S³ = (RS)² = 1.
-The rotation system is determined by the S-action on darts.
+  - **Sabidussi**: Sab(PSL(2,7), C₃, a), |PSL(2,7)| = 168, from Δ(2,3,7)
+  - **Tiling**: {7,3} — 24 heptagonal faces on the Klein quartic (genus 3)
+  - **CSS code**: [[84, 6, ≥ 7]]
 
-CSS code parameters: [[84, 6, ≥ 7]].
+The rotation system is computed from the (2,3,7) presentation R⁷ = S³ = (RS)² = 1,
+where S determines cyclic order at each vertex via the dart model.
 -/
 
 import CSSCode.CellularSurface
