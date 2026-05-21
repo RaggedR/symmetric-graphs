@@ -59,7 +59,7 @@ Same structure as d1 but for the dual graph. Key helper: `d2_entry` shows d2(e,f
 ## What's left to do
 
 ### 1. Create the PR
-Reference arXiv:1506.04029 (Breuckmann & Terhal) and arXiv:1306.4798 (Robin's thesis). The PR description should note that all general theorems are sorry-free.
+Reference arXiv:1506.04029 (Breuckmann & Terhal) and arXiv:1306.4798 (Robin's thesis). The PR description should note that all general theorems are sorry-free. **Include the images from `named_graphs/`** in the PR body — they show the symmetry-aware drawings of all the named graphs (Heawood, Möbius-Kantor, Klein, Zhou, Tutte 12-cage). Upload them inline in the GitHub PR description.
 
 ### 2. Remove Klein quartic sorry's
 Options:
