@@ -61,6 +61,10 @@ Same structure as d1 but for the dual graph. Key helper: `d2_entry` shows d2(e,f
 ### 1. Create the PR
 Reference arXiv:1506.04029 (Breuckmann & Terhal) and arXiv:1306.4798 (Robin's thesis). The PR description should note that all general theorems are sorry-free. **Include the images from `named_graphs/`** in the PR body — they show the symmetry-aware drawings of all the named graphs (Heawood, Möbius-Kantor, Klein, Zhou, Tutte 12-cage). Upload them inline in the GitHub PR description.
 
+**PR body should include this paragraph about the Zhou and Langer graphs:**
+
+> The named graphs folder also includes the Zhou graph (F182A, Sab(PSL(2,13), S₃), 182 vertices) and the Langer graph (63 vertices, 6-regular, quotient of the Clayworth graph by GH(2,2)). The Zhou graph illustrates the boundary of the construction: its vertex stabiliser S₃ is not cyclic, so it does not arise from a triangle group and has no known surface tiling. The Langer graph raises the question of how CSS code structure behaves under graph quotients.
+
 ### 2. Remove Klein quartic sorry's
 Options:
 - **Patience**: `native_decide` works but takes 20+ minutes. Try `set_option maxHeartbeats 4000000`.
