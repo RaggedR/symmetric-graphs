@@ -8,7 +8,8 @@ Layouts computed by `draw_graph.py` using automorphism group quotients.
 | `heawood-F014A.jpg` | Heawood (F014A) | 14 | Sab(G₄₂, C₃) | 1 | [[21, 2]] |
 | `mobius-kantor-F016A.jpg` | Möbius-Kantor (F016A) | 16 | Sab(GL(2,3), C₃) | 2 | [[24, 4]] |
 | `klein-F056A.jpg` | Klein (F056A) | 56 | Sab(PSL(2,7), C₃) | 3 | [[84, 6]] |
-| `zhou-F182A.jpg` | Zhou (F182A) | 182 | Sab(PSL(2,13), S₃) | — | — |
+| `zhou3-F182A.jpg` | Zhou-3 (F182A) | 182 | Sab(PSL(2,13), S₃), cubic | — | — |
+| `zhou6-91v.jpg` | Zhou-6 | 91 | Sab(PSL(2,13), D₁₂), 6-regular | — | — |
 | `tutte-12cage.jpg` | Tutte 12-cage (F126A) | 126 | from G₂(2) | — | context |
 | `langer-63v.jpg` | Langer | 63 (6-reg) | quotient of Clayworth by GH(2,2) | — | — |
 
