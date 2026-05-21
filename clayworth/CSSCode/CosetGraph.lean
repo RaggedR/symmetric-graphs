@@ -159,6 +159,28 @@ theorem SimpleGraph.cosetGraph.proj_adj {G : Type*} [Group G]
   simp only [cosetProjection_mk]
   exact fun h => h
 
+/-- **Generalized coset projection**: if H ≤ K, D is a connection set for H,
+    D' is a connection set for K, and D ⊆ D', then the coset projection is a
+    graph homomorphism from Sab(G,H,D) to Sab(G,K,D').
+
+    This generalizes `proj_adj` (which requires D = D') to handle coverings
+    where the quotient graph has a strictly larger connection set. The
+    dodecahedron → Petersen covering is the prototypical example:
+    Sab(A₅, C₃, D) → Sab(A₅, S₃, D') with D ⊊ D'. -/
+theorem SimpleGraph.cosetGraph.proj_adj_of_subset {G : Type*} [Group G]
+    {H K : Subgroup G} (hle : H ≤ K) {D D' : Set G}
+    (hDH : IsConnectionSet H D) (hDK : IsConnectionSet K D')
+    (hsub : D ⊆ D') :
+    ∀ q₁ q₂ : G ⧸ H,
+      (cosetGraph H D hDH).Adj q₁ q₂ →
+      (cosetGraph K D' hDK).Adj (cosetProjection H K hle q₁)
+                                 (cosetProjection H K hle q₂) := by
+  intro q₁ q₂
+  refine Quotient.inductionOn₂ q₁ q₂ ?_
+  intro x y
+  simp only [cosetProjection_mk]
+  exact fun h => hsub h
+
 /-- The coset projection is surjective. -/
 theorem cosetProjection_surjective {G : Type*} [Group G]
     (H K : Subgroup G) (hle : H ≤ K) :
