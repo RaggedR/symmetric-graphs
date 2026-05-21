@@ -9,15 +9,35 @@ symmetric graph theory. These are not CSS codes but are included for context.
 
   - **Zhou (F182A)**: Sab(PSL(2,13), S₃), 182 vertices, cubic, girth 7.
     Vertex stabiliser S₃, so no triangle group / surface tiling.
+    **Primitive**: Aut ≅ PSL(2,13) acts primitively on vertices (no
+    non-trivial block system giving a regular quotient graph).
 
   - **Langer**: 63 vertices, 6-regular, distance-regular.
     Collinearity graph of the generalized hexagon GH(2,2) of G₂(2).
-    Quotient of the Clayworth graph.
+    **Primitive**: Aut ≅ G₂(2) acts primitively on the 63 points (no
+    non-trivial block system). See `Q62.lean` for the algebraic definition.
 
-  - **Tutte 12-cage (F126A)**: 126 vertices, cubic, girth 12.
-    Incidence graph of GH(2,2). Aut = G₂(2), order 12096.
-    Parent of the Clayworth construction but has no {p,3} surface tiling
-    (12F = 2E = 378 gives non-integer F).
+  - **Klein (F056A)**: Sab(PSL(2,7), C₃), 56 vertices, cubic, girth 7.
+    **Primitive**: Aut ≅ PGL(2,7) acts primitively on vertices (no
+    non-trivial block system giving a regular quotient graph).
+    Surface tiling as `KleinSurface.lean` (genus 3).
+
+  - **Tutte 12-cage**: 126 vertices (63 points + 63 lines), cubic, girth 12.
+    Incidence graph of GH(2,2), the split Cayley hexagon over 𝔽₂.
+    **Semisymmetric**: edge-transitive but NOT vertex-transitive (not Sabidussi).
+    Aut ≅ G₂(2) (order 12096), two orbits of 63 (points and lines).
+    No polarity exists for GH(2,2) over 𝔽₂.
+    Distance-2 graph on points = Langer graph (proved in `Tutte12Cage.lean`).
+
+  ## Generalized polygon hierarchy over 𝔽₂
+
+  | Geometry | Type | Incidence graph | Girth | Aut | Polarity? |
+  |----------|------|-----------------|-------|-----|-----------|
+  | PG(2,2) (Fano) | gen. 3-gon | Heawood (14v) | 6 | PGL(2,7) | Yes |
+  | GH(2,2) | gen. 6-gon | Tutte 12-cage (126v) | 12 | G₂(2) | No |
+
+  PSL(2,7) ≅ GL(3,2) (Aut of Fano plane) is a subgroup of G₂(2).
+  See `Tutte12Cage.lean` for the graph definition and proofs.
 -/
 
 import CSSCode.CSSCode
@@ -46,8 +66,8 @@ def zhouGraph : ZhouGraph := {}
 
 /-- The Langer graph: collinearity graph of the generalized hexagon GH(2,2).
     63 vertices, 6-regular, distance-regular.
-    Aut = G₂(2), order 12096. Vertex stabiliser S₄, edge stabiliser D₆.
-    Quotient of the Clayworth graph by GH(2,2). -/
+    Aut = G₂(2), order 12096. Vertex stabiliser of order 192,
+    arc stabiliser of order 32. Primitive (no non-trivial block system). -/
 structure LangerGraph where
   /-- Number of vertices = |GH(2,2) points| -/
   nV : ℕ := 63
@@ -61,23 +81,3 @@ structure LangerGraph where
 /-- The Langer graph parameters. -/
 def langerGraph : LangerGraph := {}
 
-/-! ### Tutte 12-cage (F126A) -/
-
-/-- The Tutte 12-cage: incidence graph of the generalized hexagon GH(2,2).
-    Foster census F126A. 126 vertices (63 points + 63 lines), cubic, girth 12.
-    Aut = G₂(2), order 12096.
-    No {p,3} surface tiling: 12F = 2E = 378 gives F = 31.5. -/
-structure Tutte12Cage where
-  /-- Number of vertices = 2 × |GH(2,2) points| -/
-  nV : ℕ := 126
-  /-- Degree (cubic) -/
-  degree : ℕ := 3
-  /-- Number of edges -/
-  nE : ℕ := 189
-  /-- Girth -/
-  girth : ℕ := 12
-  /-- |Aut| = |G₂(2)| -/
-  autOrder : ℕ := 12096
-
-/-- The Tutte 12-cage parameters. -/
-def tutte12Cage : Tutte12Cage := {}
