@@ -137,7 +137,11 @@ def tutte12Distance2Bool (p q : Fin 63) : Bool :=
     of the Tutte 12-cage restricted to points.
 
     This connects the algebraic definition (Zorn product on Q(6,2))
-    to the geometric definition (collinearity in GH(2,2)). -/
+    to the geometric definition (collinearity in GH(2,2)).
+
+    See `G2Action.langer_eq_tutte12_distance2'` for the structural proof
+    via G₂(2) transitivity: both graphs are G₂(2)-invariant and agree
+    at vertex 0, so by the vertex-transitive action they agree everywhere. -/
 theorem langer_eq_tutte12_distance2 :
     ∀ p q : Fin 63,
       langerSimpleGraph.Adj p q ↔ tutte12Distance2Bool p q := by

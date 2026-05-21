@@ -8,3 +8,4 @@ import CSSCode.Heawood
 import CSSCode.Bolza
 import CSSCode.KleinQuartic
 import CSSCode.NamedGraphs
+import CSSCode.G2Action
