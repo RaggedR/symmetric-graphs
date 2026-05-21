@@ -96,6 +96,17 @@ Independently useful results:
 - `Equiv.sum_comp` needs the function argument explicit for unification when the goal has compound expressions.
 - `omega` does NOT handle `%` (modular arithmetic). Eliminate via `Nat.mod_eq_of_lt` / `Nat.mod_self` + case split, then `omega` handles linear arithmetic.
 
+## Named graphs
+
+| Name | Foster | Vertices | Sabidussi |
+|------|--------|----------|-----------|
+| Heawood | F014A | 14 | Sab(G₄₂, C₃) |
+| Möbius-Kantor | F016A | 16 | Sab(GL(2,3), C₃) |
+| Klein | F056A | 56 | Sab(PSL(2,7), C₃) |
+| Zhou | F182A | 182 | Sab(PSL(2,13), S₃) |
+| Langer | — | 63, 6-reg | Quotient of Clayworth by GH(2,2) |
+| Clayworth | — | 4032 | Sab(G₂(2), C₃) |
+
 ## Commits (oldest first)
 
 1. `20c647c` — Initial: CellularSurface + ∂² = 0 + rank bounds + assembly
@@ -105,3 +116,6 @@ Independently useful results:
 5. `d4149e2` — Bolza instance (Möbius-Kantor on genus 2)
 6. `b33733d` — Klein quartic instance (PSL(2,7) on genus 3)
 7. `39e9277` — Computed embedding data for all three surfaces (JSON)
+8. `290ea66` — Foster census names and Sabidussi descriptions
+9. `9fd635c` — HANDOVER.md
+10. `d91df12` — Named graphs: Zhou (F182A), Langer (63v quotient), Klein (F056A)
