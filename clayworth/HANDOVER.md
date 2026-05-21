@@ -65,7 +65,14 @@ Reference arXiv:1506.04029 (Breuckmann & Terhal) and arXiv:1306.4798 (Robin's th
 
 > The named graphs folder also includes the Zhou graph (F182A, Sab(PSL(2,13), S₃), 182 vertices) and the Langer graph (63 vertices, 6-regular, quotient of the Clayworth graph by GH(2,2)). The Zhou graph illustrates the boundary of the construction: its vertex stabiliser S₃ is not cyclic, so it does not arise from a triangle group and has no known surface tiling. The Langer graph raises the question of how CSS code structure behaves under graph quotients.
 
-### 2. Remove Klein quartic sorry's
+### 2. Regenerate named graph images in homogeneous format
+The images in `named_graphs/` have inconsistent styles (different titles, node sizes, legends). Use `draw_graph.py` to regenerate ALL of them with consistent formatting:
+- Title: "Name (Foster ID)" e.g. "Klein (F056A)"
+- Subtitle: Aut group, |Aut|, vertex count, girth, vertex/edge stabilisers
+- Consistent node and edge styling
+The Tutte 12-cage is included for context (parent of Clayworth) but has no {p,3} tiling.
+
+### 3. Remove Klein quartic sorry's
 Options:
 - **Patience**: `native_decide` works but takes 20+ minutes. Try `set_option maxHeartbeats 4000000`.
 - **Array representation**: Replace `![...]` with `fun i => Array.get! data i` where `data` is a compiled array.
