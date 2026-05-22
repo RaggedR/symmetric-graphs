@@ -10,9 +10,6 @@ The **Clayworth graph** (4032 vertices, cubic, genus 505) is Sab(G₂(2), C₃).
 
 import CSSCode.SabidussiWitness
 
-set_option maxRecDepth 8192
-set_option maxHeartbeats 800000
-
 /-! ## Neighbor data (O(3) adjacency lookup) -/
 
 private def clayworthNeighborData_chunk0 : Array (Fin 4032) := #[
@@ -1210,55 +1207,21 @@ def clayworthGens : Fin 2 → Equiv.Perm (Fin 4032)
   | 0 => clayworthGen1
   | 1 => clayworthGen2
 
--- Neighbor accessor
-private def clayworthNeighbor (u : Fin 4032) (k : Fin 3) : Fin 4032 :=
-  have h := clayworthNeighborData_size
-  clayworthNeighborData[3 * u.val + k.val]'(by omega)
-
--- O(n) check as a Prop: σ maps each neighbor edge to an edge.
--- 4032 × 3 = 12K checks instead of 4032² = 16M.
-private def adjPreservedProp (σ : Equiv.Perm (Fin 4032)) : Prop :=
-  ∀ u : Fin 4032,
-    clayworthAdjBool (σ u) (σ (clayworthNeighbor u 0)) = true ∧
-    clayworthAdjBool (σ u) (σ (clayworthNeighbor u 1)) = true ∧
-    clayworthAdjBool (σ u) (σ (clayworthNeighbor u 2)) = true
-
-private instance (σ : Equiv.Perm (Fin 4032)) : Decidable (adjPreservedProp σ) :=
-  inferInstanceAs (Decidable (∀ u : Fin 4032, _ ∧ _ ∧ _))
-
-private theorem adj_of_preserved (σ : Equiv.Perm (Fin 4032))
-    (h : adjPreservedProp σ)
-    (u v : Fin 4032) (hadj : clayworthGraph.Adj u v) :
-    clayworthGraph.Adj (σ u) (σ v) := by
-  have hsize := clayworthNeighborData_size
-  -- hadj : clayworthAdjBool u v = true
-  -- This means v is one of u's 3 neighbors
-  -- h gives: σ maps each neighbor of u to a neighbor of σ(u)
-  simp only [clayworthGraph, clayworthAdjBool, Bool.or_eq_true, beq_iff_eq] at hadj
-  have hu := h u
-  -- v = n₀ ∨ v = n₁ ∨ v = n₂ (where n_k = clayworthNeighborData[3u+k])
-  -- hu : adjBool(σu)(σ(n₀)) ∧ adjBool(σu)(σ(n₁)) ∧ adjBool(σu)(σ(n₂))
-  -- hadj: v = neighborData[3u+k] for some k
-  -- hu: σ maps each of u's 3 neighbors to a neighbor of σ(u)
-  -- The simp may have rewritten to neighborData[...] = v (reversed)
-  -- Use Eq.symm + subst pattern
-  sorry -- structural proof blocked by simp rewrite direction; verify by native_decide below
-
 theorem clayworthGen1_adj : ∀ u v : Fin 4032,
-    clayworthGraph.Adj u v → clayworthGraph.Adj (clayworthGen1 u) (clayworthGen1 v) :=
-  adj_of_preserved clayworthGen1 (by native_decide)
+    clayworthGraph.Adj u v → clayworthGraph.Adj (clayworthGen1 u) (clayworthGen1 v) := by
+  native_decide
 
 theorem clayworthGen1_inv_adj : ∀ u v : Fin 4032,
-    clayworthGraph.Adj u v → clayworthGraph.Adj (clayworthGen1.symm u) (clayworthGen1.symm v) :=
-  adj_of_preserved clayworthGen1.symm (by native_decide)
+    clayworthGraph.Adj u v → clayworthGraph.Adj (clayworthGen1.symm u) (clayworthGen1.symm v) := by
+  native_decide
 
 theorem clayworthGen2_adj : ∀ u v : Fin 4032,
-    clayworthGraph.Adj u v → clayworthGraph.Adj (clayworthGen2 u) (clayworthGen2 v) :=
-  adj_of_preserved clayworthGen2 (by native_decide)
+    clayworthGraph.Adj u v → clayworthGraph.Adj (clayworthGen2 u) (clayworthGen2 v) := by
+  native_decide
 
 theorem clayworthGen2_inv_adj : ∀ u v : Fin 4032,
-    clayworthGraph.Adj u v → clayworthGraph.Adj (clayworthGen2.symm u) (clayworthGen2.symm v) :=
-  adj_of_preserved clayworthGen2.symm (by native_decide)
+    clayworthGraph.Adj u v → clayworthGraph.Adj (clayworthGen2.symm u) (clayworthGen2.symm v) := by
+  native_decide
 
 /-! ## BFS witness words -/
 
@@ -1801,6 +1764,7 @@ theorem clayworthWitness_correct :
 
 /-! ## Sabidussi witness -/
 
+set_option maxRecDepth 8192 in
 def clayworthSabidussiWitness : SabidussiWitness clayworthGraph where
   numGens := 2
   gens := clayworthGens
