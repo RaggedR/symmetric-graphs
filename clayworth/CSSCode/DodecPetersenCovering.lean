@@ -180,6 +180,62 @@ theorem dodecCovering_equivariant_gen2 :
       dodecCoveringMap (dodecGen2 v) = inducedPetGen2 (dodecCoveringMap v) := by
   native_decide
 
+/-! ## Full group equivariance (structural proof)
+
+The generator equivariance above is verified by `native_decide`. The
+following theorem lifts this to ALL elements of the Sabidussi group A₅
+by structural induction on `Subgroup.closure`. The inverse case uses
+the same pigeonhole argument as `SabidussiWitness.group_preserves_adj`:
+an injective self-map on a finite type is surjective. -/
+
+/-- **The A₅ action preserves covering fibers**: for any σ in the
+    Sabidussi group, if two vertices are in the same fiber of φ
+    (i.e., they are an antipodal pair), then σ maps them to the
+    same fiber. This is the structural content of the covering
+    being A₅-equivariant.
+
+    Combined with `dodecCosetGraphIso`, this proves the covering
+    map factors through the coset projection A₅/C₃ → A₅/S₃. -/
+theorem group_preserves_fibers (σ : Equiv.Perm (Fin 20))
+    (hσ : σ ∈ dodecSabidussiWitness.group) :
+    ∀ u v : Fin 20, dodecCoveringMap u = dodecCoveringMap v →
+      dodecCoveringMap (σ u) = dodecCoveringMap (σ v) := by
+  induction hσ using Subgroup.closure_induction with
+  | mem x hx =>
+    obtain ⟨i, rfl⟩ := Set.mem_range.mp hx
+    intro u v h
+    match i with
+    | ⟨0, _⟩ =>
+      show dodecCoveringMap (dodecGen1 u) = dodecCoveringMap (dodecGen1 v)
+      rw [dodecCovering_equivariant_gen1 u, dodecCovering_equivariant_gen1 v, h]
+    | ⟨1, _⟩ =>
+      show dodecCoveringMap (dodecGen2 u) = dodecCoveringMap (dodecGen2 v)
+      rw [dodecCovering_equivariant_gen2 u, dodecCovering_equivariant_gen2 v, h]
+  | one => intro u v h; exact h
+  | mul x y _ _ ihx ihy =>
+    intro u v h
+    simp only [Equiv.Perm.mul_apply]
+    exact ihx _ _ (ihy u v h)
+  | inv x _ ih =>
+    intro u v h
+    -- Forward: ih says φ(a) = φ(b) → φ(x(a)) = φ(x(b)).
+    -- We need: φ(u) = φ(v) → φ(x⁻¹(u)) = φ(x⁻¹(v)).
+    -- Pigeonhole: the map f(a,b) = (x(a), x(b)) is an injective self-map
+    -- on the finite set {(a,b) : φ(a) = φ(b)}, hence surjective.
+    let f : { p : Fin 20 × Fin 20 // dodecCoveringMap p.1 = dodecCoveringMap p.2 } →
+            { p : Fin 20 × Fin 20 // dodecCoveringMap p.1 = dodecCoveringMap p.2 } :=
+      fun ⟨⟨a, b⟩, hab⟩ => ⟨⟨x a, x b⟩, ih a b hab⟩
+    have hf_inj : Function.Injective f := by
+      intro ⟨⟨a₁, b₁⟩, _⟩ ⟨⟨a₂, b₂⟩, _⟩ heq
+      simp only [f, Subtype.mk.injEq, Prod.mk.injEq] at heq
+      exact Subtype.ext (Prod.ext (x.injective heq.1) (x.injective heq.2))
+    have hf_surj : Function.Surjective f := Finite.surjective_of_injective hf_inj
+    obtain ⟨⟨⟨a, b⟩, hab⟩, heq⟩ := hf_surj ⟨⟨u, v⟩, h⟩
+    simp only [f, Subtype.mk.injEq, Prod.mk.injEq] at heq
+    rw [show a = x⁻¹ u from by rw [← heq.1]; simp,
+        show b = x⁻¹ v from by rw [← heq.2]; simp] at hab
+    exact hab
+
 /-! ## Regularity -/
 
 /-- The dodecahedron is 3-regular. -/
