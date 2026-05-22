@@ -31,7 +31,15 @@ G₂(2) has **85 subgroups** between C₃ and G₂(2). These define block system
 
 **The other 83 quotients are connected non-complete vertex-transitive graphs.**
 
-## Star quotients
+## Star quotients — the Meinhold family
+
+Named after Nick Meinhold, co-founder of [Imagineering Melbourne](https://raggedr.github.io/imagineering-dashboard/).
+
+### Meinhold-72
+
+![Meinhold-72](../named_graphs/meinhold-72.jpeg)
+
+### Parameters
 
 The most notable quotients (sparse, high girth, full G₂(2) symmetry):
 
