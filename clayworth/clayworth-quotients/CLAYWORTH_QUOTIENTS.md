@@ -1,100 +1,113 @@
-# Clayworth Graph: Block System Quotients
+# Clayworth Graph: Quotient Classification
 
-The Clayworth graph is Sab(G₂(2), C₃) — 4032 vertices, cubic, on a genus-505 surface. The C₃ subgroup belongs to conjugacy class 1 (28 conjugates, fixes 0 points of GH(2,2)).
+The Clayworth graph is Sab(G₂(2), C₃) — 4032 vertices, cubic, arc-transitive, embeddable on a genus-505 surface. The C₃ subgroup belongs to the conjugacy class with 0 fixed points on GH(2,2) (28 conjugates).
 
 ## The Langer graph is NOT a quotient
 
-The Langer graph (63 vertices, 6-regular) lives on the 63 points of GH(2,2). It is Sab(G₂(2), H₁₉₂) where H₁₉₂ is the point stabiliser (order 192). For the coset quotient map G₂(2)/C₃ → G₂(2)/H₁₉₂ to be well-defined, we need C₃ ≤ H₁₉₂. But the Clayworth C₃ fixes **zero** points of GH(2,2), so it is not contained in any point stabiliser. The two graphs are algebraic siblings (same parent group G₂(2)) but not related by quotient.
+**Theorem.** The Langer graph (63 vertices, 6-regular, primitive) is not a quotient of any Clayworth graph.
 
-There are 9 subgroups K₁₉₂ ≅ (SL(2,3) ⋊ C₄) ⋊ C₂ of order 192 containing C₃. These give 63-block quotients, but ALL 6048 edges are internal to the 64-element blocks — the quotient graph has degree 0. No 63-vertex quotient of Clayworth has any edges.
+**Proof.** The Langer graph is Sab(G₂(2), H₁₉₂) where H₁₉₂ = Stab_G(p) is the point stabiliser of GH(2,2), with structure (SL(2,3) : C₄) : C₂. For a coset projection G₂(2)/C₃ → G₂(2)/H₁₉₂^g to exist, we need C₃ ≤ H₁₉₂^g.
+
+Every conjugate of H₁₉₂ is a point stabiliser Stab_G(p) for some p ∈ {1,...,63}. A subgroup C₃ ≤ Stab_G(p) requires the C₃ generator to fix p. The Clayworth C₃ generator is a product of 21 disjoint 3-cycles with **zero fixed points** on the 63 GH(2,2) points. Therefore C₃ ⊄ Stab_G(p) for any p.
+
+Furthermore, the three order-192 overgroups of C₃ in G₂(2) have structure (((C₄×C₄):C₂):C₃):C₂, which is NOT conjugate to H₁₉₂ ≅ (SL(2,3):C₄):C₂. The resulting 63-vertex block quotient is 24-regular and verified NOT isomorphic to the 6-regular Langer graph. □
+
+**Contrast:** The OTHER C₃ conjugacy class (336 conjugates, 9 fixed points) IS contained in point stabilisers. Its coset graph is disconnected — the 56-vertex component is the Klein graph.
 
 ## Conjugacy classes of C₃ in G₂(2)
 
-| Class | Conjugates | Fixed points on GH(2,2) | Clayworth connected? |
-|-------|------------|-------------------------|---------------------|
-| 1 | 28 | 0 | **Yes** (4032 vertices) |
-| 2 | 336 | 3 | No (56-vertex component = Klein graph) |
+| Class | Conjugates | Fixed points | Coset graph |
+|-------|------------|-------------|-------------|
+| 1 | 28 | 9 | Disconnected (Klein component, 56v) |
+| 2 | 336 | **0** | **Clayworth** (connected, 4032v) |
 
-Only class 1 gives a connected Clayworth graph.
+## The quotient lattice
 
-## Intermediate subgroup lattice
+G₂(2) has **85 subgroups** between C₃ and G₂(2). These define block systems on the 4032 Clayworth vertices. Quotient structure depends on the choice of Clayworth orbital (= choice of double coset / connection set).
 
-G₂(2) has 252 subgroups between C₃ and G₂(2). These give block systems on the 4032 Clayworth vertices. Below are the distinct regular quotients (one representative per distinct quotient type):
+**Only 2 quotients are degenerate** (for any orbital choice):
+- K₂₈ via K = ((C₃×C₃):C₃):QD₁₆ (order 432) — always complete
+- K₂ via K = PSU(3,3) (order 6048) — always bipartite
 
-| |K| | K structure | Blocks | Block size | Degree | Edges | Internal edges |
-|-----|-------------|--------|------------|--------|-------|----------------|
-| 6 | C₆ | 2016 | 2 | 3 | 3024 | 0 |
-| 6 | C₆ | 2016 | 2 | 6 | 6048 | 0 |
-| 9 | C₃ × C₃ | 1344 | 3 | 9 | 6048 | 0 |
-| 12 | C₁₂ | 1008 | 4 | 3 | 1512 | 0 |
-| 12 | C₁₂ | 1008 | 4 | 6 | 3024 | 0 |
-| 12 | C₁₂ | 1008 | 4 | 12 | 6048 | 0 |
-| 18 | C₃ × C₆ | 672 | 6 | 9 | 3024 | 0 |
-| 18 | C₃ × C₆ | 672 | 6 | 18 | 6048 | 0 |
-| 24 | SL(2,3) | 504 | 8 | 1 | 252 | 0 |
-| 24 | SL(2,3) | 504 | 8 | 3 | 756 | 0 |
-| 24 | SL(2,3) | 504 | 8 | 8 | 2016 | 0 |
-| 24 | SL(2,3) | 504 | 8 | 24 | 6048 | 0 |
-| 27 | C₃ × C₃ × C₃ | 448 | 9 | 27 | 6048 | 0 |
-| 36 | — | 336 | 12 | 18 | 3024 | 0 |
-| 36 | — | 336 | 12 | 36 | 6048 | 0 |
-| 48 | SL(2,3) ⋊ C₂ | 252 | 16 | 0 | 0 | 6048 |
-| 48 | SL(2,3) ⋊ C₂ | 252 | 16 | 1 | 126 | 0 |
-| 48 | SL(2,3) ⋊ C₂ | 252 | 16 | 2 | 252 | 0 |
-| 48 | SL(2,3) ⋊ C₂ | 252 | 16 | 3 | 378 | 0 |
-| 48 | SL(2,3) ⋊ C₂ | 252 | 16 | 8 | 1008 | 0 |
-| 48 | SL(2,3) ⋊ C₂ | 252 | 16 | 16 | 2016 | 0 |
-| 48 | SL(2,3) ⋊ C₂ | 252 | 16 | 24 | 3024 | 0 |
-| 48 | SL(2,3) ⋊ C₂ | 252 | 16 | 48 | 6048 | 0 |
-| 54 | (C₃ × C₃ × C₃) ⋊ C₂ | 224 | 18 | 27 | 3024 | 0 |
-| 54 | (C₃ × C₃ × C₃) ⋊ C₂ | 224 | 18 | 54 | 6048 | 0 |
-| 96 | SL(2,3) ⋊ C₄ | 126 | 32 | 32 | 2016 | 0 |
-| 108 | ((C₃×C₃) ⋊ C₃) ⋊ C₄ | 112 | 36 | 27 | 1512 | 0 |
-| 192 | (SL(2,3) ⋊ C₄) ⋊ C₂ | 63 | 64 | 0 | 0 | 6048 |
-| 216 | ((C₃×C₃) ⋊ C₃) ⋊ C₈ | 56 | 72 | 27 | 756 | 0 |
-| 432 | ((C₃×C₃) ⋊ C₃) ⋊ QD₁₆ | 28 | 144 | 27 | 378 | 0 |
-| 6048 | PSU(3,3) = G₂(2)' | 2 | 2016 | 1 | 1 | 0 |
+**The other 83 quotients are connected non-complete vertex-transitive graphs.**
 
-## Small quotients are trivial
+## Star quotients — the Meinhold family
 
-The quotients with ≤ 56 vertices are all degenerate:
+Named after Nick Meinhold, co-founder of [Imagineering Melbourne](https://raggedr.github.io/imagineering-dashboard/).
 
-- **28v, deg 27**: K₂₈ — the complete graph. |Aut| = 28!. Every block connects to every other.
-- **56v, deg 27**: 2 × K₂₈ — disjoint union of two complete graphs. |Aut| = 2 × (28!)². The K₂₁₆ subgroup splits each K₂₈-block in half, but inter-block edges remain complete.
-- **63v, deg 0**: edgeless — all 6048 edges lie within the 64-element blocks.
-- **2v, deg 1**: K₂ via PSU(3,3) = G₂(2)' — the Clayworth graph is bipartite under this block system.
+### Meinhold-72
 
-This is a consequence of the C₃ fixing zero points of GH(2,2): the quotient lattice jumps from trivially complete to large sparse structures with nothing small and sparse in between.
+![Meinhold-72](../named_graphs/meinhold-72.jpeg)
 
-## The interesting quotients are large
+### Parameters
 
-The first non-trivial sparse quotients appear at **252 vertices** (|K| = 48, K ≅ SL(2,3) ⋊ C₂):
+The most notable quotients (sparse, high girth, full G₂(2) symmetry):
 
-| Blocks | Degree | Edges | Notes |
-|--------|--------|-------|-------|
-| 252 | 1 | 126 | perfect matching |
-| 252 | 2 | 252 | 2-regular (union of cycles) |
-| 252 | 3 | 378 | cubic — the first interesting quotient |
-| 252 | 8 | 1008 | |
-| 252 | 16 | 2016 | |
-| 252 | 24 | 3024 | |
-| 252 | 48 | 6048 | |
+| V | Degree | Girth | |Aut| | Edge mult | K | |K| | Block size |
+|-----|--------|-------|-----------|-----------|-----|------|------------|
+| **2016** | **6** | **8** | ? | 1 | C₆ | 6 | 2 |
+| 2016 | 6 | 7 | ? | 1 | C₆ | 6 | 2 |
+| **1344** | **9** | **6** | ? | 1 | C₃×C₃ | 9 | 3 |
+| 1008 | 12 | 6 | ? | 1 | A₄ | 12 | 4 |
+| **576** | **7** | **6** | G₂(2) | 3 | C₇:C₃ | 21 | 7 |
+| **504** | **6** | **6** | G₂(2) | 4 | S₄ | 24 | 8 |
+| **72** | **7** | **4** | G₂(2) | 24 | PSL(3,2) | 168 | 56 |
+| 126 | 16 | 4 | G₂(2) | 6 | ((C₄×C₄):C₃):C₂ | 96 | 32 |
 
-However, the **252-vertex cubic** quotient turns out to be **63 disjoint copies of K₄** (disconnected, girth 3, |Aut| ≈ 63! × 24⁶³). Similarly, the degree-1 quotient is 126 × K₂ (perfect matching) and the degree-2 quotient is a union of cycles.
+### The 2016-vertex girth-8 graph
 
-**The Clayworth graph has no interesting small quotients.** Every quotient is either disconnected (disjoint complete graphs) or trivially dense (complete graphs). This is because the C₃ from conjugacy class 1 sits in a "generic" position in G₂(2) — it doesn't align with any of the natural geometric structures (points, lines, flags of GH(2,2)). The subgroup lattice above C₃ consists of groups that either absorb all edges internally (edgeless quotients) or spread edges uniformly (complete graphs).
+The block-size-2 quotient via K ≅ C₆ produces a **6-regular graph on 2016 vertices with girth 8** and edge multiplicity 1 (every inter-block edge is simple). All 6048 edges cross between blocks; no internal edges exist. The Moore bound for (6,8) is 187, so this is not a cage, but it is a natural algebraic construction.
 
-| Quotient | Actual structure |
-|----------|-----------------|
-| 28v, deg 27 | K₂₈ |
-| 56v, deg 27 | 2 × K₂₈ |
-| 63v, deg 0 | 63 isolated vertices |
-| 252v, deg 3 | 63 × K₄ |
-| 252v, deg 1 | 126 × K₂ |
-| 2v, deg 1 | K₂ |
+The seven K=6 overgroups give 2016-vertex quotients with girth spectrum: **[3, 4, 4, 6, 7, 7, 8]**. The C₆ overgroups give higher girth (7, 7, 8) than the S₃ ones (3, 4, 4, 6).
 
-### The Tutte 12-cage is NOT a quotient
-The 126-block quotient (|K| = 96) has degree 32, not 3. The Tutte 12-cage does not appear as any quotient of the Clayworth graph.
+### The 72-vertex quotient via PSL(3,2)
 
-### K₂ — the bipartition (|K| = 6048)
-The simple subgroup G₂(2)' = PSU(3,3) (order 6048, index 2) gives a 2-block partition. The quotient is K₂ — the Clayworth graph is bipartite, with 2016 vertices in each part and all 6048 edges crossing the cut.
+G₂(2) contains PSL(3,2) = PSL(2,7) as a maximal subgroup (order 168, index 72). The 72-block quotient is a 7-regular graph with girth 4 and Aut = G₂(2). Each pair of adjacent blocks shares 24 crossing edges. This is a G₂(2)-orbital graph on a representation NOT isomorphic to the GH(2,2) point action.
+
+### The 504-vertex girth-6 graph
+
+Via K = S₄ (order 24, blocks of 8): a 6-regular graph on 504 vertices with girth 6 and Aut = G₂(2). Edge multiplicity 4 (each adjacent block pair shares 4 edges). This is the **sparsest quotient with full G₂(2) symmetry**.
+
+## Full classification
+
+All 85 quotients listed by block size (density = deg/(V-1)):
+
+| |K| | K structure | V | Deg | Girth | Dens% | |Aut| |
+|-----|-------------|------|-----|-------|-------|-------|
+| 6 | C₆ | 2016 | 6 | 8 | 0.3 | ? |
+| 6 | C₆ | 2016 | 6 | 7 | 0.3 | ? |
+| 6 | C₆ | 2016 | 6 | 7 | 0.3 | ? |
+| 6 | S₃ | 2016 | 6 | 3 | 0.3 | ? |
+| 6 | S₃ | 2016 | 6 | 4 | 0.3 | ? |
+| 6 | S₃ | 2016 | 6 | 4 | 0.3 | ? |
+| 6 | S₃ | 2016 | 6 | 6 | 0.3 | ? |
+| 9 | C₃×C₃ | 1344 | 9 | 6 | 0.7 | ? |
+| 12 | D₁₂ | 1008 | 12 | 3–4 | 1.2 | ? |
+| 12 | A₄ | 1008 | 12 | 4–6 | 1.2 | ? |
+| 18 | C₃×S₃ | 672 | 9–18 | 3–4 | 1.3–2.7 | G₂(2) |
+| 21 | C₇:C₃ | 576 | 7–21 | 4–6 | 1.2–3.7 | G₂(2) |
+| 24 | S₄ / C₂×A₄ | 504 | 6–24 | 3–6 | 1.2–4.8 | G₂(2) |
+| 27 | (C₃×C₃):C₃ | 448 | 27 | 4 | 6.0 | 193536 |
+| 36 | S₃×S₃ | 336 | 9–36 | 3 | 2.7–10.7 | G₂(2) |
+| 42 | C₇:C₆ | 288 | 14–42 | 3–4 | 4.9–14.6 | G₂(2) |
+| 48 | C₂×S₄ | 252 | 12–48 | 3–4 | 4.8–19.1 | G₂(2) |
+| 48 | (C₄×C₄):C₃ | 252 | 16–48 | 4 | 6.4–19.1 | 2×G₂(2) |
+| 54 | various | 224 | 27–54 | 3–4 | 12.1–24.2 | varies |
+| 96 | various | 126 | 16–48 | 3–4 | 12.8–38.4 | varies |
+| 108 | various | 112 | 27–54 | 3–4 | 24.3–48.6 | varies |
+| 168 | PSL(3,2) | 72 | 7–21 | 4 | 9.9–29.6 | G₂(2) |
+| 192 | various | 63 | 24–32 | 3 | 38.7–51.6 | varies |
+| 216 | various | 56 | 27 | 3–4 | 49.1 | varies |
+| 336 | PSL(3,2):C₂ | 36 | 14–21 | 3 | 40–60 | G₂(2) |
+| 432 | ((C₃×C₃):C₃):QD₁₆ | 28 | 27 | — | 100 | K₂₈ |
+| 6048 | PSU(3,3) | 2 | 1 | — | 100 | K₂ |
+
+## Orbital dependence
+
+Different self-paired connected orbitals give non-isomorphic Clayworth graphs with different quotient structures. The block system depends only on K (not the orbital), but the quotient graph's edge set — and hence its degree and girth — depends on which orbital defines the Clayworth edges.
+
+There are 1340 self-paired cubic suborbits of G₂(2) on G₂(2)/C₃. Each connected one gives a cubic arc-transitive graph on 4032 vertices. The specific surface-code Clayworth graph (from Breuckmann-Terhal) corresponds to a particular orbital, not yet identified in this analysis.
+
+## Verified by
+
+`prove_clayworth_quotients.g` — GAP computation using GRAPE package, EdgeOrbitsGraph for correct orbital construction, ConnectedComponents for quotient analysis.
