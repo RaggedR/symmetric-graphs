@@ -6,6 +6,7 @@ import CSSCode.IncMatrixRank
 import CSSCode.SurfaceCSS
 import CSSCode.Heawood
 import CSSCode.Bolza
-import CSSCode.KleinQuartic
+import CSSCode.KleinSurface
 import CSSCode.NamedGraphs
+import CSSCode.DualLanger
 import CSSCode.G2Action

@@ -70,7 +70,9 @@ private def tutte12Edges : Array (Fin 126 × Fin 126) := #[
   (62,92), (62,107), (62,114)
 ]
 
-private def tutte12AdjBool (u v : Fin 126) : Bool :=
+/-- Adjacency test for the Tutte 12-cage. Exposed for the dual Langer
+    graph construction (distance-2 on lines). -/
+def tutte12AdjBool (u v : Fin 126) : Bool :=
   tutte12Edges.any fun (a, b) => (u == a && v == b) || (u == b && v == a)
 
 /-- The **Tutte 12-cage** as a SimpleGraph on 126 vertices. -/
