@@ -27,6 +27,8 @@ a voltage graph on K₂ (two base vertices, three parallel edges with voltages).
 
 import CSSCode.CosetGraph
 import CSSCode.Heawood
+import CSSCode.HeawoodSabidussi
+import CSSCode.MkSabidussi
 import CSSCode.QuotientGraph
 import Mathlib.Data.ZMod.Basic
 
@@ -135,6 +137,74 @@ theorem heawood_surface_eq_voltage :
         (heawoodSurface.edge_src e = v ∧ heawoodSurface.edge_tgt e = u)) ↔
       heawoodVoltage.Adj (heawoodBij u) (heawoodBij v) := by
   native_decide
+
+/-! ## Heawood isomorphism: voltage graph ≅ Sabidussi coset graph
+
+The Heawood graph also has a Sabidussi description:
+  3. **Sabidussi** (HeawoodSabidussi.lean): `heawGraph ≃g Sab(G₄₂, H₂₄, D)`
+
+We prove `heawGraph ≃g heawoodVoltage` via a concrete bijection,
+connecting the voltage construction to the Sabidussi coset graph. -/
+
+/-- The bijection Fin 14 → Fin 2 × ZMod 7 that makes the Sabidussi graph
+    (`heawGraph`) isomorphic to the voltage graph (`heawoodVoltage`).
+
+    heawGraph 0 → (0,0), 1 → (1,1), 2 → (0,3), 3 → (1,4), 4 → (0,1),
+    5 → (1,3), 6 → (1,2), 7 → (0,5), 8 → (1,0), 9 → (0,6),
+    10 → (1,6), 11 → (1,5), 12 → (0,4), 13 → (0,2). -/
+private def heawSabBijData : Array (Fin 2 × ZMod 7) := #[
+  (0, 0), (1, 1), (0, 3), (1, 4), (0, 1), (1, 3), (1, 2),
+  (0, 5), (1, 0), (0, 6), (1, 6), (1, 5), (0, 4), (0, 2)]
+
+private theorem heawSabBijData_size : heawSabBijData.size = 14 := by native_decide
+
+private def heawSabBijFwd (v : Fin 14) : Fin 2 × ZMod 7 :=
+  heawSabBijData[v.val]'(by have := heawSabBijData_size; omega)
+
+/-- `heawGraph ≃g heawoodVoltage`: the Sabidussi edge-list graph is isomorphic
+    to the voltage graph on K₂ with Z₇ voltages {0, 4, 6}.
+
+    This proves adjacency is preserved in both directions. -/
+theorem heawGraph_adj_iff_voltage :
+    ∀ u v : Fin 14,
+      heawGraph.Adj u v ↔ heawoodVoltage.Adj (heawSabBijFwd u) (heawSabBijFwd v) := by
+  native_decide
+
+/-- **The Heawood voltage graph is a Sabidussi coset graph.**
+
+    Composing `heawGraph_adj_iff_voltage` with `heawoodSabidussiIso` from
+    `HeawoodSabidussi.lean`, we obtain:
+      `heawoodVoltage ≃g heawGraph ≃g Sab(G₄₂, H₂₄, D)`
+    connecting all three descriptions of the Heawood graph. -/
+noncomputable def heawoodVoltage_isSabidussi := heawoodSabidussiWitness.toSabidussiIso
+
+/-! ## Möbius-Kantor isomorphism: voltage graph ≅ Sabidussi coset graph
+
+Same treatment for the Möbius-Kantor graph: connect the voltage description
+(`mobiusKantorVoltage` on `Fin 2 × ZMod 8`) to the Sabidussi description
+(`mkSabGraph ≃g Sab(GL(2,3), C₃, D)` from `MkSabidussi.lean`). -/
+
+private def mkSabBijData : Array (Fin 2 × ZMod 8) := #[
+  (0, 0), (1, 2), (0, 4), (1, 6), (0, 3), (1, 1), (0, 7), (1, 5),
+  (0, 2), (1, 4), (0, 6), (1, 0), (0, 5), (1, 3), (0, 1), (1, 7)]
+
+private theorem mkSabBijData_size : mkSabBijData.size = 16 := by native_decide
+
+private def mkSabBijFwd (v : Fin 16) : Fin 2 × ZMod 8 :=
+  mkSabBijData[v.val]'(by have := mkSabBijData_size; omega)
+
+/-- `mkSabGraph ≃g mobiusKantorVoltage`: the Sabidussi edge-list graph is
+    isomorphic to the voltage graph on K₂ with Z₈ voltages {0, 1, 3}. -/
+theorem mkGraph_adj_iff_voltage :
+    ∀ u v : Fin 16,
+      mkSabGraph.Adj u v ↔ mobiusKantorVoltage.Adj (mkSabBijFwd u) (mkSabBijFwd v) := by
+  native_decide
+
+/-- **The Möbius-Kantor voltage graph is a Sabidussi coset graph.**
+
+    Composing `mkGraph_adj_iff_voltage` with `mkSabidussiIso`:
+      `mobiusKantorVoltage ≃g mkSabGraph ≃g Sab(GL(2,3), C₃, D)` -/
+noncomputable def mkVoltage_isSabidussi := mkSabidussiWitness.toSabidussiIso
 
 /-! ## Voltage graph layout quotients
 
