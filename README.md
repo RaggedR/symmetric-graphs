@@ -4,6 +4,8 @@ Quotient-driven layouts for symmetric graphs, using automorphism group orbits to
 
 **Pipeline**: GAP computes Aut(Γ) and orbit quotients → Python scores quotients, minimises crossings, places vertices → TikZ renders PDF (or D3.js renders interactive HTML).
 
+![Symmetry-aware graph drawing: standard vs quotient-driven layout for the Dodecahedron and Pappus graph](assets/comparison.png)
+
 ## Quickstart
 
 ```bash

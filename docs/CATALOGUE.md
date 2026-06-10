@@ -4,7 +4,7 @@ Companion to `RESEARCH_PROGRAM.md` ("Drawable Shadows of Lie Groups over Finite
 Fields"). For each group we record: the graph(s) drawn, the script that
 builds/draws them, and where the rendered output lives. Last updated 2026-06-10.
 
-All paths relative to `~/git/graphviz/` unless noted. The standard pipeline is
+All paths relative to `~/git/symmetric-graphs/` unless noted. The standard pipeline is
 `src/draw_graph.py` (layout engine, GAP interface, TikZ emission) +
 `src/symmetric-layout.g` (Aut, orbits, quotients); anything named `auto-*` in
 `individual_graphs/` was produced by it. Gallery: `gallery.pdf`.

@@ -10,7 +10,7 @@ Robin's honours thesis was on "Symmetric Graphs and Their Quotients" — this to
 ## Quick Start
 
 ```bash
-cd ~/git/graphviz
+cd ~/git/symmetric-graphs
 
 # Single graph → PDF (auto-detects best layout)
 python3 src/draw_graph.py petersen

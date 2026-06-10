@@ -69,8 +69,10 @@ def run_gap_enumerate(graph_name):
     if not match:
         print(f"GAP output (last 2000 chars):\n{output[-2000:]}")
         raise RuntimeError(f"No JSON in GAP output for {graph_name}")
+    import ast
     json_text = match.group(1).replace("true", "True").replace("false", "False")
-    return eval(json_text)
+    # Use ast.literal_eval instead of eval for safety
+    return ast.literal_eval(json_text)
 
 
 # ============================================================

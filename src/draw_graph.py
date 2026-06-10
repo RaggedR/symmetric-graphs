@@ -47,8 +47,10 @@ def run_gap(graph_name, max_deg=4):
     match = re.search(r'=== JSON OUTPUT ===\n(.*?)\n=== END JSON ===', output, re.DOTALL)
     if not match:
         raise RuntimeError(f"No JSON in GAP output for {graph_name}")
+    import ast
     json_text = match.group(1).replace("true", "True").replace("false", "False")
-    return eval(json_text)
+    # Use ast.literal_eval instead of eval for safety
+    return ast.literal_eval(json_text)
 
 
 # ============================================================
