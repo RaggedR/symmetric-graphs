@@ -10,7 +10,7 @@ Layouts computed by `draw_graph.py` using automorphism group quotients.
 | `klein-F056A.jpg` | Klein (F056A) | 56 | Sab(PSL(2,7), C₃) | 3 | [[84, 6]] |
 | `zhou-F182A.jpg` | Zhou (F182A) | 182 | Sab(PSL(2,13), S₃) | — | — |
 | `tutte-12cage.jpg` | Tutte 12-cage (F126A) | 126 | from G₂(2) | — | context |
-| `langer-63v.jpg` | Langer | 63 (6-reg) | quotient of Clayworth by GH(2,2) | — | — |
+| `langer-63v.jpg` | Langer | 63 (6-reg) | Sab(G₂(2), H₁₉₂) — NOT a quotient of Clayworth (see `clayworth/PR_NOTE.md`) | — | — |
 
 The Tutte 12-cage does not have a {p,3} surface tiling (12F = 2E = 378 gives F = 31.5,
 not an integer). It is included as context: it is the incidence graph of GH(2,2) and
