@@ -17,6 +17,9 @@ python3 src/draw_all.py
 
 # Orbit quotient diagrams → quotients/
 python3 src/draw_quotients.py
+
+# Visual catalogue (all individual drawings, one per page) → catalogue.pdf
+python3 src/make_catalogue.py
 ```
 
 Requires [GAP](https://www.gap-system.org/) with the GRAPE package, Python 3, and pdflatex.

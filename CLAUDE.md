@@ -14,6 +14,7 @@ Python 3, GAP (with GRAPE package), LaTeX/TikZ, pdflatex.
 python3 src/draw_graph.py dodecahedron   # Single graph → individual_graphs/
 python3 src/draw_all.py                  # Gallery → gallery.pdf (11 graphs; K4 and K3,3 omitted as trivially small)
 python3 src/draw_quotients.py            # Orbit quotient diagrams → quotients/
+python3 src/make_catalogue.py            # Visual catalogue → catalogue.pdf (one page per individual_graphs/ drawing + JPEGs)
 ```
 
 GAP scripts that `Read("symmetric-layout.g")` (e.g. `clayworth_build.g`, `g2_cubic_search.g`) must be run from `src/`. The standalone census scripts in `src/census/` run from anywhere.
