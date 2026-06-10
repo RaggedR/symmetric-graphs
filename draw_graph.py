@@ -54,13 +54,13 @@ def run_gap(graph_name, max_deg=4):
 # Quotient selection
 # ============================================================
 
-def score_quotient(q):
+def score_quotient(q, n_total=0):
     score = 0
     if q.get('is_cycle'):
         score += 100
     score -= q['max_valency'] * 10
     n_orbs = q['n_orbits']
-    if 3 <= n_orbs <= 10:
+    if 3 <= n_orbs <= 20:
         score += 20
     elif n_orbs == 2:
         score += 15  # 2 equal orbits = generalized Petersen
@@ -78,13 +78,21 @@ def score_quotient(q):
         has_cycle = q.get('has_internal_cycle', [])
         if len(has_cycle) >= 2 and (has_cycle[0] or has_cycle[1]):
             score += 150  # GP pattern — outscores everything else
+    # For large graphs, strongly prefer quotients with moderate orbit count
+    # (avoids cramming 50+ vertices per ring)
+    if n_total > 50:
+        max_orbit = max(sizes)
+        if max_orbit > 30:
+            score -= (max_orbit - 30) * 2  # penalize huge orbits
+        if 5 <= n_orbs <= 20 and len(set(sizes)) == 1:
+            score += 40  # bonus for many equal-sized orbits on large graphs
     return score
 
 
-def select_best(results):
+def select_best(results, n_total=0):
     if not results:
         return None
-    scored = [(score_quotient(r), i, r) for i, r in enumerate(results)]
+    scored = [(score_quotient(r, n_total), i, r) for i, r in enumerate(results)]
     scored.sort(reverse=True)
     print(f"\nTop quotients:")
     for score, idx, r in scored[:3]:
@@ -128,7 +136,47 @@ def detect_symmetry_type(quotient, adj):
     if n_orbits <= 4 and len(set(sizes)) == 1 and max(valencies) <= 2:
         return "cylindrical"
 
+    # Many equal-sized orbits → cylindrical (concentric rings reveal structure)
+    if n_orbits >= 5 and len(set(sizes)) == 1:
+        return "cylindrical"
+
     return "cyclic"
+
+
+def find_bfs_ordering(quotient):
+    """
+    BFS ordering for non-path quotient graphs.
+    Keeps connected orbits on nearby rings.
+    """
+    n_orbits = quotient['n_orbits']
+    quot_adj = quotient.get('quotient_adj', [])
+    if not quot_adj or n_orbits < 3:
+        return None
+
+    # Build 0-indexed adjacency
+    adj_0 = [[] for _ in range(n_orbits)]
+    for i in range(n_orbits):
+        for j in quot_adj[i]:
+            adj_0[i].append(j - 1)  # 1-indexed → 0-indexed
+
+    # BFS from vertex with highest degree (central node)
+    valencies = [len(adj_0[i]) for i in range(n_orbits)]
+    start = max(range(n_orbits), key=lambda i: valencies[i])
+
+    visited = {start}
+    order = [start]
+    queue = [start]
+    qi = 0
+    while qi < len(queue):
+        u = queue[qi]
+        qi += 1
+        for v in sorted(adj_0[u]):
+            if v not in visited:
+                visited.add(v)
+                order.append(v)
+                queue.append(v)
+
+    return order if len(order) == n_orbits else None
 
 
 def find_path_ordering(quotient):
@@ -513,12 +561,14 @@ def layout_cylindrical(quotient, n, adj):
             if oo and len(oo) == 2:
                 quotient['orbit_order'] = [oo[1], oo[0]]
 
-    # For 3+ orbits: reorder to follow quotient graph path
+    # For 3+ orbits: reorder to follow quotient graph structure
     elif n_orbits >= 3:
         path_order = find_path_ordering(quotient)
+        if path_order is None:
+            # Not a path — use BFS ordering to keep connected orbits close
+            path_order = find_bfs_ordering(quotient)
         if path_order is not None and path_order != list(range(n_orbits)):
-            print(f"  Reordering orbits to follow quotient path: "
-                  f"{[i+1 for i in path_order]}")
+            print(f"  Reordering orbits: {[i+1 for i in path_order]}")
             orbits = [orbits[i] for i in path_order]
             quotient = dict(quotient)
             oo = quotient.get('orbit_order', None)
@@ -684,12 +734,14 @@ def compute_layout(quotient, n, adj, mode="auto"):
 # ============================================================
 
 def generate_tikz(coords, adj, n, orbits, graph_name, quotient_info,
-                   aut_order=None, aut_structure=None):
+                   aut_order=None, aut_structure=None, style="full"):
     n_orbits = len(orbits)
     v_to_orbit = {}
     for oi, orbit in enumerate(orbits):
         for v in orbit:
             v_to_orbit[v] = oi
+
+    minimal = (style == "minimal")
 
     lines = []
     lines.append(r"\documentclass[border=15pt]{standalone}")
@@ -698,15 +750,20 @@ def generate_tikz(coords, adj, n, orbits, graph_name, quotient_info,
     lines.append(r"\usetikzlibrary{arrows.meta}")
     lines.append("")
 
-    for i in range(min(n_orbits, len(COLORS))):
-        lines.append(f"\\definecolor{{block{i}}}{{HTML}}{{{COLORS[i % len(COLORS)]}}}")
-    lines.append("")
+    if not minimal:
+        for i in range(min(n_orbits, len(COLORS))):
+            lines.append(f"\\definecolor{{block{i}}}{{HTML}}{{{COLORS[i % len(COLORS)]}}}")
+        lines.append("")
 
     lines.append(r"\begin{document}")
     lines.append(r"\begin{tikzpicture}[")
-    lines.append(r"  vertex/.style={circle, draw, thick, minimum size=6.5mm, inner sep=0pt,")
-    lines.append(r"                 font=\scriptsize\bfseries},")
-    lines.append(r"  edge/.style={thick, gray!45},")
+    if minimal:
+        lines.append(r"  vertex/.style={circle, fill=black, minimum size=1.2pt, inner sep=0pt},")
+        lines.append(r"  edge/.style={thin, black!40},")
+    else:
+        lines.append(r"  vertex/.style={circle, draw, thick, minimum size=6.5mm, inner sep=0pt,")
+        lines.append(r"                 font=\scriptsize\bfseries},")
+        lines.append(r"  edge/.style={thick, gray!45},")
     lines.append(r"  title/.style={font=\Large\bfseries},")
     lines.append(r"  subtitle/.style={font=\small, text=gray},")
     lines.append(r"]")
@@ -718,62 +775,78 @@ def generate_tikz(coords, adj, n, orbits, graph_name, quotient_info,
         lines.append(f"\\node[subtitle] at (0, 5.8) "
                      f"{{$\\mathrm{{Aut}} = {aut_structure}$, "
                      f"$|\\mathrm{{Aut}}| = {aut_order}$}};")
-        lines.append(f"\\node[subtitle] at (0, 5.2) "
-                     f"{{$H = {q_label}$ $\\leq$ $\\mathrm{{Aut}}$, "
-                     f"{n_orbits} orbits of {quotient_info['orbit_sizes']}}};")
-    else:
-        lines.append(f"\\node[subtitle] at (0, 5.8) "
-                     f"{{Orbits of ${q_label}$ ({n_orbits} orbits of "
-                     f"{quotient_info['orbit_sizes']})}};")
+        if not minimal:
+            lines.append(f"\\node[subtitle] at (0, 5.2) "
+                         f"{{$H = {q_label}$ $\\leq$ $\\mathrm{{Aut}}$, "
+                         f"{n_orbits} orbits of {quotient_info['orbit_sizes']}}};")
     lines.append("")
+
+    # Edges first (drawn behind vertices in minimal mode) — use raw coordinates
+    if minimal:
+        drawn = set()
+        for v in range(1, n + 1):
+            for w in adj[v - 1]:
+                edge = (min(v, w), max(v, w))
+                if edge not in drawn:
+                    drawn.add(edge)
+                    x1, y1 = coords[edge[0]]
+                    x2, y2 = coords[edge[1]]
+                    lines.append(f"\\draw[edge] ({x1:.3f}, {y1:.3f}) -- ({x2:.3f}, {y2:.3f});")
+        lines.append("")
 
     # Vertices
     for v in range(1, n + 1):
         x, y = coords[v]
         oi = v_to_orbit[v]
-        ci = oi % len(COLORS)
-        lines.append(f"\\node[vertex, fill=block{ci}!30] "
-                     f"(v{v}) at ({x:.3f}, {y:.3f}) {{{v}}};")
+        if minimal:
+            lines.append(f"\\fill[black] ({x:.3f}, {y:.3f}) circle (1.2pt);")
+        else:
+            ci = oi % len(COLORS)
+            lines.append(f"\\node[vertex, fill=block{ci}!30] "
+                         f"(v{v}) at ({x:.3f}, {y:.3f}) {{{v}}};")
 
     lines.append("")
 
-    # Edges
-    drawn = set()
-    for v in range(1, n + 1):
-        for w in adj[v - 1]:
-            edge = (min(v, w), max(v, w))
-            if edge not in drawn:
-                drawn.add(edge)
-                oi_v = v_to_orbit[v]
-                oi_w = v_to_orbit[w]
-                if oi_v == oi_w:
-                    style = f"thick, block{oi_v % len(COLORS)}!60"
-                else:
-                    style = "edge"
-                lines.append(f"\\draw[{style}] (v{edge[0]}) -- (v{edge[1]});")
+    # Edges (after vertices for full style, so labels are on top)
+    if not minimal:
+        drawn = set()
+        for v in range(1, n + 1):
+            for w in adj[v - 1]:
+                edge = (min(v, w), max(v, w))
+                if edge not in drawn:
+                    drawn.add(edge)
+                    oi_v = v_to_orbit[v]
+                    oi_w = v_to_orbit[w]
+                    if oi_v == oi_w:
+                        edge_style = f"thick, block{oi_v % len(COLORS)}!60"
+                    else:
+                        edge_style = "edge"
+                    lines.append(f"\\draw[{edge_style}] (v{edge[0]}) -- (v{edge[1]});")
 
-    lines.append("")
+        lines.append("")
 
-    # Legend
-    orbit_items = []
-    for oi, orbit in enumerate(orbits):
-        ci = oi % len(COLORS)
-        verts = ",".join(str(v) for v in sorted(orbit))
-        has_cycle = quotient_info.get('has_internal_cycle', [False] * n_orbits)
-        cycle_note = " (cycle)" if oi < len(has_cycle) and has_cycle[oi] else ""
-        orbit_items.append(
-            f"\\textcolor{{block{ci}}}{{$\\blacksquare$}} "
-            f"$O_{{{oi+1}}}$ = \\{{{verts}\\}}{cycle_note}"
-        )
+        # Legend
+        orbit_items = []
+        for oi, orbit in enumerate(orbits):
+            ci = oi % len(COLORS)
+            verts = ",".join(str(v) for v in sorted(orbit))
+            has_cycle = quotient_info.get('has_internal_cycle', [False] * n_orbits)
+            cycle_note = " (cycle)" if oi < len(has_cycle) and has_cycle[oi] else ""
+            orbit_items.append(
+                f"\\textcolor{{block{ci}}}{{$\\blacksquare$}} "
+                f"$O_{{{oi+1}}}$ = \\{{{verts}\\}}{cycle_note}"
+            )
 
-    legend = " \\\\\n  ".join(orbit_items)
-    lines.append(f"\\node[draw, rounded corners, fill=gray!5, "
-                 f"text width=12cm, align=left, font=\\small]")
-    lines.append(f"  at (0, -6.5) {{")
-    lines.append(f"  \\textbf{{Orbit decomposition}} "
-                 f"(${q_label}$, order {quotient_info.get('subgroup_order','?')}) \\\\[4pt]")
-    lines.append(f"  {legend}")
-    lines.append(f"}};")
+        legend = " \\\\\n  ".join(orbit_items)
+        lines.append(f"\\node[draw, rounded corners, fill=gray!5, "
+                     f"text width=12cm, align=left, font=\\small]")
+        lines.append(f"  at (0, -6.5) {{")
+        lines.append(f"  \\textbf{{Orbit decomposition}} "
+                     f"(${q_label}$, order {quotient_info.get('subgroup_order','?')}) "
+                     f"\\\\[4pt]")
+        lines.append(f"  {legend}")
+        lines.append(f"}};")
+
     lines.append("")
     lines.append(r"\end{tikzpicture}")
     lines.append(r"\end{document}")
@@ -793,7 +866,7 @@ def find_best_layout(results, n, adj, layout_mode="auto", verbose=True):
     3. Try both auto and rings modes for that quotient
     4. Also try sibling quotients with same orbit structure for better offsets
     """
-    scored = [(score_quotient(r), i, r) for i, r in enumerate(results)]
+    scored = [(score_quotient(r, n), i, r) for i, r in enumerate(results)]
     scored.sort(reverse=True)
 
     top_q = scored[0][2]
@@ -821,7 +894,7 @@ def find_best_layout(results, n, adj, layout_mode="auto", verbose=True):
             if verbose:
                 print(f"    → {crossings} crossings")
             if crossings < best_crossings or \
-               (crossings == best_crossings and score > score_quotient(best)):
+               (crossings == best_crossings and score > score_quotient(best, n)):
                 best_crossings = crossings
                 best_coords = coords
                 best = q
@@ -844,6 +917,8 @@ def main():
     parser.add_argument("--layout", choices=["auto", "cyclic", "rings"],
                         default="auto",
                         help="auto (detect), cyclic (single circle), rings (concentric)")
+    parser.add_argument("--style", choices=["full", "minimal"], default="full",
+                        help="full (labels+legend) or minimal (black dots, no legend)")
     parser.add_argument("--no-open", action="store_true")
     args = parser.parse_args()
 
@@ -864,7 +939,8 @@ def main():
     coords, best = find_best_layout(results, n, adj, layout_mode=args.layout)
     tikz = generate_tikz(coords, adj, n, best['orbits'], graph_name, best,
                          aut_order=data.get('aut_order'),
-                         aut_structure=data.get('aut_structure'))
+                         aut_structure=data.get('aut_structure'),
+                         style=args.style)
 
     indiv_dir = os.path.join(GRAPHVIZ_DIR, "individual_graphs")
     os.makedirs(indiv_dir, exist_ok=True)

@@ -1,0 +1,125 @@
+\documentclass[border=8mm]{standalone}
+\usepackage{tikz}
+\usepackage{amsmath,amssymb}
+\usetikzlibrary{calc, backgrounds, arrows.meta}
+
+\begin{document}
+\begin{tikzpicture}[
+    pt/.style={circle, draw=black!70, fill=white, minimum size=8mm,
+               inner sep=0pt, font=\small\bfseries, line width=0.7pt},
+    ln/.style={rounded rectangle, draw=#1!70, fill=#1!12, minimum size=8mm,
+               inner sep=1.5pt, font=\tiny\bfseries, line width=0.9pt},
+]
+
+% === COLORS ===
+\definecolor{c1}{HTML}{E53935}
+\definecolor{c2}{HTML}{FB8C00}
+\definecolor{c3}{HTML}{43A047}
+\definecolor{c4}{HTML}{1E88E5}
+\definecolor{c5}{HTML}{8E24AA}
+\definecolor{c6}{HTML}{00ACC1}
+\definecolor{c7}{HTML}{D81B60}
+
+% === RADII ===
+\def\Rin{2.6}   % inner circle (points)
+\def\Rout{4.4}  % outer circle (lines)
+\def\Rmid{3.5}  % for split bubbles
+
+% === COORDINATES ===
+\foreach \i in {1,...,7} {
+    \pgfmathsetmacro{\ang}{90 - (\i-1)*360/7}
+    \coordinate (p\i) at (\ang:\Rin);
+    \coordinate (l\i) at (\ang:\Rout);
+}
+
+% === SPLIT BUBBLES (background) ===
+% Faint gray ovals showing "these two were one Fano vertex"
+\begin{scope}[on background layer]
+\foreach \i/\col in {1/c1, 2/c2, 3/c3, 4/c4, 5/c5, 6/c6, 7/c7} {
+    \pgfmathsetmacro{\ang}{90 - (\i-1)*360/7}
+    % Ellipse along radial direction
+    \fill[\col, opacity=0.06, rotate around={\ang:(0,0)}]
+        (\ang:\Rmid) ellipse (0.55 and 1.15);
+}
+\end{scope}
+
+% === EDGES (colored by line-vertex) ===
+% Polarity pairing:
+%   pos 1: p₁ ↔ {1,2,6}    pos 2: p₂ ↔ {2,3,7}
+%   pos 3: p₃ ↔ {3,5,6}    pos 4: p₄ ↔ {1,3,4}
+%   pos 5: p₅ ↔ {2,4,5}    pos 6: p₆ ↔ {4,6,7}
+%   pos 7: p₇ ↔ {1,5,7}
+
+% Line at pos 1 = {1,2,6}: edges to p₁, p₂, p₆
+\draw[c1, line width=1.6pt, opacity=0.55] (l1) -- (p1);  % internal
+\draw[c1, line width=1.6pt, opacity=0.55] (l1) -- (p2);
+\draw[c1, line width=1.6pt, opacity=0.55] (l1) -- (p6);
+
+% Line at pos 2 = {2,3,7}: edges to p₂, p₃, p₇
+\draw[c2, line width=1.6pt, opacity=0.55] (l2) -- (p2);  % internal
+\draw[c2, line width=1.6pt, opacity=0.55] (l2) -- (p3);
+\draw[c2, line width=1.6pt, opacity=0.55] (l2) -- (p7);
+
+% Line at pos 3 = {3,5,6}: edges to p₃, p₅, p₆
+\draw[c3, line width=1.6pt, opacity=0.55] (l3) -- (p3);  % internal
+\draw[c3, line width=1.6pt, opacity=0.55] (l3) -- (p5);
+\draw[c3, line width=1.6pt, opacity=0.55] (l3) -- (p6);
+
+% Line at pos 4 = {1,3,4}: edges to p₁, p₃, p₄
+\draw[c4, line width=1.6pt, opacity=0.55] (l4) -- (p4);  % internal
+\draw[c4, line width=1.6pt, opacity=0.55] (l4) -- (p1);
+\draw[c4, line width=1.6pt, opacity=0.55] (l4) -- (p3);
+
+% Line at pos 5 = {2,4,5}: edges to p₂, p₄, p₅
+\draw[c5, line width=1.6pt, opacity=0.55] (l5) -- (p5);  % internal
+\draw[c5, line width=1.6pt, opacity=0.55] (l5) -- (p2);
+\draw[c5, line width=1.6pt, opacity=0.55] (l5) -- (p4);
+
+% Line at pos 6 = {4,6,7}: edges to p₄, p₆, p₇
+\draw[c6, line width=1.6pt, opacity=0.55] (l6) -- (p6);  % internal
+\draw[c6, line width=1.6pt, opacity=0.55] (l6) -- (p4);
+\draw[c6, line width=1.6pt, opacity=0.55] (l6) -- (p7);
+
+% Line at pos 7 = {1,5,7}: edges to p₁, p₅, p₇
+\draw[c7, line width=1.6pt, opacity=0.55] (l7) -- (p7);  % internal
+\draw[c7, line width=1.6pt, opacity=0.55] (l7) -- (p1);
+\draw[c7, line width=1.6pt, opacity=0.55] (l7) -- (p5);
+
+% === VERTICES (on top) ===
+% Inner = points (white circles)
+\foreach \i in {1,...,7} {
+    \node[pt] at (p\i) {$\i$};
+}
+
+% Outer = lines (colored rounded rectangles with set content)
+\node[ln=c1] at (l1) {\textcolor{c1!80!black}{1\,2\,6}};
+\node[ln=c2] at (l2) {\textcolor{c2!80!black}{2\,3\,7}};
+\node[ln=c3] at (l3) {\textcolor{c3!80!black}{3\,5\,6}};
+\node[ln=c4] at (l4) {\textcolor{c4!80!black}{1\,3\,4}};
+\node[ln=c5] at (l5) {\textcolor{c5!80!black}{2\,4\,5}};
+\node[ln=c6] at (l6) {\textcolor{c6!80!black}{4\,6\,7}};
+\node[ln=c7] at (l7) {\textcolor{c7!80!black}{1\,5\,7}};
+
+% === LABELS showing the split ===
+% Small "p" and "ℓ" labels near inner/outer vertices
+\foreach \i in {1,...,7} {
+    \pgfmathsetmacro{\ang}{90 - (\i-1)*360/7}
+    \node[font=\tiny, text=black!40] at (\ang:{\Rin - 0.65}) {$p_{\i}$};
+    \node[font=\tiny, text=black!40] at (\ang:{\Rout + 0.6}) {$\rho(p_{\i})$};
+}
+
+% === TITLE ===
+\node[font=\Large\bfseries] at (0, \Rout + 1.8) {Unfolding the Fano Plane};
+\node[font=\normalsize, text=black!60] at (0, \Rout + 1.1) {%
+    Each vertex $i$ splits into point $p_i$ (inner) and line $\rho(p_i)$ (outer)};
+
+% === ANNOTATION ===
+\node[font=\small, text=black!50, text width=10cm, align=center] at (0, -\Rout - 1.2) {%
+    The polarity $\rho$ pairs each point with a line containing it.
+    Collapsing each inner--outer pair recovers the Fano plane.};
+\node[font=\small, text=black!35, text width=10cm, align=center] at (0, -\Rout - 1.9) {%
+    $G = \mathrm{PSL}(3,2)$, \;$|G| = 168$. \quad
+    $\mathrm{Aut}(\text{Heawood}) = G {:} C_2$ where $C_2 = \langle\rho\rangle$.};
+
+\end{tikzpicture}
+\end{document}

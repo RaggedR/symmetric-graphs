@@ -1,0 +1,52 @@
+\documentclass[border=15pt]{standalone}
+\usepackage{amsmath, amssymb}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta}
+
+\definecolor{block0}{HTML}{E53935}
+\definecolor{block1}{HTML}{1E88E5}
+
+\begin{document}
+\begin{tikzpicture}[
+  vertex/.style={circle, draw, thick, minimum size=6.5mm, inner sep=0pt,
+                 font=\scriptsize\bfseries},
+  edge/.style={thick, gray!45},
+  title/.style={font=\Large\bfseries},
+  subtitle/.style={font=\small, text=gray},
+]
+
+\node[title] at (0, 6.5) {Cube};
+\node[subtitle] at (0, 5.8) {$\mathrm{Aut} = C2 x S4$, $|\mathrm{Aut}| = 48$};
+\node[subtitle] at (0, 5.2) {$H = C4$ $\leq$ $\mathrm{Aut}$, 2 orbits of [4, 4]};
+
+\node[vertex, fill=block0!30] (v1) at (0.000, 4.500) {1};
+\node[vertex, fill=block1!30] (v2) at (0.000, 1.575) {2};
+\node[vertex, fill=block1!30] (v3) at (1.575, -0.000) {3};
+\node[vertex, fill=block0!30] (v4) at (4.500, -0.000) {4};
+\node[vertex, fill=block0!30] (v5) at (-4.500, 0.000) {5};
+\node[vertex, fill=block1!30] (v6) at (-1.575, 0.000) {6};
+\node[vertex, fill=block1!30] (v7) at (-0.000, -1.575) {7};
+\node[vertex, fill=block0!30] (v8) at (-0.000, -4.500) {8};
+
+\draw[edge] (v1) -- (v2);
+\draw[thick, block0!60] (v1) -- (v4);
+\draw[thick, block0!60] (v1) -- (v5);
+\draw[thick, block1!60] (v2) -- (v3);
+\draw[thick, block1!60] (v2) -- (v6);
+\draw[edge] (v3) -- (v4);
+\draw[thick, block1!60] (v3) -- (v7);
+\draw[thick, block0!60] (v4) -- (v8);
+\draw[edge] (v5) -- (v6);
+\draw[thick, block0!60] (v5) -- (v8);
+\draw[thick, block1!60] (v6) -- (v7);
+\draw[edge] (v7) -- (v8);
+
+\node[draw, rounded corners, fill=gray!5, text width=12cm, align=left, font=\small]
+  at (0, -6.5) {
+  \textbf{Orbit decomposition} ($C4$, order 4) \\[4pt]
+  \textcolor{block0}{$\blacksquare$} $O_{1}$ = \{1,4,5,8\} (cycle) \\
+  \textcolor{block1}{$\blacksquare$} $O_{2}$ = \{2,3,6,7\} (cycle)
+};
+
+\end{tikzpicture}
+\end{document}

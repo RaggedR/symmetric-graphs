@@ -10,3 +10,5 @@ import CSSCode.KleinSurface
 import CSSCode.NamedGraphs
 import CSSCode.DualLanger
 import CSSCode.G2Action
+import CSSCode.LangerTriangles
+import CSSCode.GH22Duality

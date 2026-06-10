@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Petersen Graph is a Shadow of E₆</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap');
+
+  :root {
+    --bg: #faf9f7;
+    --fg: #1a1a1a;
+    --accent: #8b2500;
+    --muted: #666;
+    --border: #ddd;
+    --code-bg: #f0ede8;
+    --highlight: #fff8e7;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Crimson Pro', Georgia, serif;
+    font-size: 19px;
+    line-height: 1.7;
+    color: var(--fg);
+    background: var(--bg);
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 60px 24px 120px;
+  }
+
+  h1 {
+    font-size: 2.2em;
+    font-weight: 600;
+    line-height: 1.2;
+    margin-bottom: 0.3em;
+    letter-spacing: -0.01em;
+  }
+
+  .subtitle {
+    font-size: 1.15em;
+    color: var(--muted);
+    font-style: italic;
+    margin-bottom: 2.5em;
+    line-height: 1.5;
+  }
+
+  h2 {
+    font-size: 1.4em;
+    font-weight: 600;
+    margin-top: 2.5em;
+    margin-bottom: 0.6em;
+    color: var(--accent);
+  }
+
+  h3 {
+    font-size: 1.1em;
+    font-weight: 600;
+    margin-top: 1.8em;
+    margin-bottom: 0.4em;
+  }
+
+  p { margin-bottom: 1em; }
+
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent); }
+  a:hover { background: var(--highlight); }
+
+  .chain {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82em;
+    line-height: 1.8;
+    background: var(--code-bg);
+    padding: 20px 24px;
+    border-radius: 6px;
+    margin: 1.5em 0;
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  .pullquote {
+    border-left: 3px solid var(--accent);
+    padding: 0.8em 1.2em;
+    margin: 1.8em 0;
+    background: var(--highlight);
+    font-style: italic;
+    font-size: 1.05em;
+  }
+
+  .figure {
+    text-align: center;
+    margin: 2em 0;
+  }
+
+  .figure svg {
+    max-width: 100%;
+  }
+
+  .caption {
+    font-size: 0.88em;
+    color: var(--muted);
+    margin-top: 0.5em;
+    font-style: italic;
+  }
+
+  table {
+    border-collapse: collapse;
+    margin: 1.2em 0;
+    width: 100%;
+    font-size: 0.95em;
+  }
+
+  th, td {
+    padding: 8px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+
+  th {
+    font-weight: 600;
+    background: var(--code-bg);
+  }
+
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85em;
+    background: var(--code-bg);
+    padding: 2px 5px;
+    border-radius: 3px;
+  }
+
+  .footnote {
+    font-size: 0.88em;
+    color: var(--muted);
+    margin-top: 3em;
+    padding-top: 1.5em;
+    border-top: 1px solid var(--border);
+  }
+
+  .step-number {
+    display: inline-block;
+    width: 28px;
+    height: 28px;
+    line-height: 28px;
+    text-align: center;
+    background: var(--accent);
+    color: white;
+    border-radius: 50%;
+    font-size: 0.75em;
+    font-weight: 600;
+    margin-right: 8px;
+    vertical-align: middle;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .steps p {
+    margin-bottom: 1.2em;
+    padding-left: 0;
+  }
+
+  hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 2.5em 0;
+  }
+</style>
+</head>
+<body>
+
+<h1>The Petersen Graph is a Shadow of E₆</h1>
+<p class="subtitle">
+How the most famous graph in combinatorics hides inside the geometry of cubic surfaces, and why this is not a coincidence.
+</p>
+
+<h2>Two famous objects</h2>
+
+<p>
+The <b>Petersen graph</b> is the most important graph in combinatorics. It has 10 vertices and 15 edges. It is the smallest bridgeless cubic graph with no 3-edge-colouring. It is a forbidden minor for linkless embedding. It appears in the proof of the four-colour theorem. It is a Moore graph, a Kneser graph, a strongly regular graph. It seems to show up everywhere.
+</p>
+
+<p>
+The <b>27 lines on a cubic surface</b> are the most classical objects in algebraic geometry. In 1849, Cayley and Salmon proved that every smooth cubic surface in three-dimensional projective space contains exactly 27 straight lines. The configuration of these lines&mdash;which ones meet and which ones are skew&mdash;is controlled by the exceptional Lie algebra E₆.
+</p>
+
+<p>
+These two objects are connected. The connection is not a coincidence. It runs through the deepest structures in mathematics.
+</p>
+
+<h2>The blow-up</h2>
+
+<p>
+Every smooth cubic surface is the projective plane P² blown up at 6 points. You choose 6 points p₁,&hellip;,p₆ in general position and replace each point with a line. The result is a surface in P³, and it carries exactly 27 lines:
+</p>
+
+<table>
+<tr><th>Type</th><th>Count</th><th>Description</th></tr>
+<tr><td>eᵢ</td><td>6</td><td>Exceptional divisor over each blown-up point</td></tr>
+<tr><td>gᵢⱼ</td><td>15</td><td>Proper transform of the line through pᵢ and pⱼ</td></tr>
+<tr><td>fᵢ</td><td>6</td><td>Proper transform of the conic through all points except pᵢ</td></tr>
+</table>
+
+<p>
+Two lines on the surface either meet in one point or are completely disjoint (<i>skew</i>). The meeting rules are combinatorial: the line gᵢⱼ meets gₖₗ if and only if {i,j} and {k,l} share an element. In other words, two &ldquo;pair lines&rdquo; are skew precisely when the pairs are <b>disjoint</b>.
+</p>
+
+<h2>The Petersen graph falls out</h2>
+
+<div class="steps">
+<p>
+<span class="step-number">1</span>
+Take the 15 pair lines gᵢⱼ on the cubic surface. Two of them are skew when {i,j} &cap; {k,l} = &emptyset;. This is the definition of the <b>Kneser graph</b> KG(6,2): vertices are 2-element subsets of {1,&hellip;,6}, edges connect disjoint pairs. The result is the triangular graph T(6), a strongly regular graph on 15 vertices.
+</p>
+
+<p>
+<span class="step-number">2</span>
+Now forget one of the 6 blown-up points. Say we drop p₆. The 10 lines gᵢⱼ with i,j &isin; {1,&hellip;,5} still live on the surface. Their skewness pattern is the Kneser graph KG(5,2): 2-element subsets of a 5-element set, edges between disjoint pairs.
+</p>
+
+<p>
+<span class="step-number">3</span>
+KG(5,2) is the Petersen graph.
+</p>
+</div>
+
+<div class="pullquote">
+The Petersen graph is the skewness graph of the 10 lines through pairs of 5 of the 6 blown-up points. Delete one point, get the Petersen graph.
+</div>
+
+<h2>A chain of three graphs</h2>
+
+<p>
+This gives us a chain of strongly regular graphs, each contained in the next:
+</p>
+
+<table>
+<tr><th>Graph</th><th>Vertices</th><th>Degree</th><th>Automorphism group</th></tr>
+<tr><td>Petersen</td><td>10</td><td>3</td><td>S₅ (order 120)</td></tr>
+<tr><td>T(6)</td><td>15</td><td>6</td><td>S₆ (order 720)</td></tr>
+<tr><td>Schl&auml;fli</td><td>27</td><td>10</td><td>W(E₆) (order 51840)</td></tr>
+</table>
+
+<p>
+The automorphism groups grow: S₅, then S₆, then the full Weyl group of E₆. The jump from S₅ to S₆ is explained by the <b>outer automorphism of S₆</b>&mdash;the unique symmetric group that has one. The 15 pair partitions of a 5-element set are secretly the 15 edges of a complete graph on 6 vertices, and the hidden 6th vertex is what the outer automorphism reveals.
+</p>
+
+<h2>Why this is deep</h2>
+
+<p>
+The chain of graphs is a chain of <b>Lie algebra inclusions</b>:
+</p>
+
+<div class="chain">sl(5)        &sub;     sl(6)        &sub;     E₆
+  |                   |                  |
+W(A₄) = S₅       W(A₅) = S₆       W(E₆)
+  |                   |                  |
+Petersen          T(6)            Schl&auml;fli
+10 = C(5,2)      15 = C(6,2)     27 = fund. rep</div>
+
+<p>
+The 27 lines are the <b>weights</b> of the 27-dimensional fundamental representation of E₆. This representation knows about the entire configuration of the 27 lines: which ones meet, which are skew, and how they are permuted by symmetries. When we restrict this representation along the chain E₆ &sup; A₅ &sup; A₄, it decomposes:
+</p>
+
+<div class="chain">E₆:   27
+       |  restrict to A₅ = sl(6)
+A₅:   15  +  6  +  6
+       |  restrict to A₄ = sl(5)
+A₄:   10 + 5  +  6  +  6</div>
+
+<p>
+The <b>15</b> is the exterior square &Lambda;²(C⁶)&mdash;the space spanned by 2-element subsets of a 6-element basis. This is the vertex set of T(6). The skewness relation (disjoint pairs) is the vanishing of a natural bilinear pairing on this exterior square.
+</p>
+
+<p>
+The <b>10</b> is the exterior square &Lambda;²(C⁵)&mdash;2-element subsets of a 5-element set. This is the Petersen graph. When T(6) restricts from sl(6) to sl(5), the 15 pair lines split as 10 + 5, and the 10-dimensional piece carries the Petersen graph as its skewness structure.
+</p>
+
+<h2>The Clebsch surface</h2>
+
+<p>
+There is one cubic surface where the whole chain becomes visible at once: the <b>Clebsch diagonal surface</b>, defined in P⁴ by
+</p>
+
+<div class="chain">&Sigma; xᵢ = 0,    &Sigma; xᵢ³ = 0</div>
+
+<p>
+Its automorphism group is S₅, acting by permuting the five coordinates. This S₅ is the Weyl group W(A₄), and its action on the 27 lines decomposes them into two orbits:
+</p>
+
+<table>
+<tr><th>Orbit</th><th>Size</th><th>Induced graph</th><th>Automorphisms</th></tr>
+<tr><td>Type I (pair partitions)</td><td>15</td><td>T(6) = SRG(15,6,1,3)</td><td>S₆</td></tr>
+<tr><td>Type II (five-cycles)</td><td>12</td><td>5-regular</td><td>C₂ &times; S₆</td></tr>
+</table>
+
+<p>
+The 15 Type I lines form T(6), and inside T(6) sits the Petersen graph as the 10 lines that avoid the &ldquo;hidden 6th point.&rdquo; The chain of inclusions
+</p>
+
+<div class="chain">Petersen &sub; T(6) &sub; Schl&auml;fli</div>
+
+<p>
+is the geometric realization of
+</p>
+
+<div class="chain">sl(5) &sub; sl(6) &sub; E₆</div>
+
+<p>
+on a single cubic surface.
+</p>
+
+<h2>The spectral shadow</h2>
+
+<p>
+All three graphs share the eigenvalue 1. The corresponding eigenspaces form a nested chain:
+</p>
+
+<div class="chain">dim 5  &sub;  dim 9  &sub;  dim 20
+Petersen    T(6)     Schl&auml;fli</div>
+
+<p>
+The 5-dimensional eigenspace of the Petersen graph is the standard representation of S₅. It sits inside the 9-dimensional eigenspace of T(6), which sits inside the 20-dimensional eigenspace of the Schl&auml;fli graph (an irreducible representation of PSp(4,3) &cong; &Omega;(5,3)).
+</p>
+
+<p>
+Each eigenspace is an irreducible module for the corresponding group, and the inclusions are restrictions along the Lie algebra chain. The spectrum of a graph encodes the shadows of representation theory.
+</p>
+
+<h2>The Hecke algebras</h2>
+
+<p>
+The Petersen graph and the Schl&auml;fli graph are both <b>Sabidussi coset graphs</b>: the Petersen graph is Sab(A₅, S₃, HaH) and the Schl&auml;fli graph is Sab(PSp(4,3), (C₂⁴):A₅, HaH). In both cases, the pair (G, H) is a <b>Gelfand pair</b>&mdash;the Hecke algebra H(G,H) = End<sub>G</sub>(C[G/H]) is commutative.
+</p>
+
+<p>
+Both Hecke algebras have rank 3: three basis elements T₀, T₁, T₂ corresponding to the three double cosets (identity, adjacent, non-adjacent). Both are abstractly isomorphic to C³. But the structure constants&mdash;the multiplication rules&mdash;encode the SRG parameters:
+</p>
+
+<h3>Petersen: SRG(10, 3, 0, 1)</h3>
+<div class="chain">T₁² = 3T₀ + T₂
+T₁T₂ = 2T₁ + 2T₂
+T₂² = 6T₀ + 4T₁ + 3T₂</div>
+
+<h3>Schl&auml;fli: SRG(27, 10, 1, 5)</h3>
+<div class="chain">T₁² = 10T₀ + T₁ + 5T₂
+T₁T₂ = 8T₁ + 5T₂
+T₂² = 16T₀ + 8T₁ + 10T₂</div>
+
+<p>
+The structure constant c<sub>ijk</sub> counts two-step paths through the orbital graphs. For T₁² in the Petersen graph, the diagonal entry is 3 (each vertex has 3 neighbours), the adjacent entry is 0 (&lambda; = 0, no common neighbours for adjacent vertices), and the non-adjacent entry is 1 (&mu; = 1, exactly one common neighbour for non-adjacent vertices).
+</p>
+
+<hr>
+
+<div class="pullquote">
+The Petersen graph is not &ldquo;a graph that happens to relate to the 27 lines.&rdquo; It is the shadow of sl(5) inside E₆, made visible by the geometry of cubic surfaces. Every time you see the Petersen graph in mathematics&mdash;as a Moore graph, as a Kneser graph, as the obstruction in the four-colour theorem, as a forbidden minor for linkless embedding&mdash;you are seeing a fragment of E₆. The Clebsch surface is the cubic surface where this fragment is most clearly exposed, because its S₅ symmetry is exactly the Weyl group of the A₄ subalgebra sitting inside E₆.
+</div>
+
+<div class="footnote">
+<p>
+All computations verified in GAP 4 with the GRAPE package. The Hecke algebra multiplication tables, S₅ orbit decomposition, and induced subgraph parameters were computed from first principles using the Sabidussi coset construction.
+</p>
+<p style="margin-top: 0.8em;">
+Robin Langer, June 2026.
+</p>
+</div>
+
+</body>
+</html>

@@ -1,108 +1,137 @@
 \documentclass[border=15pt]{standalone}
 \usepackage{amsmath, amssymb}
 \usepackage{tikz}
-\usetikzlibrary{arrows.meta}
 
-\definecolor{block0}{HTML}{E53935}
-\definecolor{block1}{HTML}{1E88E5}
-\definecolor{block2}{HTML}{43A047}
+\definecolor{ptcol}{HTML}{E53935}
+\definecolor{lncol}{HTML}{1E88E5}
 
 \begin{document}
 \begin{tikzpicture}[
-  vertex/.style={circle, draw, thick, minimum size=6.5mm, inner sep=0pt,
-                 font=\scriptsize\bfseries},
-  edge/.style={thick, gray!45},
+  edge/.style={thick, gray!40},
   title/.style={font=\Large\bfseries},
   subtitle/.style={font=\small, text=gray},
 ]
 
-\node[title] at (0, 6.5) {Tutte-Coxeter};
-\node[subtitle] at (0, 5.8) {$\mathrm{Aut} = (A6 . C2) : C2$, $|\mathrm{Aut}| = 1440$};
-\node[subtitle] at (0, 5.2) {$H = C10$ $\leq$ $\mathrm{Aut}$, 3 orbits of [10, 10, 10]};
+\node[title] at (0, 8.0) {Tutte-Coxeter graph};
+\node[subtitle] at (0, 7.3) {Levi graph of $\mathrm{GQ}(2{,}2)$ --- the $(3{,}8)$-cage, 30 vertices};
+\node[subtitle] at (0, 6.7) {$\mathrm{Aut} \cong S_6 \times C_2$, $|\mathrm{Aut}| = 1440$, girth $8$};
 
-\node[vertex, fill=block0!30] (v1) at (0.000, 4.500) {1};
-\node[vertex, fill=block0!30] (v2) at (-2.645, 3.641) {2};
-\node[vertex, fill=block0!30] (v3) at (-4.280, 1.391) {3};
-\node[vertex, fill=block0!30] (v4) at (-4.280, -1.391) {4};
-\node[vertex, fill=block0!30] (v5) at (-2.645, -3.641) {5};
-\node[vertex, fill=block0!30] (v6) at (-0.000, -4.500) {6};
-\node[vertex, fill=block0!30] (v7) at (2.645, -3.641) {7};
-\node[vertex, fill=block0!30] (v8) at (4.280, -1.391) {8};
-\node[vertex, fill=block1!30] (v9) at (2.889, -0.939) {9};
-\node[vertex, fill=block1!30] (v10) at (-2.889, 0.939) {10};
-\node[vertex, fill=block2!30] (v11) at (-1.498, 0.487) {11};
-\node[vertex, fill=block2!30] (v12) at (0.926, 1.274) {12};
-\node[vertex, fill=block1!30] (v13) at (1.785, 2.457) {13};
-\node[vertex, fill=block1!30] (v14) at (-1.785, -2.457) {14};
-\node[vertex, fill=block2!30] (v15) at (-0.926, -1.274) {15};
-\node[vertex, fill=block2!30] (v16) at (1.498, -0.487) {16};
-\node[vertex, fill=block2!30] (v17) at (0.000, 1.575) {17};
-\node[vertex, fill=block1!30] (v18) at (0.000, 3.038) {18};
-\node[vertex, fill=block1!30] (v19) at (-0.000, -3.038) {19};
-\node[vertex, fill=block2!30] (v20) at (-0.000, -1.575) {20};
-\node[vertex, fill=block2!30] (v21) at (1.498, 0.487) {21};
-\node[vertex, fill=block2!30] (v22) at (-0.926, 1.274) {22};
-\node[vertex, fill=block1!30] (v23) at (-1.785, 2.457) {23};
-\node[vertex, fill=block1!30] (v24) at (1.785, -2.457) {24};
-\node[vertex, fill=block2!30] (v25) at (0.926, -1.274) {25};
-\node[vertex, fill=block2!30] (v26) at (-1.498, -0.487) {26};
-\node[vertex, fill=block1!30] (v27) at (-2.889, -0.939) {27};
-\node[vertex, fill=block1!30] (v28) at (2.889, 0.939) {28};
-\node[vertex, fill=block0!30] (v29) at (4.280, 1.391) {29};
-\node[vertex, fill=block0!30] (v30) at (2.645, 3.641) {30};
+\coordinate (p1) at (0.0000, 6.0000);
+\coordinate (p2) at (0.0000, 4.0000);
+\coordinate (p3) at (0.0000, 2.2000);
+\coordinate (p4) at (0.0000, 1.5000);
+\coordinate (p5) at (-2.8532, 0.9271);
+\coordinate (p6) at (-2.9389, -4.0451);
+\coordinate (p7) at (-5.7063, 1.8541);
+\coordinate (p8) at (-3.8042, 1.2361);
+\coordinate (p9) at (-2.0923, 0.6798);
+\coordinate (p10) at (-1.4266, 0.4635);
+\coordinate (p11) at (-1.7634, -2.4271);
+\coordinate (p12) at (2.9389, -4.0451);
+\coordinate (p13) at (-3.5267, -4.8541);
+\coordinate (p14) at (-2.3511, -3.2361);
+\coordinate (p15) at (-1.2931, -1.7798);
+\coordinate (p16) at (-0.8817, -1.2135);
+\coordinate (p17) at (1.7634, -2.4271);
+\coordinate (p18) at (4.7553, 1.5451);
+\coordinate (p19) at (3.5267, -4.8541);
+\coordinate (p20) at (2.3511, -3.2361);
+\coordinate (p21) at (1.2931, -1.7798);
+\coordinate (p22) at (0.8817, -1.2135);
+\coordinate (p23) at (2.8532, 0.9271);
+\coordinate (p24) at (0.0000, 5.0000);
+\coordinate (p25) at (5.7063, 1.8541);
+\coordinate (p26) at (3.8042, 1.2361);
+\coordinate (p27) at (2.0923, 0.6798);
+\coordinate (p28) at (1.4266, 0.4635);
+\coordinate (p29) at (0.0000, 3.0000);
+\coordinate (p30) at (-4.7553, 1.5451);
 
-\draw[thick, block0!60] (v1) -- (v2);
-\draw[edge] (v1) -- (v18);
-\draw[thick, block0!60] (v1) -- (v30);
-\draw[thick, block0!60] (v2) -- (v3);
-\draw[edge] (v2) -- (v23);
-\draw[thick, block0!60] (v3) -- (v4);
-\draw[edge] (v3) -- (v10);
-\draw[thick, block0!60] (v4) -- (v5);
-\draw[edge] (v4) -- (v27);
-\draw[thick, block0!60] (v5) -- (v6);
-\draw[edge] (v5) -- (v14);
-\draw[thick, block0!60] (v6) -- (v7);
-\draw[edge] (v6) -- (v19);
-\draw[thick, block0!60] (v7) -- (v8);
-\draw[edge] (v7) -- (v24);
-\draw[edge] (v8) -- (v9);
-\draw[thick, block0!60] (v8) -- (v29);
-\draw[thick, block1!60] (v9) -- (v10);
-\draw[edge] (v9) -- (v16);
-\draw[edge] (v10) -- (v11);
-\draw[thick, block2!60] (v11) -- (v12);
-\draw[thick, block2!60] (v11) -- (v20);
-\draw[edge] (v12) -- (v13);
-\draw[thick, block2!60] (v12) -- (v25);
-\draw[thick, block1!60] (v13) -- (v14);
-\draw[edge] (v13) -- (v30);
-\draw[edge] (v14) -- (v15);
-\draw[thick, block2!60] (v15) -- (v16);
-\draw[thick, block2!60] (v15) -- (v22);
-\draw[thick, block2!60] (v16) -- (v17);
-\draw[edge] (v17) -- (v18);
-\draw[thick, block2!60] (v17) -- (v26);
-\draw[thick, block1!60] (v18) -- (v19);
-\draw[edge] (v19) -- (v20);
-\draw[thick, block2!60] (v20) -- (v21);
-\draw[thick, block2!60] (v21) -- (v22);
-\draw[edge] (v21) -- (v28);
-\draw[edge] (v22) -- (v23);
-\draw[thick, block1!60] (v23) -- (v24);
-\draw[edge] (v24) -- (v25);
-\draw[thick, block2!60] (v25) -- (v26);
-\draw[edge] (v26) -- (v27);
-\draw[thick, block1!60] (v27) -- (v28);
-\draw[edge] (v28) -- (v29);
-\draw[thick, block0!60] (v29) -- (v30);
+\draw[edge] (p1) -- (p2);
+\draw[edge] (p1) -- (p30);
+\draw[edge] (p1) -- (p18);
+\draw[edge] (p2) -- (p3);
+\draw[edge] (p2) -- (p23);
+\draw[edge] (p3) -- (p4);
+\draw[edge] (p3) -- (p10);
+\draw[edge] (p4) -- (p27);
+\draw[edge] (p4) -- (p5);
+\draw[edge] (p5) -- (p14);
+\draw[edge] (p5) -- (p6);
+\draw[edge] (p6) -- (p19);
+\draw[edge] (p6) -- (p7);
+\draw[edge] (p7) -- (p24);
+\draw[edge] (p7) -- (p8);
+\draw[edge] (p8) -- (p9);
+\draw[edge] (p8) -- (p29);
+\draw[edge] (p9) -- (p10);
+\draw[edge] (p9) -- (p16);
+\draw[edge] (p10) -- (p11);
+\draw[edge] (p11) -- (p20);
+\draw[edge] (p11) -- (p12);
+\draw[edge] (p12) -- (p25);
+\draw[edge] (p12) -- (p13);
+\draw[edge] (p13) -- (p30);
+\draw[edge] (p13) -- (p14);
+\draw[edge] (p14) -- (p15);
+\draw[edge] (p15) -- (p22);
+\draw[edge] (p15) -- (p16);
+\draw[edge] (p16) -- (p17);
+\draw[edge] (p17) -- (p18);
+\draw[edge] (p17) -- (p26);
+\draw[edge] (p18) -- (p19);
+\draw[edge] (p19) -- (p20);
+\draw[edge] (p20) -- (p21);
+\draw[edge] (p21) -- (p28);
+\draw[edge] (p21) -- (p22);
+\draw[edge] (p22) -- (p23);
+\draw[edge] (p23) -- (p24);
+\draw[edge] (p24) -- (p25);
+\draw[edge] (p25) -- (p26);
+\draw[edge] (p26) -- (p27);
+\draw[edge] (p27) -- (p28);
+\draw[edge] (p28) -- (p29);
+\draw[edge] (p29) -- (p30);
 
-\node[draw, rounded corners, fill=gray!5, text width=12cm, align=left, font=\small]
-  at (0, -6.5) {
-  \textbf{Orbit decomposition} ($C10$, order 10) \\[4pt]
-  \textcolor{block0}{$\blacksquare$} $O_{1}$ = \{1,2,3,4,5,6,7,8,29,30\} (cycle) \\
-  \textcolor{block1}{$\blacksquare$} $O_{2}$ = \{9,10,13,14,18,19,23,24,27,28\} \\
-  \textcolor{block2}{$\blacksquare$} $O_{3}$ = \{11,12,15,16,17,20,21,22,25,26\}
+\node[circle, draw, thick, fill=ptcol!25, minimum size=5.5mm, inner sep=0pt, font=\scriptsize\bfseries] at (0.0000, 6.0000) {1};
+\node[circle, draw, thick, fill=lncol!25, minimum size=5mm, inner sep=0pt, font=\scriptsize\bfseries] at (0.0000, 4.0000) {2};
+\node[circle, draw, thick, fill=ptcol!25, minimum size=4.5mm, inner sep=0pt, font=\tiny\bfseries] at (0.0000, 2.2000) {3};
+\node[circle, draw, thick, fill=lncol!25, minimum size=4mm, inner sep=0pt, font=\tiny\bfseries] at (0.0000, 1.5000) {4};
+\node[circle, draw, thick, fill=ptcol!25, minimum size=4.5mm, inner sep=0pt, font=\tiny\bfseries] at (-2.8532, 0.9271) {5};
+\node[circle, draw, thick, fill=lncol!25, minimum size=5mm, inner sep=0pt, font=\scriptsize\bfseries] at (-2.9389, -4.0451) {6};
+\node[circle, draw, thick, fill=ptcol!25, minimum size=5.5mm, inner sep=0pt, font=\scriptsize\bfseries] at (-5.7063, 1.8541) {7};
+\node[circle, draw, thick, fill=lncol!25, minimum size=5mm, inner sep=0pt, font=\scriptsize\bfseries] at (-3.8042, 1.2361) {8};
+\node[circle, draw, thick, fill=ptcol!25, minimum size=4.5mm, inner sep=0pt, font=\tiny\bfseries] at (-2.0923, 0.6798) {9};
+\node[circle, draw, thick, fill=lncol!25, minimum size=4mm, inner sep=0pt, font=\tiny\bfseries] at (-1.4266, 0.4635) {10};
+\node[circle, draw, thick, fill=ptcol!25, minimum size=4.5mm, inner sep=0pt, font=\tiny\bfseries] at (-1.7634, -2.4271) {11};
+\node[circle, draw, thick, fill=lncol!25, minimum size=5mm, inner sep=0pt, font=\scriptsize\bfseries] at (2.9389, -4.0451) {12};
+\node[circle, draw, thick, fill=ptcol!25, minimum size=5.5mm, inner sep=0pt, font=\scriptsize\bfseries] at (-3.5267, -4.8541) {13};
+\node[circle, draw, thick, fill=lncol!25, minimum size=5mm, inner sep=0pt, font=\scriptsize\bfseries] at (-2.3511, -3.2361) {14};
+\node[circle, draw, thick, fill=ptcol!25, minimum size=4.5mm, inner sep=0pt, font=\tiny\bfseries] at (-1.2931, -1.7798) {15};
+\node[circle, draw, thick, fill=lncol!25, minimum size=4mm, inner sep=0pt, font=\tiny\bfseries] at (-0.8817, -1.2135) {16};
+\node[circle, draw, thick, fill=ptcol!25, minimum size=4.5mm, inner sep=0pt, font=\tiny\bfseries] at (1.7634, -2.4271) {17};
+\node[circle, draw, thick, fill=lncol!25, minimum size=5mm, inner sep=0pt, font=\scriptsize\bfseries] at (4.7553, 1.5451) {18};
+\node[circle, draw, thick, fill=ptcol!25, minimum size=5.5mm, inner sep=0pt, font=\scriptsize\bfseries] at (3.5267, -4.8541) {19};
+\node[circle, draw, thick, fill=lncol!25, minimum size=5mm, inner sep=0pt, font=\scriptsize\bfseries] at (2.3511, -3.2361) {20};
+\node[circle, draw, thick, fill=ptcol!25, minimum size=4.5mm, inner sep=0pt, font=\tiny\bfseries] at (1.2931, -1.7798) {21};
+\node[circle, draw, thick, fill=lncol!25, minimum size=4mm, inner sep=0pt, font=\tiny\bfseries] at (0.8817, -1.2135) {22};
+\node[circle, draw, thick, fill=ptcol!25, minimum size=4.5mm, inner sep=0pt, font=\tiny\bfseries] at (2.8532, 0.9271) {23};
+\node[circle, draw, thick, fill=lncol!25, minimum size=5mm, inner sep=0pt, font=\scriptsize\bfseries] at (0.0000, 5.0000) {24};
+\node[circle, draw, thick, fill=ptcol!25, minimum size=5.5mm, inner sep=0pt, font=\scriptsize\bfseries] at (5.7063, 1.8541) {25};
+\node[circle, draw, thick, fill=lncol!25, minimum size=5mm, inner sep=0pt, font=\scriptsize\bfseries] at (3.8042, 1.2361) {26};
+\node[circle, draw, thick, fill=ptcol!25, minimum size=4.5mm, inner sep=0pt, font=\tiny\bfseries] at (2.0923, 0.6798) {27};
+\node[circle, draw, thick, fill=lncol!25, minimum size=4mm, inner sep=0pt, font=\tiny\bfseries] at (1.4266, 0.4635) {28};
+\node[circle, draw, thick, fill=ptcol!25, minimum size=4.5mm, inner sep=0pt, font=\tiny\bfseries] at (0.0000, 3.0000) {29};
+\node[circle, draw, thick, fill=lncol!25, minimum size=5mm, inner sep=0pt, font=\scriptsize\bfseries] at (-4.7553, 1.5451) {30};
+
+\node[draw, rounded corners, fill=gray!5,
+  text width=11cm, align=left, font=\small]
+  at (0, -8.0) {
+  \textbf{Generalized quadrangle GQ(2,2)} --- 6 concentric pentagons under $C_5$ \\[4pt]
+  \textcolor{ptcol}{$\blacksquare$} 15 points = duads (2-element subsets of $\{1,\ldots,6\}$) \\
+  \textcolor{lncol}{$\blacksquare$} 15 lines = synthemes (partitions into 3 pairs) \\[2pt]
+  $\mathrm{Aut}(\mathrm{GQ}(2{,}2)) = S_6 \cong \mathrm{PSp}(4{,}2)$; \ 
+  duality realizes $\mathrm{Out}(S_6) \cong C_2$
 };
 
 \end{tikzpicture}

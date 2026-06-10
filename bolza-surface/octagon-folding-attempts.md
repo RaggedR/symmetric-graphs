@@ -274,3 +274,216 @@ Split the octagon by angle (upper vs lower semicircle), compute (s,t) per handle
 **Root cause:** The pentagon is NOT a parallelogram. It extends BEYOND the unit square [0,1]² in the bilinear parameterization. Vertices in the "overhang" (near V₄, with u < 0 or u > 1) get wrapped to the wrong side of the torus.
 
 **The fix needed:** When a triangle has vertices that span a wrapping discontinuity (e.g., one vertex at u=0.05 and another at u=0.85 after mod 1), the triangle should be drawn with the CLOSER copy — i.e., one vertex should use u=0.05 and the other u=0.85-1=-0.15, so they're close together. This is the same problem as drawing on a periodic domain (like a world map near the date line).
+
+## Attempt 8: R⁴ algebraic curve embedding via Poincaré series
+
+**New approach:** Abandon R³ entirely. The Bolza surface is the algebraic curve y² = x⁵ − x, which lives naturally in C² = R⁴ with no singularities. Map each point z in the octagon to (x(z), y(z)) ∈ C², giving R⁴ coordinates (Re x, Im x, Re y, Im y). Visualize by projecting R⁴ → R³.
+
+**Key mathematical idea:** For the hyperelliptic curve y² = x⁵ − x, the two holomorphic differentials are ω₁ = dx/(2y) and ω₂ = x·dx/(2y). Their ratio is x. So x(z) = Θ₂(z)/Θ₁(z) (up to Möbius), where Θ₁, Θ₂ are weight-2 Poincaré series over the Fuchsian group Γ = ker(Δ(2,3,8) → GL(2,3)).
+
+**The Poincaré series:** For a pole point p ∈ H (outside the fundamental domain):
+
+    Θ_p(z) = Σ_{γ ∈ Γ} 1 / ((a_γ − p·c_γ)z + (b_γ − p·d_γ))²
+
+where γ = [[a,b],[c,d]] ∈ SL(2,R). This converges absolutely because the 1/(z−p)² seed provides extra decay beyond the weight-2 automorphy factor. Two series with different poles p₁, p₂ give linearly independent weight-2 forms; their ratio is a degree-2 meromorphic function on the surface (the hyperelliptic projection x, up to Möbius).
+
+**Calibration:** The 6 Weierstrass points (= 6 order-8 vertices of the {8,3} cell complex = cosets of ⟨c⟩ in GL(2,3)) should map to x ∈ {0, 1, −1, i, −i, ∞}. Evaluate the ratio Θ₂/Θ₁ at these 6 points, then fit a Möbius transformation to match the known x-values. Try all 2 × 4! = 48 possible assignments, pick the one with lowest error.
+
+**Implementation:** Files `bolza_group.py` (shared GL(2,3) + SL(2,R) infrastructure, extracted from the 4 duplicate copies) and `bolza_r4.py` (main pipeline).
+
+**Results:**
+- 1101 Γ-elements enumerated from 50,000 Δ-elements via BFS
+- Systole trace: 4.8284 = 2 + 2√2, exact match ✓
+- 6 Weierstrass points correctly identified ✓
+- Automorphy check: max |x(γz) − x(z)| = 7.5 × 10⁻², mean 4.7 × 10⁻² (∼5% error)
+- Degree check: preimages come in pairs (distances 0.0177, 0.0177), confirming degree 2 ✓
+- Möbius calibration total error: 1.73 (summed over 5 finite Weierstrass points)
+- R⁴ coordinate ranges: Re(x) ∈ [−11, 7], Re(y) ∈ [0, 707] (huge spike near x = ∞)
+
+**What works:**
+- The Poincaré series machinery is correct — automorphy holds to ∼5%
+- The degree-2 structure of x is confirmed (preimage pairs)
+- y² = x⁵ − x holds to machine precision (but this is tautological: y = √(x⁵−x))
+- No NaN/Inf vertices; all 2160 mesh points are finite
+- Subdivided mesh: 48 × 64 = 3072 sub-triangles, 2160 vertices
+
+**What doesn't work:**
+- Möbius calibration error of 1.73 is too high — the assignment of x-values to Weierstrass points may be wrong, or the series needs more terms
+- R⁴ coordinates are extremely non-uniform: y ∼ |x|^{5/2}, so near x = ∞ the coordinates blow up to ∼700. arcsinh normalization + centering + rescaling helps but produces a distorted shape
+- Visualization (Three.js) not yet verified — headless Playwright can't render WebGL
+- The 5% automorphy error suggests 1101 Γ-elements may not be enough. Convergence is slow for weight-2 series (marginal exponent)
+
+**Open questions:**
+1. Is 5% automorphy error acceptable, or does the series need fundamentally more terms?
+2. The assignment W2 → x = ∞ puts the pole at the center of the octagon — every triangle has large y-values near the center. Would a different normalization of the curve (e.g., degree-6 model y² = f₆(x) with no point at infinity) avoid the coordinate blowup?
+3. Should we use weight-4 Poincaré series (which converge faster) instead of weight-2, then extract x from the Sym²(S₂) decomposition?
+4. Would the Schottky uniformization approach (products over a free group on 2 generators) converge faster than the Poincaré series approach?
+
+**Root cause analysis:** The 5% error is NOT because we need more terms. With 1101 Γ-elements, the tail of the series contributes < 0.1% (terms decay as |γ|⁻⁴, counting grows as |γ|², so convergence goes as 1/N). The actual problem: the Poincaré series converges to different accuracy at different points because evaluating at γ₀(z) requires terms near γ₀⁻¹·(neighborhood of pole), which may not be in our 1101-element truncation. The error is in the AUTOMORPHY CHECK, not the series itself. An "adaptive summation" (including the most relevant Γ-elements for each evaluation point) would fix this, but is complex to implement.
+
+## Attempt 9 plan: Discrete Hodge theory (finite element, no infinite sums)
+
+**Core idea:** Instead of reconstructing the holomorphic differentials from an infinite Poincaré series, solve for them directly as a finite element problem on the octagon mesh. A holomorphic differential φ(z) satisfies:
+- Δφ = 0 in the octagon interior (holomorphic ⟹ harmonic in the Euclidean metric, since the Poincaré disk is conformally flat)
+- φ(T_k z) = (c_k z + d_k)² · φ(z) on identified boundary pairs
+
+where T_k are the 4 side-pairing transformations (generators of Γ acting as SL(2,R) matrices).
+
+This is a LINEAR eigenvalue-0 problem for the Laplacian with twisted boundary conditions. The solution space has dimension g = 2 (the two holomorphic differentials). No infinite sums, no group enumeration, no convergence issues. Accuracy depends only on mesh resolution.
+
+**Why this works:**
+- Holomorphicity = harmonicity on a conformally flat domain (the Poincaré disk). The Cauchy-Riemann equations become Δu = 0, Δv = 0 where φ = u + iv.
+- The octagon boundary identifications with their automorphy twists (c_k z + d_k)² turn this into a standard FEM problem with periodic boundary conditions and a complex phase twist.
+- The kernel of the resulting sparse linear system is exactly the 2D space of holomorphic differentials.
+- Their ratio φ₂/φ₁ gives x (up to Möbius), same as attempt 8.
+
+**What's needed that we don't have:**
+1. **Side-pairing transformations** T_{a₁}, T_{b₁}, T_{a₂}, T_{b₂} as SL(2,R) matrices. These map each octagon side to its identified partner. They are generators of Γ = π₁(Bolza). Can find them by:
+   - Searching the 1101 Γ-elements from attempt 8 for the ones that map V₀ → V₃ and V₁ → V₂ (for the a₁ pairing), etc.
+   - Or computing them directly from the octagon vertex geometry.
+2. **Fine mesh with identified boundary vertices.** Subdivide the 48 triangles, then MERGE identified boundary vertex pairs (rather than keeping them separate as in attempt 8). The twist factors relate φ-values at merged pairs.
+3. **Cotangent-weight Laplacian** on the subdivided mesh. Standard FEM construction.
+
+**Advantages over Poincaré series (attempt 8):**
+- No infinite sum — finite linear algebra (sparse eigenvalue solve)
+- No Fuchsian group enumeration beyond the 4 generators
+- Error controlled by mesh refinement, which is straightforward
+- Naturally handles the interior of the octagon uniformly (no position-dependent convergence)
+
+**Risks:**
+- Finding the side-pairing transformations correctly (orientation matters)
+- The twist factors (c_k z + d_k)² couple Re(φ) and Im(φ), making the linear system complex
+- The pole of x (at one Weierstrass point) creates large values on the mesh — same visualization issue as attempt 8
+- Need to verify that the discrete Laplacian's kernel is actually 2-dimensional (mesh quality matters)
+
+**The coordinate blowup problem (shared with attempt 8):**
+The curve y² = x⁵ − x has a point at infinity where |x| → ∞, |y| → ∞. Any R⁴ embedding using (Re x, Im x, Re y, Im y) must deal with this. Options:
+- Stereographic projection on x: map x ∈ C∪{∞} to S² via (2Re x/(1+|x|²), 2Im x/(1+|x|²), (|x|²−1)/(|x|²+1)), then embed using (S² coords, bounded y). This gives a BOUNDED embedding.
+- Two-chart approach: use (x, y) where |x| < C and (1/x, y/x³) where |x| ≥ C, with smooth interpolation.
+- Accept the blowup and use arcsinh normalization (attempt 8's approach — ugly but functional).
+
+## Attempt 9 result: FAILED
+
+Ran but hit three interconnected issues:
+1. Side-pairing matrices for a₁ and b₁ had det = 3 (should be 1) — the assumed octagon vertex labeling was wrong
+2. Only 16/2145 vertices classified as boundary (used radius threshold, but octagon sides curve inward)
+3. Two different Weierstrass points (W0, W5) mapped to the same mesh vertex (W5 was outside the octagon at |w| = 0.897)
+
+**Root cause:** All three issues stem from incorrect assumptions about the fundamental domain geometry, specifically about which octagon vertices correspond to which side-pairing identifications.
+
+## Attempt 10: GL(2,3) labels as the single source of truth
+
+**Diagnosis of why attempts 8–9 failed:**
+
+The fundamental domain, side pairings, and Weierstrass points were all derived from geometric heuristics (closest 48 triangles, vertex angle ordering, coset orbits). These heuristics produced inconsistent data:
+- 9 distinct order-8 vertex positions in the disk (should map to 6 on the surface)
+- 16 triangles meeting at the center (should be 8 for an order-8 vertex)
+- Weierstrass points at |w| > R_oct (outside the octagon entirely)
+
+**The fix:** Use the GL(2,3) labels — already computed for each triangle — as the SOLE source of structural data. No geometric guessing.
+
+### Key mathematical insights
+
+**Side pairings from GL(2,3):**
+A boundary edge separates a fund domain triangle (label g₁, matrix M₁) from an exterior triangle (label g₂, matrix M₂). The side-pairing γ maps the exterior triangle to its fund domain equivalent:
+
+    γ = M_fund(g₂) · M_ext(g₂)⁻¹
+
+Since both matrices map to the same GL(2,3) element g₂, their ratio maps to the identity — confirming γ ∈ Γ. This requires keeping the SL(2,R) matrices of boundary-adjacent exterior triangles, which the BFS already generates but currently discards.
+
+**Weierstrass points are NOT order-8 vertices:**
+The 6 Weierstrass points are fixed points of the hyperelliptic involution ι = c⁴ ∈ GL(2,3). On the disk, c⁴ acts as z → −z. The center (z = 0) is the only fixed point of c⁴ itself. The other 5 are at positions where some γ ∈ Γ satisfies γ(−z) = z. Each such γ gives a Weierstrass point at:
+
+    z_W = fixed_point(M_γ · c_real⁴)
+
+This is an order-2 isometry with a unique fixed point in H.
+
+**The 16-triangle anomaly at the center:**
+The "closest 48" heuristic grabs triangles from both the identity Gamma-coset AND the c⁴-coset at the center (since c⁴ fixes the center, both cosets have triangles at distance 0). This corrupts the fundamental domain. Fix: use GL(2,3) labels to select exactly one triangle per label, breaking ties consistently.
+
+### Implementation plan
+
+1. **BFS with full data retention:** Generate ~4000 triangles, keeping SL(2,R) matrices AND GL(2,3) labels for ALL of them (not just the 48 closest)
+
+2. **Proper fundamental domain:** For each GL(2,3) label, select the triangle whose ORDER-2 VERTEX (wa) is closest to the origin. This gives exactly 48 triangles, one per label, with no duplication. Verify: exactly 8 triangles share each order-8 vertex position.
+
+3. **Side pairings from boundary adjacency:** For each edge on the octagon boundary, find the adjacent exterior triangle, look up its GL(2,3) label, find the corresponding fund domain triangle, and compute γ = M_fund · M_ext⁻¹. This gives 4 generators of Γ (one per identified side pair).
+
+4. **Weierstrass points:** Compute M_γ · c_real⁴ for the 4 generators (and their products), find fixed points, check which are inside the fundamental domain. Should give 6 distinct points.
+
+5. **Subdivide + FEM:** With correct identifications, build the discrete Laplacian and solve for holomorphic differentials (attempt 9's approach, now with correct boundary data).
+
+6. **Stereographic embedding:** Map x → S² (bounded), avoiding the coordinate blowup.
+
+### Attempt 10 result: PARTIAL SUCCESS
+
+The algebraic side-pairing approach works:
+- **14 Gamma generators found** (all with |tr| = 4.8284 = systole trace, det = 1) ✓
+- **80 boundary pairs matched** via the Gamma elements ✓
+- **Laplacian eigenvalue solve** ran successfully; spectrum shows lambda_0 ≈ 0 (constant kernel) ✓
+
+Issues remaining:
+- 17 "Weierstrass points" found (should be 6) — the Gamma-orbit deduplication doesn't account for identified octagon vertices and points outside the fundamental domain
+- Some fund domain triangles still have wc outside the octagon (8/48 at |w| = 0.84)
+- The eigenvalue gap (1e-3) between the constant and the next eigenvector suggests the boundary identification may be incomplete
+- The Laplacian kernel should be 2D on a properly identified genus-2 surface (one constant + one from the topology); getting only 1D kernel means the surface isn't fully "closed"
+
+**Key insight that broke the logjam:** Computing neighbors ALGEBRAICALLY from the GL(2,3) multiplication table, not geometrically from vertex proximity. For fund triangle (label g, matrix M), the neighbor via generator 'a' has label g·a and EXPECTED matrix M·a_real. The ACTUAL fund domain triangle with that label has matrix M'. The ratio gamma = M' · (M·a_real)⁻¹ is the side-pairing element. This is exact — no tolerance matching needed.
+
+**Critical mathematical error discovered:** The scalar Laplacian on functions has kernel = {constants} on any compact surface. The holomorphic differentials live in the kernel of the d-bar operator (or the Hodge Laplacian on 1-forms), NOT the scalar Laplacian. The eigenvalue spectrum (lambda_1 through lambda_5 all at ~1e-3 with multiplicity 5) is actually the FIRST LAPLACIAN EIGENVALUE of the Bolza surface — confirming the boundary identification works, but solving the wrong equation.
+
+Full mathematical analysis written to MATHEMATICS.md.
+
+## Attempt 11 plan: Period matrix from the algebraic side
+
+**Strategy shift:** Stop fighting the hyperbolic side. Start from the algebraic curve y² = x⁵ − x, where everything is explicit, and work TOWARD the Poincaré disk.
+
+**Step 1: Compute the period matrix Omega.**
+The holomorphic differentials omega_1 = dx/(2y) and omega_2 = x·dx/(2y) are explicit. Choose a canonical homology basis {A1, A2, B1, B2} by connecting branch points {0, 1, -1, i, -i, infinity} with branch cuts. Integrate omega_k along each cycle using Gauss-Jacobi quadrature (handles the sqrt singularities at branch points). The period matrix is Omega = A^{-1} B where A_{jk} = integral_{A_k} omega_j, B_{jk} = integral_{B_k} omega_j.
+
+**Step 2: Compute the Riemann theta function.**
+Theta(z; Omega) = sum_{n in Z^2} exp(pi*i * n^T Omega n + 2*pi*i * n^T z). For genus 2, this is a double sum that converges exponentially fast (each term decays as exp(-pi * |n|^2 * Im(Omega))).
+
+**Step 3: Abel-Jacobi map on the algebraic curve.**
+For each point P = (x, y) on the curve, compute u(P) = integral_{P0}^{P} (omega_1, omega_2) by numerical path integration along the curve. This gives a map from the curve to the Jacobian J = C^2 / (Z^2 + Omega Z^2).
+
+**Step 4: Inverse Abel-Jacobi map via theta functions.**
+Given a point u in the Jacobian, recover x(u) using the Thomae-type formula or by solving Theta(u - Abel(P); Omega) = 0 for P. This inverts Step 3.
+
+**Step 5: Connect to the Poincaré disk.**
+The Abel-Jacobi map u: curve -> Jacobian lifts to a map u_tilde: H -> C^2 on the universal cover. On H, u_tilde is holomorphic with u_tilde(gamma(z)) = u_tilde(z) + period(gamma) for gamma in Gamma. The Gamma generators (found in Attempt 10) map to LATTICE TRANSLATIONS in C^2.
+
+To find u_tilde(z) for a disk point z:
+- Evaluate u_tilde at the Weierstrass points (known in both pictures)
+- Integrate the holomorphic differentials (as weight-2 forms) along paths in H from one Weierstrass point to z
+- Or: use the Poincaré series from Attempt 8 to evaluate phi_1(z), phi_2(z), then u_tilde(z) = integral phi(z) dz
+
+**Step 6: Compose the maps.**
+For a disk point z: z -> u_tilde(z) -> (x, y) via inverse Abel-Jacobi. This gives the R^4 embedding.
+
+**Why this should work:**
+- Steps 1–4 are entirely on the algebraic side — no Fuchsian group needed, standard numerical methods
+- Step 5 is the only place where the two pictures meet, and it can be done pointwise
+- The period matrix for y² = x⁵ − x may have a known closed form (the Bolza surface has CM by Z[i])
+- Genus 2 means 2×2 matrices and double sums — computationally tiny
+
+**Risk:** Step 5 still requires evaluating holomorphic differentials on H (the same Poincaré series problem). But now we have the period matrix as a CROSS-CHECK: the series must reproduce the known periods. This constrains the error and gives a validation criterion that Attempt 8 lacked.
+
+### Attempt 11 result: STUCK on canonical homology basis
+
+Computed period integrals numerically (trapezoidal rule with complex branch tracking). Got finite A-periods and B-periods, but the resulting Omega is NOT symmetric (error 0.98) and Im(Omega) has a negative eigenvalue. Theta function explodes to 10^38.
+
+**Root cause:** The cycles I chose don't form a canonical homology basis satisfying A_j · B_k = delta_{jk}. Getting this right requires:
+1. Correct branch point ordering
+2. Branch cuts that don't cross each other
+3. A-cycles that encircle exactly one cut
+4. B-cycles that connect the correct pairs of cuts WITHOUT crossing other cuts
+5. Correct intersection numbers verified
+
+This is a well-known difficulty in computational algebraic geometry. Standard algorithms (Deconinck-van Hoeij 2001, Tretkoff-Tretkoff) handle it automatically, but implementing them from scratch is non-trivial.
+
+**Options:**
+1. Use SageMath's `hyperelliptic_curves` module (has period matrix computation built in)
+2. Implement Deconinck-van Hoeij's algorithm (proper cycle construction + Gauss quadrature)
+3. Fix my cycles by computing intersection numbers and applying a symplectic correction
+4. Abandon the period matrix route and go back to fixing Attempt 8's visualization

@@ -1,0 +1,229 @@
+=== leanprover-community/mathlib4#39530 ===
+Title: feat(Combinatorics/SimpleGraph): group actions on simple graphs
+
+This adds the first connection between Mathlib's MulAction and SimpleGraph libraries. The GraphAction class asserts that a group action on the vertex type preserves the adjacency relation, and builds on it to define vertex-transitivity and arc-transitivity for graphs.
+
+The GraphAction typeclass gives adj_smul_iff (the biconditional for group actions) and toIso (each group element induces a graph automorphism). The IsVertexTransitive class combines GraphAction with IsPretransitive, and IsArcTransitive requires transitivity on ordered adjacent pairs (arcs).
+
+The main theorem is the standard characterization: a graph is arc-transitive if and only if it is vertex-transitive and locally transitive (the stabilizer of each vertex acts transitively on its neighbors). The forward direction is proved directly by composing a vertex-transporting element with a neighbor-transporting stabilizer element. The reverse direction shows that an arc-transitive graph with no isolated vertices is vertex-transitive.
+
+These definitions are the algebraic graph theory prerequisites for formalizing coset graphs (Sabidussi's construction) and the characterization of symmetric graphs via double cosets and involutions (Lorimer's theorem).
+
+---
+LLM tools were used to assist with Lean formalization. The mathematical content is the author's own work.
+
+
+
+=== leanprover-community/mathlib4#39548 ===
+Title: feat(Combinatorics/SimpleGraph): coset graphs (Sabidussi construction)
+
+This adds coset graphs (Sabidussi's construction) to Mathlib, building on the graph action infrastructure from #39530. Given a group `G`, a subgroup `H`, and a connection set `D` (a union of `(H,H)`-double cosets, closed under inversion, disjoint from `H`), the coset graph `Sab(G, H, D)` is the simple graph on `G ⧸ H` where `xH` is adjacent to `yH` whenever `x⁻¹y ∈ D`.
+
+The well-definedness proof — that adjacency is independent of coset representatives — uses the double coset stability of `D`. This is the core algebraic content of the construction. The file then shows that left multiplication by `G` preserves adjacency (`graphAction` instance) and that coset graphs are vertex-transitive.
+
+When `H ≤ K`, the natural projection `G ⧸ H → G ⧸ K` is a graph homomorphism for coset graphs sharing the same connection set `D`. The proof of `proj_adj` is trivial — adjacency is `x⁻¹y ∈ D` in both graphs, independent of the subgroup. This is the Sabidussi analogue of quotient by a block system: the orbits of `K` on `G ⧸ H` form blocks of size `[K : H]`, and the quotient graph is `Sab(G, K, D)`. For example, the Zhou graph (F182A, Sab(PSL(2,13), S₃), 182 vertices, cubic) projects to the Zhou-6 graph (Sab(PSL(2,13), D₁₂), 91 vertices, 6-regular) via S₃ ≤ D₁₂, and the dodecahedron (Sab(A₅, C₃)) projects to the Petersen graph (Sab(A₅, D₆)) via C₃ ≤ D₆.
+
+Sabidussi's construction generalizes Cayley graphs (which are the special case `H = ⊥`). Together with the representation theorem (a future PR), it gives a complete classification: every vertex-transitive graph is isomorphic to a coset graph.
+
+The definitions and proofs are from my honours thesis (*Symmetric Graphs and their Quotients*, arXiv:1306.4798).
+
+Depends on #39530.
+
+---
+LLM tools were used to assist with Lean formalization. The mathematical content is the author's own work.
+
+
+
+=== leanprover-community/mathlib4#39550 ===
+Title: feat(Combinatorics/SimpleGraph): Sabidussi representation theorem
+
+This proves Sabidussi's representation theorem: if a group G acts transitively on the vertices of a graph Γ while preserving adjacency, then Γ is isomorphic to the coset graph `Sab(G, Gᵥ, D)` where `Gᵥ` is the stabilizer of a basepoint and `D = {g ∈ G : Γ.Adj v (g • v)}` is the connection set.
+
+For arc-transitive (symmetric) graphs, the connection set D is a single double coset HaH, giving the classical Sabidussi coset graph Sab(G, H, HaH). For merely vertex-transitive graphs, D may be a union of several double cosets.
+
+The connection set D is shown to satisfy the IsConnectionSet axioms for the stabilizer subgroup: it is stable under left and right multiplication by stabilizer elements (since the stabilizer fixes v and the action preserves adjacency), closed under inversion (since the graph is undirected), and disjoint from the stabilizer (since the graph has no loops). The orbit-stabilizer equivalence V ≃ G ⧸ Gᵥ is then shown to preserve adjacency in both directions, completing the isomorphism.
+
+The definitions and proofs are from my honours thesis (*Symmetric Graphs and their Quotients*, arXiv:1306.4798).
+
+Depends on #39548.
+
+---
+LLM tools were used to assist with Lean formalization. The mathematical content is the author's own work.
+
+
+
+=== leanprover-community/mathlib4#39551 ===
+Title: feat(Combinatorics/SimpleGraph): Lorimer's theorem and quotient graphs
+
+This completes the algebraic theory of symmetric graphs by proving Lorimer's theorem (both directions) and the Lorimer quotient theorem, building on the Sabidussi representation theorem from #39550.
+
+Lorimer's theorem characterizes symmetric (arc-transitive) graphs in terms of coset graphs. The forward direction shows that Sab(G, H, HaH) is arc-transitive whenever a is an involution not in H. The proof establishes local transitivity at the identity coset by exploiting the double coset decomposition of neighbors, then transports it to all vertices by conjugation. The reverse direction shows that every arc-transitive graph's connection set is a single double coset GᵥaGᵥ, where a is the element swapping an arc (v, w). This a satisfies a ∉ Gᵥ and a² ∈ Gᵥ.
+
+The quotient theorem shows that the quotient of Sab(G, H, D) by an overgroup K ≥ H (with D ∩ K = ∅) is isomorphic to Sab(G, K, KDK) where KDK is the expanded connection set. The isomorphism is witnessed by Equiv.refl — the quotient graph and the coset graph with expanded connection set are the same graph up to the identity map on G ⧸ K.
+
+Together with #39530, #39548, and #39550, this gives a complete formalization of Chapters 1–2 of arXiv:1306.4798.
+
+Depends on #39550.
+
+---
+LLM tools were used to assist with Lean formalization. The mathematical content is the author's own work.
+
+
+
+=== leanprover-community/mathlib4#39649 ===
+Title: feat(Archive): Langer graph, Tutte 12-cage, and structural equality via G₂(2)
+
+This adds three constructions from the theory of generalized polygons over finite fields to Archive/, and proves they give the same graph using the Sabidussi representation theorem from #39548 and #39550.
+
+The Langer graph (63 vertices, 6-regular) is the collinearity graph of the split Cayley hexagon GH(2,2). It has three independent definitions: algebraically via the Zorn product on Q(6,2) (`langerSimpleGraph`), geometrically as the distance-2 graph of the Tutte 12-cage restricted to points (`tutte12Distance2Graph`), and group-theoretically as the coset graph Sab(G₂(2), H₁₉₂, D) where H₁₉₂ is the point stabiliser of order 192 (`langerCosetGraph`).
+
+The main result `langer_iso_tutte12_distance2` proves the algebraic and geometric definitions are isomorphic by composing two Sabidussi isos through a common coset graph. Both graphs are G₂(2)-invariant and arc-transitive, so `sabidussiIso` maps each to Sab(G₂(2), Stab(0), D). Since they have the same 6 neighbors at vertex 0, their connection sets are equal (`dist2_connectionSet_eq`), so both map to the same coset graph. The proof is `langerSabidussiIso.trans dist2SabidussiIso.symm`.
+
+![Langer graph](https://raw.githubusercontent.com/RaggedR/symmetric-graphs/main/lean/named_graphs/langer-63v.jpg)
+![Tutte 12-cage](https://raw.githubusercontent.com/RaggedR/symmetric-graphs/main/lean/named_graphs/tutte-12cage.jpg)
+
+Also included: the Tutte 12-cage (126 vertices, semisymmetric because GH(2,2) has no polarity over F₂), and self-orthogonality of the Q(6,2) parity-check matrix.
+
+Generator data was produced by `compute_g2_generators.py` in the source repo at RaggedR/symmetric-graphs.
+
+Depends on #39548 (coset graphs), #39550 (Sabidussi representation), #39551 (quotient graphs). The `sabidussiIso`, `connectionSet`, and `GraphAction` from those PRs are load-bearing in the equivalence proof.
+
+---
+LLM tools were used to assist with Lean formalization. The mathematical content is the author's own work.
+
+
+
+=== leanprover-community/mathlib4#39650 ===
+Title: feat(Archive): dodecahedron, Petersen graph, 3-cube, and antipodal quotients
+
+This defines the dodecahedron graph (Fin 20, 3-regular, 30 edges), the Petersen graph (Fin 10, as the antipodal quotient of the dodecahedron), and the 3-cube Q₃ (Fin 8, 3-regular, 12 edges) with its antipodal quotient proved equal to K₄.
+
+The Petersen graph is defined as `dodecahedronGraph.quotientGraph dodecAntipodalMap`, using the quotient graph infrastructure from #39551. The antipodal involution on the dodecahedron identifies each vertex with the vertex at distance 5 (diametrically opposite). The 3-cube's antipodal involution (bitwise complement) quotients to K₄ = ⊤.
+
+![Dodecahedron → Petersen quotient](https://raw.githubusercontent.com/RaggedR/symmetric-graphs/main/lean/named_graphs/dodecahedron-quotient-petersen.jpeg)
+![Cube → K₄ quotient](https://raw.githubusercontent.com/RaggedR/symmetric-graphs/main/lean/named_graphs/cube-quotient-k4.jpeg)
+
+The graph definitions and quotient constructions follow Langer, arXiv:1306.4798.
+
+Depends on #39551 (quotient graphs and Lorimer's theorem).
+
+---
+LLM tools were used to assist with Lean formalization. The mathematical content is the author's own work.
+
+
+
+=== leanprover-community/mathlib4#39651 ===
+Title: feat(Archive): voltage graphs on K₂, Heawood and Möbius-Kantor graphs
+
+This defines `voltageGraphK2`, a cubic covering construction on K₂ with cyclic voltage group `ZMod m`. Vertices are `Fin 2 × ZMod m`, with edges `(0, g) ~ (1, g + vⱼ)` for three voltages.
+
+Two instances are provided. The Heawood graph (F014A) is `voltageGraphK2 7 0 4 6`, the Levi graph of the Fano plane PG(2,2): 14 vertices, cubic, girth 6, equal to Sab(G₄₂, C₃) where G₄₂ = Z₇ ⋊ Z₆. The Möbius-Kantor graph (F016A) is `voltageGraphK2 8 0 1 3`, the generalised Petersen graph GP(8,3): 16 vertices, cubic, girth 6, equal to Sab(GL(2,3), C₃).
+
+Both quotient to K₂ under the fibre projection `Prod.fst`, recovering the base graph.
+
+![Heawood graph](https://raw.githubusercontent.com/RaggedR/symmetric-graphs/main/lean/named_graphs/heawood-F014A.jpg)
+![Möbius-Kantor graph](https://raw.githubusercontent.com/RaggedR/symmetric-graphs/main/lean/named_graphs/mobius-kantor-F016A.jpg)
+
+The voltage graph construction and named graph instances follow Langer, arXiv:1306.4798, and Gross & Tucker, *Topological Graph Theory*.
+
+Depends on #39551 (quotient graphs and Lorimer's theorem).
+
+---
+LLM tools were used to assist with Lean formalization. The mathematical content is the author's own work.
+
+
+
+=== leanprover-community/mathlib4#39653 ===
+Title: feat(Combinatorics): cellular surfaces, CSS quantum codes, and k = 2g
+
+This formalises CSS quantum error-correcting codes from surface tilings, following Breuckmann & Terhal (arXiv:1506.04029).
+
+CellularSurface encodes the combinatorial data of a 2-cell embedding of a graph on a closed surface: vertices, edges with endpoints, and faces whose boundaries are closed directed trails. The boundary operators ∂₁ (vertex-edge incidence) and ∂₂ (edge-face boundary) are matrices over F₂.
+
+The theorem `d1_mul_d2_eq_zero` proves ∂₁ ∘ ∂₂ = 0 (the chain complex condition) from the closed walk axiom: each vertex in a face boundary is visited an even number of times, so the sum vanishes in characteristic 2. The theorem `d1_rank_eq` proves rank(∂₁) = V − 1 for connected graphs — the kernel of ∂₁ᵀ is span{1} because elements of the kernel assign equal values to adjacent vertices, and connectivity propagates this to all vertices. The theorem `d2_rank_eq` proves rank(∂₂) = F − 1 for connected dual graphs with the two-sides condition (each edge borders exactly 2 faces).
+
+The main result `css_k_eq_2g` gives the number of logical qubits k = 2g. This is pure arithmetic: k = E − rank(∂₁) − rank(∂₂) = E − (V−1) − (F−1) = E − V − F + 2 = 2g by Euler's formula.
+
+No `native_decide` — all proofs are structural.
+
+---
+LLM tools were used to assist with Lean formalization. The mathematical content is the author's own work.
+
+
+
+=== leanprover-community/mathlib4#39654 ===
+Title: feat(Archive): CellularSurface instances (genus 1, 2, 3, 505)
+
+This PR provides concrete CellularSurface instances for the four CSS surface codes: Heawood (genus 1), Bolza (genus 2), Klein quartic (genus 3), and Clayworth (genus 505). Each surface embeds a cubic arc-transitive graph arising from a Sabidussi coset construction, and the chain complex d1, d2 satisfies the boundary condition d1 · d2 = 0 that gives the CSS orthogonality. Together with #39653, which proves that k = 2g for any surface tiling, these instances yield formally verified CSS codes with parameters [[21, 2]], [[24, 4]], [[84, 6]], and [[6048, 1010]] respectively.
+
+The Heawood and Bolza surfaces are small enough that all axioms are verified by decide. Both include bridge theorems proving the CellularSurface graph matches the corresponding voltage graph on K₂ from VoltageGraphs.lean. The Klein quartic embeds the Klein graph (56 vertices) from the triangle group Δ(2,3,7) acting on PSL(2,7), with a Sabidussi proof. The Clayworth surface is the interesting case: 4032 vertices, 6048 edges, 1008 dodecagonal faces, genus 505. Rather than storing tens of thousands of array entries, the construction works algebraically from the regular representation of G₂(2) on 12096 darts, using a general TriangleGroupSurface module that derives a CellularSurface from any finite quotient of Δ(2,3,r). The key identity is that T = RS implies the far endpoint of each dart has the same vertex as its R-successor, because S preserves vertex cosets.
+
+There are five sorrys. Four are dual graph regularity theorems (Heawood 6-regular, Bolza 8-regular, Klein 7-regular, Clayworth 12-regular), all of which should be closable by native_decide. The fifth is the Clayworth Sabidussi isomorphism, where the individual native_decide checks all pass but the kernel struggles to assemble the SabidussiWitness structure for 4032 vertices. These are left for a follow-up.
+
+![Klein graph](https://raw.githubusercontent.com/RaggedR/symmetric-graphs/main/lean/named_graphs/klein-F056A.jpg)
+![Zhou-3 graph](https://raw.githubusercontent.com/RaggedR/symmetric-graphs/main/lean/named_graphs/zhou3-F182A.jpg)
+![Zhou-6 graph](https://raw.githubusercontent.com/RaggedR/symmetric-graphs/main/lean/named_graphs/zhou6-91v.jpg)
+
+Depends on #39653 (CellularSurface, k = 2g). Cross-references #39649 (Langer/G₂(2) ecosystem), #39651 (voltage graphs).
+
+
+
+=== leanprover-community/mathlib4#39695 ===
+Title: feat(Archive): Zhou-3 arc-transitivity and Lorimer quotient to Zhou-6
+
+The Zhou-3 graph (Foster census F182A, 182 vertices, cubic) has an imprimitive block system of 91 blocks of size 2. This PR proves the block system is invariant under the full PSL(2,13) action via closure induction on the generators, with a pigeonhole argument for the inverse case. The setwise stabilizer of the block containing vertex 0 is D₁₂ (dihedral of order 12), which contains the point stabilizer S₃ at index 2.
+
+With the block structure established, Lorimer's quotient theorem (from #39551) is instantiated for the first time on a concrete graph: the quotient of Sab(PSL(2,13), S₃, D) by D₁₂ is isomorphic to Sab(PSL(2,13), D₁₂, D₁₂·D·D₁₂). The two hypotheses — H ≤ K and D ∩ K = ∅ — are verified, the first using the closure block invariance theorem and the second by observing that any element of K maps vertex 0 into {0, 137}, but neither is a neighbor of 0.
+
+Arc-transitivity of Zhou-3 is proved via Lorimer's forward theorem: the connection set is a single double coset S₃·a·S₃ where a is an explicit involution (a word of length 9 in the generators) that swaps vertex 0 with its neighbor 3.
+
+![Zhou-3 graph](https://raw.githubusercontent.com/RaggedR/symmetric-graphs/main/lean/named_graphs/zhou3-F182A.jpg)
+![Zhou-6 graph](https://raw.githubusercontent.com/RaggedR/symmetric-graphs/main/lean/named_graphs/zhou6-91v.jpg)
+
+This depends on the Sabidussi/Lorimer chain (#39530, #39548, #39550, #39551) and on #39654 for the Zhou-3 Sabidussi representation and SabidussiWitness infrastructure.
+
+
+
+=== leanprover-community/mathlib4#39698 ===
+Title: feat(Archive): Meinhold family — five Sabidussi coset graphs of G₂(2)
+
+Five coset graphs of the exceptional Chevalley group G₂(2), each arising as Sab(G₂(2), K, D) for intermediate subgroups C₃ ≤ K ≤ G₂(2). The Clayworth graph (4032 vertices, cubic, genus 505) is the base case K = C₃.
+
+Meinhold-72 has 72 vertices, is 7-regular with girth 4, via K = PSL(3,2). Meinhold-504 has 504 vertices, is 24-regular with girth 4, via S₄. Meinhold-576 has 576 vertices, is 7-regular with girth 6, via C₇:C₃. Meinhold-1344 has 1344 vertices, is 9-regular with girth 6, via C₃×C₃. Meinhold-2016 has 2016 vertices, is 6-regular with girth 8, via C₆. Each graph has a Sabidussi isomorphism proving arc-transitivity, is connected, and has a shortest cycle witness establishing the girth.
+
+![Meinhold-72](https://raw.githubusercontent.com/RaggedR/symmetric-graphs/main/lean/named_graphs/meinhold-72.jpeg)
+
+The Langer graph (63 vertices, 6-regular) is proved not to be a quotient of Clayworth: the three G₂(2)-invariant 63-block systems have quotient degrees 24, 32, 32, none of which equals 6.
+
+The Clayworth graph itself is proved to be a Sabidussi coset graph Sab(G₂(2), C₃, D) with two generators of orders 7 and 6 preserving adjacency, and BFS witness words establishing transitivity. The current approach is admittedly brute-force — the Clayworth graph is defined via a flat adjacency array and the quotient maps are verified by native_decide on concrete vertex data. A more algebraic treatment, deriving the Meinhold graphs directly from the coset lattice of G₂(2) without storing explicit adjacency data, would be cleaner and is planned as a follow-up.
+
+These graphs arise from my honours thesis on symmetric graph quotients (arXiv:1306.4798). The Meinhold family is named after Nick Meinhold, co-founder of Imagineering Melbourne.
+
+Depends on #39654 (CellularSurface instances, Clayworth graph).
+
+---
+LLM tools were used to assist with Lean formalization. The mathematical content is the author's own work.
+
+
+
+=== leanprover-community/mathlib4#39702 ===
+Title: feat(Archive): dual Langer graph, non-isomorphism via d₃-connectivity
+
+Depends on #39649.
+
+This PR introduces the dual Langer graph, the line-collinearity graph of the split Cayley hexagon GH(2,2). Where the Langer graph (defined in #39649) connects points that share a line, the dual Langer graph connects lines that share a point. Concretely, it is the distance-2 graph of the Tutte 12-cage restricted to the line vertices (indices 63–125).
+
+GH(2,2) is not self-dual. Cohen and Tits showed that a generalized hexagon GH(q,q) is self-dual if and only if q is a power of 3. Since q = 2 fails this condition, the point-collinearity and line-collinearity graphs are genuinely distinct objects, despite sharing the same intersection array {6,4,4; 1,1,3}, the same regularity (6-regular, 189 edges), and the same λ = 1.
+
+The distinguishing invariant is the connectivity of the d₃-induced subgraph. For any vertex v, the subgraph induced on vertices at graph distance 3 from v is connected (1 component) in the Langer graph and disconnected (2 components of 16 vertices) in the dual. This is verified at all 63 vertices by native_decide, providing a computable non-isomorphism certificate.
+
+The non-isomorphism theorem is proved structurally. A chain of lemmas establishes that graph isomorphisms commute with BFS layer computation (iso_bfsExpand, iso_bfsLayers, iso_distanceLayer) and with BFS reachability within induced subsets (iso_inducedBfsReach, iso_AllPairsReachable). The all-pairs reachability predicate is starting-vertex-independent, avoiding the need for a BFS-start-independence lemma. Since the Langer d₃-subgraph is all-pairs reachable and the dual Langer d₃-subgraph is not, no isomorphism can exist.
+
+![Dual Langer graph](https://raw.githubusercontent.com/RaggedR/symmetric-graphs/main/lean/named_graphs/dual-langer-63v.jpg)
+
+This PR also exposes tutte12AdjBool (previously private) so that the dual graph can be defined in terms of the Tutte 12-cage adjacency.
+
+LLM tools were used to assist with Lean formalization. The mathematical content is the author's own work.
+
+
+

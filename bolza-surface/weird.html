@@ -200,12 +200,22 @@ const squash = x => C * Math.tanh(x / C);
 
 function project4(a, b, c, d, theta) {
   const ct = Math.cos(theta), st = Math.sin(theta);
-  const c2 = c*ct - d*st;
-  const d2 = c*st + d*ct;
   if (embedMode === 'clifford') {
+    const c2 = c*ct - d*st;
+    const d2 = c*st + d*ct;
     return stereoProject(a, b, c2, d2);
   } else {
-    return [squash(a), squash(b), squash(c2)];
+    const c2 = c*ct - d*st;
+    const d2 = c*st + d*ct;
+    // Normalize to S³, then stereographic project
+    const r = Math.sqrt(a*a + b*b + c2*c2 + d2*d2);
+    if (r < 1e-4) {
+      // Near e₃: ℘' dominates, use its direction (removable singularity)
+      const r2 = Math.sqrt(c2*c2 + d2*d2);
+      if (r2 < 1e-8) return [0, 0, 0];
+      return stereoProject(0, 0, c2/r2, d2/r2);
+    }
+    return stereoProject(a/r, b/r, c2/r, d2/r);
   }
 }
 
