@@ -21,8 +21,9 @@ import os
 import re
 import math
 
-GRAPHVIZ_DIR = os.path.expanduser("~/git/graphviz")
-GAP_SCRIPT = os.path.join(GRAPHVIZ_DIR, "symmetric-layout.g")
+SRC_DIR = os.path.dirname(os.path.abspath(__file__))
+GRAPHVIZ_DIR = os.path.dirname(SRC_DIR)
+GAP_SCRIPT = os.path.join(SRC_DIR, "symmetric-layout.g")
 
 COLORS = [
     "E53935", "1E88E5", "43A047", "FB8C00", "8E24AA",

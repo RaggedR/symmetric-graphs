@@ -20,7 +20,7 @@ import shutil
 import tempfile
 
 # Import layout engine from draw_graph.py
-sys.path.insert(0, os.path.expanduser("~/git/graphviz"))
+sys.path.insert(0, os.path.expanduser("~/git/graphviz/src"))
 from draw_graph import run_gap, find_best_layout, count_all_crossings
 
 NAMED_GRAPHS = [

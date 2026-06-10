@@ -14,8 +14,10 @@ import subprocess
 import tempfile
 from PIL import Image
 
-BASE = os.path.dirname(os.path.abspath(__file__))
+SRC_DIR = os.path.dirname(os.path.abspath(__file__))
+BASE = os.path.dirname(SRC_DIR)  # repo root
 INDIV = os.path.join(BASE, "individual_graphs")
+ASSETS = os.path.join(BASE, "assets")
 
 
 def strip_tex(tex_path):
@@ -86,8 +88,8 @@ def main():
     from PIL import ImageDraw, ImageFont
 
     # Downloaded reference images
-    dodec_dl = os.path.join(BASE, "dodecahedron-download.png")
-    pappus_dl = os.path.join(BASE, "pappus-download.png")
+    dodec_dl = os.path.join(ASSETS, "dodecahedron-download.png")
+    pappus_dl = os.path.join(ASSETS, "pappus-download.png")
 
     with tempfile.TemporaryDirectory() as tmpdir:
         # Generate clean versions of auto-dodecahedron and auto-pappus
@@ -174,7 +176,7 @@ def main():
             draw.text(((total_w - tw) // 2, y_label), row_labels[ri],
                       fill='gray', font=font_small)
 
-        out_path = os.path.join(BASE, "comparison.png")
+        out_path = os.path.join(ASSETS, "comparison.png")
         canvas.save(out_path, dpi=(300, 300))
         print(f"\nSaved: {out_path}")
         print(f"Size: {canvas.size}")

@@ -16,6 +16,7 @@ The incidence graph (63 points + 63 lines, bipartite, cubic) is the Tutte 12-cag
 """
 
 import json
+import os
 import sys
 
 
@@ -316,9 +317,11 @@ GraphLibrary.tuttecage12 := function()
 end;
 """
 
-    with open("tutte12cage.g", "w") as f:
+    src_dir = os.path.dirname(os.path.abspath(__file__))
+    gap_path = os.path.join(src_dir, "census", "tutte12cage.g")
+    with open(gap_path, "w") as f:
         f.write(output)
-    print(f"\nWrote GAP definition to tutte12cage.g")
+    print(f"\nWrote GAP definition to {gap_path}")
 
     # Also output JSON for direct use
     data = {
@@ -328,9 +331,10 @@ end;
         "points": n_pts,
         "lines": n_lines,
     }
-    with open("tutte12cage.json", "w") as f:
+    json_path = os.path.join(src_dir, "tutte12cage.json")
+    with open(json_path, "w") as f:
         json.dump(data, f)
-    print("Wrote JSON to tutte12cage.json")
+    print(f"Wrote JSON to {json_path}")
 
 
 def check_girth(adj, max_start=20):

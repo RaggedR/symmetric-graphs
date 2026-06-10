@@ -16,7 +16,8 @@ import os
 import re
 import math
 
-GRAPHVIZ_DIR = os.path.expanduser("~/git/graphviz")
+SRC_DIR = os.path.dirname(os.path.abspath(__file__))
+GRAPHVIZ_DIR = os.path.dirname(SRC_DIR)
 QUOTIENTS_DIR = os.path.join(GRAPHVIZ_DIR, "quotients")
 
 from draw_graph import COLORS, run_gap, find_best_layout
@@ -50,7 +51,7 @@ DISPLAY_NAMES = {
 
 def run_gap_enumerate(graph_name):
     """Run enumerate-quotients.g in JSON mode for one graph."""
-    gap_script = os.path.join(GRAPHVIZ_DIR, "enumerate-quotients.g")
+    gap_script = os.path.join(SRC_DIR, "enumerate-quotients.g")
     gap_input = (
         f'json_mode := true;\n'
         f'target_graphs := ["{graph_name}"];\n'
@@ -59,6 +60,7 @@ def run_gap_enumerate(graph_name):
     result = subprocess.run(
         ["gap", "-q"], input=gap_input,
         capture_output=True, text=True, timeout=600,
+        cwd=SRC_DIR,  # enumerate-quotients.g Read()s symmetric-layout.g relative to cwd
     )
     output = result.stdout + result.stderr
     match = re.search(

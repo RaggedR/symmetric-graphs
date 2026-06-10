@@ -11,7 +11,8 @@ import os
 import math
 from draw_graph import run_gap, find_best_layout, COLORS
 
-GRAPHVIZ_DIR = os.path.expanduser("~/git/graphviz")
+SRC_DIR = os.path.dirname(os.path.abspath(__file__))
+GRAPHVIZ_DIR = os.path.dirname(SRC_DIR)
 
 ALL_GRAPHS = [
     "cube", "petersen", "heawood", "moebiuskantor",

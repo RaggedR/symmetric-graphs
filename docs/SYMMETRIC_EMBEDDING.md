@@ -13,26 +13,23 @@ Robin's honours thesis was on "Symmetric Graphs and Their Quotients" — this to
 cd ~/git/graphviz
 
 # Single graph → PDF (auto-detects best layout)
-python3 draw_graph.py petersen
-python3 draw_graph.py dodecahedron --layout rings
-python3 draw_graph.py heawood --layout cyclic
-
-# Single graph → interactive HTML (draggable vertices)
-python3 draw_graph_d3.py pappus
+python3 src/draw_graph.py petersen
+python3 src/draw_graph.py dodecahedron --layout rings
+python3 src/draw_graph.py heawood --layout cyclic
 
 # All graphs → single gallery PDF
-python3 draw_all.py
+python3 src/draw_all.py
 ```
 
 ## Files
 
 | File | Purpose |
 |------|---------|
-| `symmetric-layout.g` | **GAP script**: computes Aut(Γ), enumerates subgroups, finds orbit quotients, outputs JSON |
-| `draw_graph.py` | **Python → PDF**: reads GAP JSON, auto-detects cyclic vs cylindrical, outputs TikZ, compiles |
-| `draw_graph_d3.py` | **Python → HTML**: same pipeline but outputs interactive D3.js with draggable vertices |
-| `draw_all.py` | **Gallery**: draws all graphs in one PDF (calls draw_graph.py internally) |
-| `spectral_layout.py` | Earlier attempt: eigenvector embedding. Abandoned — eigenvalue multiplicity kills it |
+| `src/symmetric-layout.g` | **GAP script**: computes Aut(Γ), enumerates subgroups, finds orbit quotients, outputs JSON |
+| `src/draw_graph.py` | **Python → PDF**: reads GAP JSON, auto-detects cyclic vs cylindrical, outputs TikZ, compiles |
+| `src/draw_all.py` | **Gallery**: draws all graphs in one PDF (calls draw_graph.py internally) |
+
+(`draw_graph_d3.py` — interactive D3.js output — and `spectral_layout.py` — abandoned eigenvector embedding — are referenced in older notes but are no longer in the repo.)
 
 ### Supporting files
 | File | Purpose |
@@ -63,7 +60,7 @@ Python runs `gap -q` with stdin:
 ```
 graph_name := "petersen";
 max_deg := 4;
-Read("/Users/robin/git/graphviz/symmetric-layout.g");
+Read(".../src/symmetric-layout.g");
 ```
 GAP outputs JSON between `=== JSON OUTPUT ===` and `=== END JSON ===` markers.
 Python parses with `eval()` (GAP list syntax ≈ Python list syntax).

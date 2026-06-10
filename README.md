@@ -2,16 +2,42 @@
 
 Quotient-driven layouts for symmetric graphs, using automorphism group orbits to determine vertex placement on concentric rings with rotational symmetry.
 
-## Key files
+**Pipeline**: GAP computes Aut(Γ) and orbit quotients → Python scores quotients, minimises crossings, places vertices → TikZ renders PDF (or D3.js renders interactive HTML).
 
-| File | Description |
-|------|-------------|
-| `gallery.pdf` | All 13 graphs on one page |
-| `draw_graph.py` | Layout engine: GAP interface, crossing minimisation, TikZ output |
-| `draw_all.py` | Generates the gallery |
-| `symmetric-layout.g` | GAP script: computes Aut(G), orbit decompositions, quotient graphs |
-| `SYMMETRIC_EMBEDDING.md` | Theory and implementation notes |
-| `thesis.pdf` | Reference: Eades & Hong, *Symmetric Graph Drawing* |
+## Quickstart
+
+```bash
+# Single graph → individual_graphs/auto-dodecahedron.pdf
+python3 src/draw_graph.py dodecahedron
+
+# Full gallery → gallery.pdf
+python3 src/draw_all.py
+
+# Orbit quotient diagrams → quotients/
+python3 src/draw_quotients.py
+```
+
+Requires [GAP](https://www.gap-system.org/) with the GRAPE package, Python 3, and pdflatex.
+
+## Repository layout
+
+| Directory | Contents |
+|-----------|----------|
+| `src/` | The pipeline: `draw_graph.py` (layout engine), `draw_all.py` (gallery), `draw_quotients.py`, `symmetric-layout.g` (GAP: Aut, orbits, quotients), `enumerate-quotients.g`, code-construction scripts |
+| `src/census/` | Standalone GAP research scripts: PSL(2,q) cubic graph censuses, M₁₁ searches, Macbeath graph, Klein quartic codes |
+| `docs/` | [Implementation & theory](docs/SYMMETRIC_EMBEDDING.md), [research program](docs/RESEARCH_PROGRAM.md), [algebraic background](docs/CLASSIFICATION.md), [research notes](docs/RESEARCH_NOTES.md), Eades & Hong reference (`thesis.pdf`) |
+| `tex/` | Hand-written papers/diagrams: `cubic-bi-circulant.tex`, Fano plane figures, quotient unfoldings (compile with `pdflatex` from inside `tex/`) |
+| `individual_graphs/` | Generated + hand-tuned TikZ drawings of single graphs |
+| `quotients/` | Generated orbit-quotient diagrams (output of `draw_quotients.py`) |
+| `named_graphs_tikz/` | Curated TikZ sources for named graphs |
+| `assets/` | Reference images (downloaded comparisons, JPEG exports) |
+| `bolza-surface/` | Genus-2 Bolza surface: cohomology, Poincaré disk tilings, interactive foldings ([docs](bolza-surface/README.md), [maths](bolza-surface/MATHEMATICS.md)) |
+| `klein-quartic/` | Genus-3 Klein quartic: PSL(2,7) cohomology, 3D visualization ([notes](klein-quartic/PRELIMINARY.md)) |
+| `clayworth/` | CSS quantum codes from graph tilings, Lean 4 formalization ([docs](clayworth/README.md)) |
+| `clifford-torus/` | Interactive Clifford torus homotopies ([docs](clifford-torus/README.md)) |
+| `surfaces/` | G₂(2) triality hexagon, Clebsch surface ([readme](surfaces/README.md)) |
+| `hecke/` | Clebsch surface and three Hecke algebras ([notes](hecke/Clebsch.md)) |
+| `lean/` | Lean 4 / mathlib notes and named graph images |
 
 ## How it works
 
@@ -20,11 +46,13 @@ Quotient-driven layouts for symmetric graphs, using automorphism group orbits to
 3. **Crossing minimisation**: path reordering of orbits (Schlegel-like), global angular offset search with rotations and reflections
 4. **TikZ** renders the final PDF
 
+For the full theory (Eades & Hong Theorem 3.2, layout modes, adding new graphs), see [docs/SYMMETRIC_EMBEDDING.md](docs/SYMMETRIC_EMBEDDING.md).
+
 ## Graphs
 
 All graphs are **cubic** (3-regular). The collection is the complete [Foster census](https://en.wikipedia.org/wiki/Foster_census) of cubic arc-transitive (symmetric) graphs up to 30 vertices — all 13 of them. Cubic graphs are the simplest non-trivial regular graphs, and their automorphism groups are large relative to their size, making them a natural testbed for symmetry-aware drawing.
 
-**The list is exhaustive for n ≤ 30**: every cubic arc-transitive graph on at most 30 vertices appears in the gallery (there are exactly 13). No cubic arc-transitive graph exists on 12 or 22 vertices.
+**The list is exhaustive for n ≤ 30**: every cubic arc-transitive graph on at most 30 vertices appears (there are exactly 13). No cubic arc-transitive graph exists on 12 or 22 vertices.
 
 Given a graph Γ, we compute G = Aut(Γ) and select a subgroup H ≤ G whose orbits give a clean quotient. The layout places each H-orbit on a concentric ring.
 
@@ -44,21 +72,16 @@ Given a graph Γ, we compute G = Aut(Γ) and select a subgroup H ≤ G whose orb
 | F028 | Coxeter | 28 | PSL(3,2) : C₂ | 336 | D₁₄ | 14 | [7, 7, 7, 7] |
 | F030 | Tutte-Coxeter | 30 | (A₆ . C₂) : C₂ | 1440 | C₁₀ | 10 | [10, 10, 10] |
 
-All group structures computed by GAP (GRAPE package). K₄ and K₃,₃ are included in the code but omitted from the gallery as trivially small. The gallery shows the 11 graphs from F008 to F030.
+All group structures computed by GAP (GRAPE package). K₄ and K₃,₃ are included in the code but omitted from the gallery as trivially small. `gallery.pdf` shows the 11 graphs from F008 to F030.
 
 The next entry after F030 is at n=32.
 
-## Usage
+## Going deeper
 
-```bash
-# Single graph
-python3 draw_graph.py dodecahedron
-
-# Full gallery
-python3 draw_all.py
-```
-
-Requires [GAP](https://www.gap-system.org/) with the GRAPE package, Python 3, and pdflatex.
+- **[docs/SYMMETRIC_EMBEDDING.md](docs/SYMMETRIC_EMBEDDING.md)** — implementation: pipeline architecture, graph library, layout modes, how to add a graph
+- **[docs/RESEARCH_PROGRAM.md](docs/RESEARCH_PROGRAM.md)** — the research line: Biggs-Smith as "a picture of SU(2) over F₁₇", PSL(2,q) censuses, towers of covers, open questions
+- **[docs/CLASSIFICATION.md](docs/CLASSIFICATION.md)** — algebraic background: the GL(2,q) family, PSL(2,q) ≅ SO(3,q), split vs non-split tori
+- **[docs/RESEARCH_NOTES.md](docs/RESEARCH_NOTES.md)** — triangle quotient spectra, strong symmetric genus
 
 ## Interactive visualizations
 

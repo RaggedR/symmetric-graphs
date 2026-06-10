@@ -25,8 +25,9 @@ import argparse
 from copy import deepcopy
 
 # Reuse GAP interface from the drawing pipeline
-GRAPHVIZ_DIR = os.path.expanduser("~/git/graphviz")
-sys.path.insert(0, GRAPHVIZ_DIR)
+SRC_DIR = os.path.dirname(os.path.abspath(__file__))
+GRAPHVIZ_DIR = os.path.dirname(SRC_DIR)
+sys.path.insert(0, SRC_DIR)
 from draw_graph import run_gap
 
 

@@ -3,7 +3,7 @@
 
 import sys
 import os
-sys.path.insert(0, os.path.expanduser("~/git/graphviz"))
+sys.path.insert(0, os.path.expanduser("~/git/graphviz/src"))
 from draw_graph import run_gap, score_quotient, detect_symmetry_type
 
 GRAPHS = [
