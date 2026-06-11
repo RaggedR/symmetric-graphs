@@ -1,0 +1,93 @@
+|K| = 168
+|N_G(K)| = 336  (index in G: 36)
+Normalizing element maps spread A to: spread B  (SWAPS the spreads)
+
+|G/K| = 72
+Suborbit lengths on 72 cosets: [ 1, 1, 7, 7, 7, 7, 21, 21 ]
+
+Suborbit pairing (D vs D⁻¹):
+Syntax warning: Unbound global variable in why13_orbitals.g:85
+    j := PositionProperty(sub72, s -> y in s);;
+                                      ^
+Syntax warning: Unbound global variable in why13_orbitals.g:86
+    i := PositionProperty(sub72, s -> x in s);;
+                                      ^
+  suborbit 1 (val 1): SYMMETRIC
+  suborbit 2 (val 1): SYMMETRIC
+  suborbit 3 (val 7): SYMMETRIC
+  suborbit 4 (val 7): paired with suborbit 6
+  suborbit 5 (val 7): SYMMETRIC
+  suborbit 6 (val 7): paired with suborbit 4
+  suborbit 7 (val 21): SYMMETRIC
+  suborbit 8 (val 21): SYMMETRIC
+
+Geometric invariants (relative to coset 1 = K itself):
+suborbit | val | |P∩P'| | |SA∩SA'| | |SA∩SB'| | |SB∩SA'| | |SB∩SB'|
+Syntax warning: Unbound global variable in why13_orbitals.g:110
+    SA1 := Set(List(SA, l -> OnSets(l, gi)));;
+                                       ^^
+Syntax warning: Unbound global variable in why13_orbitals.g:111
+    SB1 := Set(List(SB, l -> OnSets(l, gi)));;
+                                       ^^
+   1     |  1  |   21   |    7    |    0    |    0    |    7
+   2     |  1  |   21   |    0    |    7    |    7    |    0
+   3     |  7  |   9   |    1    |    0    |    0    |    3
+   4     |  7  |   9   |    0    |    1    |    3    |    0
+   5     |  7  |   9   |    3    |    0    |    0    |    1
+   6     |  7  |   9   |    0    |    3    |    1    |    0
+   7     |  21  |   5   |    1    |    0    |    0    |    1
+   8     |  21  |   5   |    0    |    1    |    1    |    0
+
+Path counts: for each suborbit a, T_a·T_a evaluated at representative pairs:
+  T_3²  hits suborbits (suborbit, coeff): 
+[ [ [ 0, 7 ], 1 ], [ [ 7, 2 ], 21 ] ]
+  T_4²  hits suborbits (suborbit, coeff): 
+[ [ [ 6, 4 ], 7 ], [ [ 7, 1 ], 21 ] ]
+  T_5²  hits suborbits (suborbit, coeff): 
+[ [ [ 0, 7 ], 1 ], [ [ 7, 2 ], 21 ] ]
+  T_6²  hits suborbits (suborbit, coeff): 
+[ [ [ 4, 4 ], 7 ], [ [ 7, 1 ], 21 ] ]
+
+Bipartiteness check (BFS 2-colouring of underlying undirected graph):
+  suborbit 3: bipartite = true
+  suborbit 4: bipartite = false
+  suborbit 5: bipartite = true
+  suborbit 6: bipartite = false
+
+Characteristic polynomials (factored) of 7-valent orbital graphs:
+  suborbit 3: [ x-7, x-1, x-1, x-1, x-1, x-1, x-1, x-1, x-1, x-1, x-1, x-1, 
+  x-1, x-1, x-1, x-1, x-1, x-1, x-1, x-1, x-1, x-1, x+1, x+1, x+1, x+1, x+1, 
+  x+1, x+1, x+1, x+1, x+1, x+1, x+1, x+1, x+1, x+1, x+1, x+1, x+1, x+1, x+1, 
+  x+1, x+7, x^2-13, x^2-13, x^2-13, x^2-13, x^2-13, x^2-13, x^2-13, x^2-13, 
+  x^2-13, x^2-13, x^2-13, x^2-13, x^2-13, x^2-13 ]
+  suborbit 4: [ x-7, x-7, x-1, x-1, x-1, x-1, x-1, x-1, x-1, x-1, x-1, x-1, 
+  x-1, x-1, x-1, x-1, x-1, x-1, x-1, x-1, x-1, x-1, x-1, x-1, x-1, x-1, x-1, 
+  x-1, x-1, x-1, x-1, x-1, x-1, x-1, x-1, x-1, x-1, x-1, x-1, x-1, x-1, x-1, 
+  x-1, x-1, x^2+4*x+13, x^2+4*x+13, x^2+4*x+13, x^2+4*x+13, x^2+4*x+13, 
+  x^2+4*x+13, x^2+4*x+13, x^2+4*x+13, x^2+4*x+13, x^2+4*x+13, x^2+4*x+13, 
+  x^2+4*x+13, x^2+4*x+13, x^2+4*x+13 ]
+  suborbit 5: [ x-7, x-1, x-1, x-1, x-1, x-1, x-1, x-1, x-1, x-1, x-1, x-1, 
+  x-1, x-1, x-1, x-1, x-1, x-1, x-1, x-1, x-1, x-1, x+1, x+1, x+1, x+1, x+1, 
+  x+1, x+1, x+1, x+1, x+1, x+1, x+1, x+1, x+1, x+1, x+1, x+1, x+1, x+1, x+1, 
+  x+1, x+7, x^2-13, x^2-13, x^2-13, x^2-13, x^2-13, x^2-13, x^2-13, x^2-13, 
+  x^2-13, x^2-13, x^2-13, x^2-13, x^2-13, x^2-13 ]
+  suborbit 6: [ x-7, x-7, x-1, x-1, x-1, x-1, x-1, x-1, x-1, x-1, x-1, x-1, 
+  x-1, x-1, x-1, x-1, x-1, x-1, x-1, x-1, x-1, x-1, x-1, x-1, x-1, x-1, x-1, 
+  x-1, x-1, x-1, x-1, x-1, x-1, x-1, x-1, x-1, x-1, x-1, x-1, x-1, x-1, x-1, 
+  x-1, x-1, x^2+4*x+13, x^2+4*x+13, x^2+4*x+13, x^2+4*x+13, x^2+4*x+13, 
+  x^2+4*x+13, x^2+4*x+13, x^2+4*x+13, x^2+4*x+13, x^2+4*x+13, x^2+4*x+13, 
+  x^2+4*x+13, x^2+4*x+13, x^2+4*x+13 ]
+
+Characteristic polynomials of 21-valent orbital graphs:
+  suborbit 7: [ x-21, x-21, x-3, x-3, x-3, x-3, x-3, x-3, x-3, x-3, x-3, x-3, 
+  x-3, x-3, x-3, x-3, x-3, x-3, x-3, x-3, x-3, x-3, x-3, x-3, x-3, x-3, x-3, 
+  x-3, x-3, x-3, x+3, x+3, x+3, x+3, x+3, x+3, x+3, x+3, x+3, x+3, x+3, x+3, 
+  x+3, x+3, x+3, x+3, x+3, x+3, x+3, x+3, x+3, x+3, x+3, x+3, x+3, x+3, x+3, 
+  x+3, x+3, x+3, x+3, x+3, x+3, x+3, x+3, x+3, x+3, x+3, x+3, x+3, x+3, x+3 ]
+  suborbit 8: [ x-21, x-3, x-3, x-3, x-3, x-3, x-3, x-3, x-3, x-3, x-3, x-3, 
+  x-3, x-3, x-3, x-3, x-3, x-3, x-3, x-3, x-3, x-3, x-3, x-3, x-3, x-3, x-3, 
+  x-3, x-3, x-3, x-3, x-3, x-3, x-3, x-3, x-3, x+3, x+3, x+3, x+3, x+3, x+3, 
+  x+3, x+3, x+3, x+3, x+3, x+3, x+3, x+3, x+3, x+3, x+3, x+3, x+3, x+3, x+3, 
+  x+3, x+3, x+3, x+3, x+3, x+3, x+3, x+3, x+3, x+3, x+3, x+3, x+3, x+3, x+21 ]
+
+═══ DONE ═══

@@ -6,4 +6,7 @@ __pycache__/
 *.log
 *.toc
 *.out
+# But keep GAP computation output
+!hecke/*_*.out
+!hecke/why13_*.out
 *.synctex.gz

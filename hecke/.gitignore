@@ -4,8 +4,12 @@ meinhold_mult_*.txt
 # LaTeX build artifacts
 *.aux
 *.log
-*.out
 *.toc
+# LaTeX .out files (hyperref bookmarks) — but NOT GAP .out files
+hecke.out
+hecke-catalog.out
+hecke-irreps.out
+why13.out
 
 # Reference PDFs (copyrighted books — don't commit)
 geometry-finite-groups.pdf
