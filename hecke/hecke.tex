@@ -1,0 +1,94 @@
+\documentclass[12pt]{article}
+\usepackage{amsmath,amssymb,amsthm}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}[theorem]{Definition}
+
+\title{The Hecke Algebra of a Pair $(G,H)$}
+\author{Robin Langer}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{Setup}
+
+Let $G$ be a finite group and $H$ a subgroup. The cosets $G/H$ form a finite set of size $n = [G:H]$. The group $G$ acts on $G/H$ by left multiplication: $g$ sends the coset $xH$ to $gxH$. This is a permutation action --- each $g \in G$ permutes the $n$ cosets. Linearizing, we get a representation of $G$ on the vector space $\mathbb{C}[G/H]$ with basis $\{\delta_{xH} : xH \in G/H\}$, where $g$ acts by the permutation matrix $P_g$ that sends $\delta_{xH}$ to $\delta_{gxH}$.
+
+\section{The orbital graphs}
+
+The double cosets $H \backslash G / H$ partition $G$. Each double coset $HgH$ determines a graph on the vertex set $G/H$: the Sabidussi graph $\mathrm{Sab}(G, H, HgH)$, with an edge from $xH$ to $yH$ whenever $xy^{-1} \in HgH$.
+
+Since the double cosets partition $G$, these graphs partition the edges of the complete directed graph on $G/H$: every ordered pair of cosets is an edge in exactly one orbital graph.
+
+The trivial double coset $HeH = H$ gives the diagonal orbital --- a loop at every vertex.
+
+\section{The adjacency matrices}
+
+Each orbital graph has an adjacency matrix $T_{HgH}$ of size $n \times n$. The $(xH, yH)$ entry is
+\[
+(T_{HgH})_{xH,\, yH} = \begin{cases} 1 & \text{if } xy^{-1} \in HgH, \\ 0 & \text{otherwise.} \end{cases}
+\]
+Equivalently, $T_{HgH}$ maps each coset to the sum of its neighbours in the orbital graph:
+\[
+T_{HgH}(\delta_{xH}) = \sum_{\substack{yH \in G/H \\ xy^{-1} \in HgH}} \delta_{yH}.
+\]
+The identity double coset $H = HeH$ gives the identity matrix.
+
+\section{These matrices are $G$-equivariant}
+
+Each $T_{HgH}$ commutes with the $G$-action on $\mathbb{C}[G/H]$. That is, for every $z \in G$,
+\[
+T_{HgH}(z \cdot \delta_{xH}) = z \cdot T_{HgH}(\delta_{xH}).
+\]
+This holds because the orbital graph is $G$-symmetric: $G$ acts on the graph by automorphisms, so it commutes with the adjacency matrix.
+
+\section{The orbital adjacency matrices form a basis for $\mathrm{End}_G(\mathbb{C}[G/H])$}
+
+\begin{proposition}
+The set $\{T_{HgH} : HgH \in H \backslash G / H\}$ is a basis for $\mathrm{End}_G(\mathbb{C}[G/H])$.
+\end{proposition}
+
+\begin{proof}
+A $G$-endomorphism $T$ of $\mathbb{C}[G/H]$ is a linear map $T \colon \mathbb{C}[G/H] \to \mathbb{C}[G/H]$ satisfying $T(g \cdot v) = g \cdot T(v)$ for all $g \in G$. A linear map on an $n$-dimensional space has $n^2$ parameters. We will show that equivariance cuts this to $n$, and then $H$-invariance cuts $n$ down to $r = |H \backslash G / H|$.
+
+\emph{Step 1: $n^2 \to n$.} Since $yH = y \cdot eH$, equivariance gives $T(\delta_{yH}) = y \cdot T(\delta_{eH})$ for any coset $yH$. So $T$ is completely determined by the single vector
+\[
+T(\delta_{eH}) = \sum_{xH \in G/H} a_{xH}\, \delta_{xH},
+\]
+a list of $n$ coefficients $a_{xH}$, one per coset.
+
+\emph{Step 2: $n \to r$.} For any $h \in H$, applying Step 1 with $y = h$ gives $T(\delta_{hH}) = h \cdot T(\delta_{eH})$. But $hH = eH$, so the left side is $T(\delta_{eH})$. Therefore
+\[
+\sum_{xH} a_{xH}\, \delta_{xH} = h \cdot \sum_{xH} a_{xH}\, \delta_{xH} = \sum_{xH} a_{xH}\, \delta_{hxH}.
+\]
+Comparing coefficients: $a_{hxH} = a_{xH}$ for every $h \in H$ and every coset $xH$. This is the orbit relation for the action of $H$ on $G/H$ by left multiplication: two cosets $xH$ and $yH$ must get the same coefficient whenever they lie in the same $H$-orbit, i.e., whenever $y \in Hx$. The $H$-orbit of $xH$ is $\{hxH : h \in H\}$, and the union of these left cosets in $G$ is the double coset $HxH$. (The right-hand $H$ plays no role here: $xH$ and $xh'H$ are already the same coset for any $h' \in H$.)
+
+So the $n$ coefficients collapse to $r = |H \backslash G / H|$ free parameters, one per double coset.
+
+Conversely, every such coefficient pattern is realised: given any choice of scalars $a_d$ for $d \in H \backslash G / H$, define $T(\delta_{eH}) = \sum_{d} a_d \sum_{xH \subseteq d} \delta_{xH}$ and extend by equivariance. This is well-defined precisely because the coefficients are $H$-invariant. The result is:
+\[
+T = \sum_{d \,\in\, H \backslash G / H} a_d \; T_{HdH}.
+\]
+Every $G$-endomorphism is a linear combination of the $T_{HgH}$, and every such linear combination is a $G$-endomorphism.
+
+\emph{Independence.} The double cosets partition $G$, so the orbital graphs partition the edges of the complete directed graph. Their adjacency matrices have $1$s in disjoint positions. No non-trivial linear combination can be zero.
+\end{proof}
+
+\section{The Hecke algebra}
+
+The space $\mathrm{End}_G(\mathbb{C}[G/H])$ is closed under composition: if $S$ and $T$ both commute with the $G$-action, then so does $ST$, since for any $g \in G$,
+\[
+(ST)(g \cdot v) = S(g \cdot T(v)) = g \cdot S(T(v)) = g \cdot (ST)(v).
+\]
+Therefore the product of two basis elements decomposes as a linear combination of basis elements:
+\[
+T_{Hg_1H} \cdot T_{Hg_2H} = \sum_{d} c_d \; T_{HdH}.
+\]
+The structure constant $c_d$ is a non-negative integer: it counts the number of two-step paths from $eH$ to any fixed coset in $HdH$, taking one edge in $\mathrm{Sab}(G, H, Hg_2H)$ followed by one edge in $\mathrm{Sab}(G, H, Hg_1H)$.
+
+The algebra $\mathrm{End}_G(\mathbb{C}[G/H])$ with this multiplication is the \emph{Hecke algebra} $\mathcal{H}(G,H)$. Equivalently, it is the commutant of the permutation matrices $\{P_g : g \in G\}$ inside $\mathrm{Mat}_n(\mathbb{C})$, where $n = |G/H|$. Here each $P_g$ is the $n \times n$ permutation matrix for the action of $g$ on the cosets $G/H$, and the commutant is the set of all $n \times n$ matrices that commute with every $P_g$.
+
+\end{document}

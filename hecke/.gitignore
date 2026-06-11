@@ -1,0 +1,12 @@
+# Large Hecke multiplication tables (regenerable from GAP scripts)
+meinhold_mult_*.txt
+
+# LaTeX build artifacts
+*.aux
+*.log
+*.out
+*.toc
+
+# Reference PDFs (copyrighted books — don't commit)
+geometry-finite-groups.pdf
+chinese-book.pdf

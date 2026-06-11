@@ -1,0 +1,294 @@
+% hecke-catalog.tex — COMPLETE reference catalog of the irreducible
+% representations of the Hecke algebras in catalogue.pdf.
+% One section per graph: Sabidussi pair (G,H), Wedderburn decomposition,
+% table of all 1-dimensional characters, and for every block of dimension
+% >= 2: generators, complete relations, explicit matrices for ALL orbital
+% generators, and the expansion of every rho(T_i) in the block generators.
+% Data blocks are machine-generated: hecke_catalog_full.g -> catalog-data/.
+% Do not edit catalog-data/*.tex by hand.
+\documentclass[11pt]{article}
+\usepackage[margin=2.4cm]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage[hidelinks]{hyperref}
+\allowdisplaybreaks
+
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\HH}{\mathcal{H}}
+\newcommand{\mat}[1]{\begin{pmatrix}#1\end{pmatrix}}
+\newtheorem{remark}{Remark}
+
+\title{A complete catalog of Hecke-algebra representations\\
+\large for the graphs of \texttt{catalogue.pdf}}
+\author{Fable (Claude), with Robin Langer}
+\date{June 2026}
+
+\begin{document}
+\maketitle
+
+\noindent
+For each vertex-transitive graph $\Gamma$ in \texttt{catalogue.pdf} whose
+Hecke algebra is noncommutative, this catalog records:
+\begin{itemize}
+\item the \emph{Sabidussi pair} $(G,H)$: $G=\operatorname{Aut}\Gamma$ (or the
+  chosen transitive subgroup) and $H=\operatorname{Stab}_G(v)$, so that
+  $\Gamma$ is a coset graph on $G/H$;
+\item the Wedderburn decomposition of
+  $\HH=\HH(G,H)=\operatorname{End}_G\C[G/H]$;
+\item the table of \emph{all} one-dimensional characters
+  $T_i\mapsto\lambda_i$ (columns labelled by the $G$-irreducible
+  $\chi$ they sit on, with its degree);
+\item for \emph{every} irreducible representation of dimension $m\ge2$:
+  \begin{itemize}
+  \item a minimal generating set $A,B,\dots$ chosen among the orbital
+    images $\rho(T_i)$, as explicit matrices;
+  \item \emph{complete} defining relations: the minimal polynomial of each
+    generator, together with rewriting rules expressing $w\cdot g$ in the
+    monomial basis for every basis word $w$ and generator $g$ --- a
+    presentation of $M_m(\C)$ from which any word in the generators
+    reduces;
+  \item the explicit matrix of \emph{every} orbital generator
+    $\rho(T_1),\dots,\rho(T_r)$, each accompanied by its expansion as a
+    linear combination of words in the block generators.
+  \end{itemize}
+\end{itemize}
+Throughout, $T_1=I,T_2,\dots,T_r$ is the orbital basis of $\HH$, sorted by
+suborbit length $k_i$ (ties among equal valencies are ordered by the orbit
+enumeration of the generating GAP session; the numbering is therefore fixed
+unambiguously by the explicit matrices below, but may differ from earlier
+write-ups within a tied valency class). All matrices were computed exactly
+over cyclotomic fields by isotypic restriction
+(\texttt{hecke\_catalog\_full.g}) and verified by reconstructing the
+$m^2$-dimensional matrix algebra, checking $\rho(\sum_i T_i)=0$ on
+non-principal blocks, and re-multiplying every word expansion.
+
+\paragraph{Notation.}
+$\eta_a=\sum_{s\in H_p}\zeta_p^{as}$ denotes the sextic Gauss period of
+$\Q(\zeta_p)$ over the index-$6$ subgroup $H_p\le(\Z/p)^\times$;
+$c_k=\zeta_7^k+\zeta_7^{-k}$ (so $c_1+c_2+c_3=-1$);
+$\alpha=\frac{-1+\sqrt{-7}}{2}$ (so $\alpha\bar\alpha=2$,
+$\alpha+\bar\alpha=-1$); $\omega=e^{2\pi i/3}$ (so
+$\omega\bar\omega=1$, $\omega+\bar\omega=-1$).
+
+\tableofcontents
+
+%──────────────────────────────────────────────────────────────────────
+\section{Dodecahedron, refined: $\bigl(\mathrm{PSL}(2,5),\,C_3\bigr)$}
+
+\textbf{Graph.} The dodecahedron on $20=|{\mathrm{PSL}(2,5)}|/3$ vertices.
+Under the full group $C_2\times A_5$ the pair is Gelfand; the
+representation theory below belongs to the refined pair
+$G=\mathrm{PSL}(2,5)\cong A_5$, $H=C_3$.
+
+\textbf{Algebra.} Rank $8$, $\HH\cong\C^4\oplus M_2(\C)$.
+
+\textbf{Highlights.} The valency-3 generator satisfies $B^2+B+3I=0$
+($\det B=3=$ valency); the golden $\pm\sqrt5$ of the dodecahedron spectrum
+lives entirely in the 1-dimensional characters below. The ``why-$N$''
+constant of this 20-point Meinhold miniature is $4$:
+$(\rho(T_6)-I)^2=4I$.
+
+\input{catalog-data/dodeca}
+
+%──────────────────────────────────────────────────────────────────────
+\section{F26A: $\bigl(C_{13}{:}C_6,\,C_3\bigr)$}
+
+\textbf{Graph.} F26A, the unique cubic arc-transitive graph on 26 vertices;
+$G=C_{13}{:}C_6$ ($|G|=78$) is \emph{sharply} arc-transitive, $H=C_3$.
+
+\textbf{Algebra.} Rank $10$,
+$\HH\cong\C^2\oplus M_2(\C)\oplus M_2(\C)$, the two blocks Galois conjugate
+over $\Q(\sqrt{13})$ (the substitution $\sqrt{13}\mapsto-\sqrt{13}$ maps
+Block~1 to Block~2).
+
+\textbf{Highlights.} With $\eta_0,\eta_1=\frac{-1\pm\sqrt{13}}{2}$ the
+sextic Gauss periods of $\Q(\zeta_{13})$, the traceless generators satisfy
+\[
+B^2=\frac{5-\sqrt{13}}{2}\,I \quad(\text{Block 1}),\qquad
+B^2=\frac{5+\sqrt{13}}{2}\,I \quad(\text{Block 2}),\qquad
+N_+N_-=3=\text{valency},
+\]
+and $\frac{5\mp\sqrt{13}}{2}=3+\eta$: \emph{valency plus a Gauss period}
+(see the Remark after CR(31)).
+
+\input{catalog-data/f26a}
+
+%──────────────────────────────────────────────────────────────────────
+\section{CR(19): $\bigl(C_{19}{:}C_6,\,C_3\bigr)$}
+
+\textbf{Graph.} The 38-vertex cubic arc-transitive Frobenius graph;
+$G=C_{19}{:}C_6$ ($|G|=114$), $H=C_3$. Here
+$H_{19}=\langle 8\rangle=\{1,7,8,11,12,18\}\le(\Z/19)^\times$ and the three
+sextic periods are $\eta_1,\eta_2,\eta_4$ (indexed by coset representatives
+$1,2,4$), satisfying $\eta_1+\eta_2+\eta_4=-1$; entries below are written
+in the basis $\{1,\eta_a,\eta_b\}$ that gives the sparsest expression.
+
+\textbf{Algebra.} Rank $14$, $\HH\cong\C^2\oplus M_2(\C)^{\oplus3}$.
+
+\textbf{Highlights.} The three blocks are permuted cyclically by the Galois
+action $a\mapsto2a$ on period indices; in each, the traceless valency-3
+orbital squares to $(3+\eta)I$.
+
+\input{catalog-data/cr19}
+
+%──────────────────────────────────────────────────────────────────────
+\section{CR(31): $\bigl(C_{31}{:}C_6,\,C_3\bigr)$}
+
+{\sloppy
+\textbf{Graph.} The 62-vertex sibling; $G=C_{31}{:}C_6$ ($|G|=186$),
+$H=C_3$. Here $H_{31}=\langle 26\rangle=\{1,5,6,25,26,30\}$, and there
+are five sextic periods $\eta_1,\eta_2,\eta_3,\eta_4,\eta_8$ (coset
+representatives $1,2,3,4,8$), summing to $-1$.\par}
+
+\textbf{Algebra.} Rank $22$, $\HH\cong\C^2\oplus M_2(\C)^{\oplus5}$.
+
+\textbf{Highlights.} Five Galois-conjugate blocks, cycled by $a\mapsto2a$;
+same $(3+\eta)$-law as CR(19).
+
+\input{catalog-data/cr31}
+
+\begin{remark}[A uniform law for the Frobenius family]
+In all three graphs F26A, CR(19), CR(31) the traceless valency-3 generator
+satisfies
+\[
+T^2=(3+\eta)\,I
+\]
+where $3$ is the valency and $\eta$ is a sextic Gauss period of
+$\Q(\zeta_p)$. For $p=13$ this is $3+\frac{-1\mp\sqrt{13}}{2}
+=\frac{5\mp\sqrt{13}}{2}$, recovering the F26A relation. The ``why-$N$''
+constant of the whole family is \emph{valency plus a Gauss period}.
+\end{remark}
+
+%──────────────────────────────────────────────────────────────────────
+\section{Klein graph F056A: $\bigl(\mathrm{PSL}(2,7),\,C_3\bigr)$}
+
+\textbf{Graph.} F056A, the 56-vertex cubic arc-transitive graph of girth 6
+on the cosets $\mathrm{PSL}(2,7)/C_3$; $G=\mathrm{PSL}(2,7)$ ($|G|=168$),
+$H=C_3$.
+
+\textbf{Algebra.} Rank $20$,
+$\HH\cong\C^3\oplus M_2(\C)\oplus M_3(\C)\oplus M_2(\C)$
+(blocks on $\chi_4,\chi_5,\chi_6$ of degrees $6,7,8$).
+
+\textbf{Highlights.} Block~1 is generated by the $\alpha$-diagonal orbital
+($A^2+A+2I=0$; $2=\alpha\bar\alpha$ is the prime that splits in
+$\Q(\sqrt{-7})$). Block~2, the integral $M_3$, carries the irreducible
+characteristic polynomial $x^3+x-6$ --- the first genuinely cubic
+eigenvalue in the catalogue, echoed by $\mathrm{PSL}(2,13)$'s $x^3+x-26$
+below. In Block~3 the order-3 matrix
+$\bigl(\begin{smallmatrix}1/2&1\\-7/4&-3/2\end{smallmatrix}\bigr)$ appears
+as $\rho(T_{10})$ --- see the Remark after the Klein $\{7,3\}$ section.
+
+\input{catalog-data/f056a}
+
+%──────────────────────────────────────────────────────────────────────
+\section{Klein $\{3,7\}$ graph: $\bigl(\mathrm{PGL}(2,7),\,D_7\bigr)$}
+
+\textbf{Graph.} The 1-skeleton of the $\{3,7\}$ tiling of the Klein
+quartic: 24 vertices, valency 7 (the dual of the $\{7,3\}$ map).
+$G=\operatorname{Aut}\Gamma\cong\mathrm{PGL}(2,7)$ ($|G|=336$,
+GAP-verified), with vertex stabilizer $H\cong D_7$ (dihedral of order
+14).
+
+\textbf{Algebra.} Rank $6$, $\HH\cong\C^2\oplus M_2(\C)$.
+
+\textbf{Highlights.} The stabilizer fixes three vertices, and the two
+non-trivial valency-1 orbitals act as the $\omega$-diagonal pair
+($A^2+A+I=0$, so $\rho(T_2)$ has order 3). The symmetric valency-7
+orbital satisfies
+\[
+B^2=7I
+\]
+--- the ``why-$N$'' constant equals the valency on the nose, the cleanest
+instance in the catalogue --- and the chiral valency-7 pair is exactly
+$\rho(T_5)=BA$, $\rho(T_6)=AB$, with $AB+BA=-B$.
+
+\input{catalog-data/klein37}
+
+%──────────────────────────────────────────────────────────────────────
+\section{Klein $\{7,3\}$ graph: $\bigl(\mathrm{PGL}(2,7),\,S_3\bigr)$}
+
+\textbf{Graph.} The 1-skeleton of the $\{7,3\}$ tiling of the Klein quartic
+(56 vertices, cubic, girth 7): the \emph{same} coset space
+$\mathrm{PSL}(2,7)/C_3$ as F056A, but a girth-7 orbital. The full group is
+$G=\operatorname{Aut}\Gamma\cong\mathrm{PGL}(2,7)$ ($|G|=336$; GAP-verified,
+and visible in the character data: the degree-6 constituents take values in
+$\Q(\zeta_8)$, so $G$ has elements of order 8 --- ruling out
+$\mathrm{PSL}(2,7)\times C_2$), with vertex stabilizer $H\cong S_3$.
+
+\textbf{Algebra.} Rank $13$,
+$\HH\cong\C^5\oplus M_2(\C)\oplus M_2(\C)$.
+
+\textbf{Highlights.} Block~1 is integral with
+$B^2+B+4I=0$ and the companion orbital relations producing eigenvalues
+$\frac{-1\pm\sqrt{17}}{2}$; Block~2 contains an orbital of order 3 and one
+with square $8I$.
+
+\input{catalog-data/klein73}
+
+\begin{remark}
+The order-3 matrix
+$\bigl(\begin{smallmatrix}1/2&1\\-7/4&-3/2\end{smallmatrix}\bigr)$
+is \emph{literally the same} as $\rho(T_{10})$ in F056A's Block~3 --- same
+coset geometry, different orbital, identical $2\times2$ block.
+\end{remark}
+
+%──────────────────────────────────────────────────────────────────────
+\section{Zhou-3 (F182A): $\bigl(\mathrm{PSL}(2,13),\,S_3\bigr)$}
+
+\textbf{Graph.} The 182-vertex cubic coset graph of girth 7;
+$G=\mathrm{PSL}(2,13)$ ($|G|=1092$), $H=S_3$.
+
+\textbf{Algebra.} Rank $34$,
+$\HH\cong\C^4\oplus M_2(\C)^{\oplus3}\oplus M_3(\C)^{\oplus2}$.
+
+\textbf{Highlights.} The three $M_2$ blocks (degrees $12,12,12$) are Galois
+conjugate over $\Q(\zeta_7)^+$ via $c_k\mapsto c_{2k}$. Block~4 is the
+integral Steinberg $M_3$ with $B^3=-I$ and an orbital of characteristic
+polynomial $x^3+x-26$, echoing $\mathrm{PSL}(2,7)$'s $x^3+x-6$. Block~5
+carries $B^3=5I$ --- the first \emph{cubic} analogue of Meinhold's
+$B^2=13I$. The $\pm\sqrt{13}$ of $\Q(\zeta_{13})$ appears in the
+1-dimensional characters (quadratic Gauss periods
+$\frac{-1\pm\sqrt{13}}{2}$), a different 13 from Meinhold's.
+
+\input{catalog-data/zhou3}
+
+%──────────────────────────────────────────────────────────────────────
+\section{Meinhold-72: $\bigl(G_2(2),\,\mathrm{PSL}(3,2)\bigr)$}
+
+\textbf{Graph.} The Meinhold-72 orbital graph: $G=G_2(2)=\mathrm{PSU}(3,3){:}2$
+($|G|=12096$) acting on the $72$ cosets of $H=\mathrm{PSL}(3,2)$ (the $36+36$
+chiral Fano structures).
+
+\textbf{Algebra.} Rank $8$, $\HH\cong\C^2\oplus M_2(\C)\oplus\C^2$.
+
+\textbf{Highlights.} The block is generated by the mirror involution
+$A=\rho(T_2)$ and the directed valency-7 orbital $B=\rho(T_3)$ with
+\[
+A^2=I,\qquad B^2+4B+13I=0 ;
+\]
+the roots $-2\pm3i$ of $x^2+4x+13$ are Gaussian integers of norm $13$.
+Equivalently, the symmetric generator $\rho(T_4)=-4A-AB$ satisfies
+$\rho(T_4)^2=13I$ and $A\rho(T_4)+\rho(T_4)A=-4I$.
+Why 13? $13=7+2\cdot3$: $NN^{\mathsf T}=7I+2A_{\mathrm{SRG}}$ for the
+$\mathrm{SRG}(36,21,12,12)$ on the chiral Fano structures, and
+$3=\sqrt{k-\mu}$; the $-4$ is the $U_3(3)$-graph eigenvalue. (Full account:
+\texttt{why13.pdf}.)
+
+\input{catalog-data/meinhold}
+
+%──────────────────────────────────────────────────────────────────────
+\section*{Provenance}
+\addcontentsline{toc}{section}{Provenance}
+{\sloppy
+All data blocks: GAP, exact cyclotomic arithmetic, by isotypic restriction
+and spin-up of eigenvectors --- single script
+\texttt{hecke\_catalog\_full.g} in \texttt{\~{}/git/hecke/}, console audit
+trail \texttt{hecke\_catalog\_full.out}, LaTeX fragments
+\texttt{catalog-data/*.tex} (machine-generated; do not edit). Methods and
+proofs: \texttt{hecke-irreps.pdf}; the Meinhold story: \texttt{why13.pdf}.
+The non-Gelfand pairs $\mathrm{PSL}(2,19)/S_3$ and $\mathrm{PSL}(2,31)/S_4$
+are deliberately out of scope.\par}
+
+\end{document}
