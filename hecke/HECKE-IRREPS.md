@@ -276,3 +276,35 @@ in the non-commutative block rather than the spherical functions.
 Four orbitals act as −I on the 3-dim block (T₃₆ = T₆₀ = T₆₅ = T₆₆ = −I),
 and elements of **finite order 6** appear (charpoly x² − x + 1, primitive
 6th roots of unity).
+
+---
+
+## 7. Torsion in the non-commutative blocks
+
+Computed by `hecke_torsion.g` (2026-06-11). For each non-commutative Hecke block,
+what is the maximum order of ρ(T_i)?
+
+| q | Block | χ (deg) | Max torsion | Cyclotomic |
+|---|-------|---------|-------------|------------|
+| 7 | M₂ | χ₄ (6) | 1 (no torsion) | — |
+| 7 | M₃ | χ₅ (7) | 2 | Φ₁Φ₂ |
+| 7 | M₂ | χ₆ (8) | **3** | **Φ₃** (x²+x+1) |
+| 11 | M₃ | χ₆ (11) | **6** | x³+1 = Φ₂·**Φ₆** |
+| 13 | M₃ | χ₂ (7) | 2 | Φ₁Φ₂ |
+| 13 | M₃ | χ₃ (7) | 2 | Φ₁Φ₂ |
+
+**Observations:**
+
+1. **Torsion concentrates in specific blocks.** At q=7, the order-3 elements live
+   in the rational M₂ block (χ₆, deg q+1), not the ℚ(√−7) block or the M₃.
+   At q=11, order-6 elements live in the Steinberg M₃ block. At q=13, the
+   M₃ blocks (on the deg-(q+1)/2 characters) have only involutions.
+
+2. **The Steinberg block is special.** At q=11, eight orbitals act with order 6
+   on the Steinberg block (charpoly x³+1 = (x+1)(x²−x+1)), and four act as −I.
+   The 3×3 matrix has eigenvalues {−1, e^{πi/3}, e^{−πi/3}} — a 60° rotation
+   in a 2D subspace. This connects to the Eisenstein integers ℤ[ω₃].
+
+3. **Torsion order is NOT monotone in q.** q=7 gives order 3, q=11 gives order 6,
+   but q=13 drops back to order 2 (in the blocks computed so far). The torsion
+   depends on which block you're in, not just on q.
