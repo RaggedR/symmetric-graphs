@@ -736,8 +736,100 @@ def compute_layout(quotient, n, adj, mode="auto"):
 # TikZ output
 # ============================================================
 
+# Ring palette for the dmt style (same as clayworth/generate_named_graphs.py
+# and surfaces/draw_triality_hexagon.py): blue outermost ring -> red innermost.
+RING_PALETTE = [
+    "0033CC", "0066FF", "0099FF", "00CCCC", "00CC66",
+    "33CC00", "99CC00", "CCCC00", "FF9900", "FF6600",
+    "FF3300", "CC0000",
+]
+
+
+def generate_tikz_dmt(coords, adj, n, orbits, graph_name,
+                      aut_order=None, aut_structure=None):
+    """dmt style: ring-colored vertices (by mean orbit radius), gap-colored
+    edges, no labels or legend."""
+    n_orbits = len(orbits)
+    mean_r = []
+    for orbit in orbits:
+        mean_r.append(sum(math.hypot(*coords[v]) for v in orbit) / len(orbit))
+    order = sorted(range(n_orbits), key=lambda oi: -mean_r[oi])
+    ring_rank = {oi: rank for rank, oi in enumerate(order)}
+    v_to_orbit = {}
+    for oi, orbit in enumerate(orbits):
+        for v in orbit:
+            v_to_orbit[v] = oi
+
+    def color_idx(oi):
+        return min(11, int(ring_rank[oi] * 12 / n_orbits))
+
+    dot_size = max(2.0, 3.5 - n / 60.0)
+    max_y = max(y for x, y in coords.values())
+    title_y = max_y + 1.2
+    sub_y = title_y - 0.65
+
+    subtitle = ""
+    if aut_structure and aut_order:
+        subtitle = (f"$\\mathrm{{Aut}} = {aut_structure}$, "
+                    f"$|\\mathrm{{Aut}}| = {aut_order}$, {n} vertices")
+
+    lines = []
+    lines.append(r"\documentclass[border=12pt]{standalone}")
+    lines.append(r"\usepackage{amsmath, amssymb}")
+    lines.append(r"\usepackage{tikz}")
+    for idx, hex_c in enumerate(RING_PALETTE):
+        lines.append(f"\\definecolor{{ring{idx}}}{{HTML}}{{{hex_c}}}")
+    lines.append(r"\definecolor{gap0}{HTML}{E53935}")
+    lines.append(r"\definecolor{gap1}{HTML}{1E88E5}")
+    lines.append(r"\definecolor{gapfar}{HTML}{CCCCCC}")
+    lines.append(r"\begin{document}")
+    lines.append(r"\begin{tikzpicture}")
+    lines.append(f"\\node[font=\\Large\\bfseries] at (0, {title_y:.2f}) {{{graph_name}}};")
+    if subtitle:
+        lines.append(f"\\node[font=\\small, text=gray] at (0, {sub_y:.2f}) {{{subtitle}}};")
+
+    # On a single-circle layout ring ranks are arbitrary: binary gap there.
+    concentric = (max(mean_r) - min(mean_r)) > 0.1
+
+    edges_by_gap = {}
+    for v in range(1, n + 1):
+        for w in adj[v - 1]:
+            if v < w:
+                if concentric:
+                    gap = abs(ring_rank[v_to_orbit[v]] - ring_rank[v_to_orbit[w]])
+                else:
+                    gap = 0 if v_to_orbit[v] == v_to_orbit[w] else 1
+                edges_by_gap.setdefault(gap, []).append((v, w))
+
+    wf = max(1.0, 2.2 - n / 40.0)
+    op = 0.15 if wf > 1.0 else 0.0
+    for gap in sorted(edges_by_gap.keys(), reverse=True):
+        if gap == 0:
+            style = f"line width={0.5*wf:.2f}pt, gap0, opacity={0.6+op:.2f}"
+        elif gap <= 3:
+            style = f"line width={0.4*wf:.2f}pt, gap1, opacity={0.35+op:.2f}"
+        else:
+            style = f"line width={0.35*wf:.2f}pt, gapfar, opacity={0.45+op:.2f}"
+        for v, w in edges_by_gap[gap]:
+            x1, y1 = coords[v]
+            x2, y2 = coords[w]
+            lines.append(f"\\draw[{style}] ({x1:.3f}, {y1:.3f}) -- ({x2:.3f}, {y2:.3f});")
+
+    for v in range(1, n + 1):
+        x, y = coords[v]
+        c = f"ring{color_idx(v_to_orbit[v])}"
+        lines.append(f"\\fill[{c}] ({x:.3f}, {y:.3f}) circle ({dot_size:.1f}pt);")
+
+    lines.append(r"\end{tikzpicture}")
+    lines.append(r"\end{document}")
+    return "\n".join(lines)
+
+
 def generate_tikz(coords, adj, n, orbits, graph_name, quotient_info,
                    aut_order=None, aut_structure=None, style="full"):
+    if style == "dmt":
+        return generate_tikz_dmt(coords, adj, n, orbits, graph_name,
+                                 aut_order=aut_order, aut_structure=aut_structure)
     n_orbits = len(orbits)
     v_to_orbit = {}
     for oi, orbit in enumerate(orbits):
@@ -920,9 +1012,12 @@ def main():
     parser.add_argument("--layout", choices=["auto", "cyclic", "rings"],
                         default="auto",
                         help="auto (detect), cyclic (single circle), rings (concentric)")
-    parser.add_argument("--style", choices=["full", "minimal"], default="full",
-                        help="full (labels+legend) or minimal (black dots, no legend)")
+    parser.add_argument("--style", choices=["full", "minimal", "dmt"], default="full",
+                        help="full (labels+legend), minimal (black dots), "
+                             "or dmt (ring palette, gap-colored edges)")
     parser.add_argument("--no-open", action="store_true")
+    parser.add_argument("--out-dir", default=None,
+                        help="Output directory (default: individual_graphs/)")
     args = parser.parse_args()
 
     print(f"Running GAP for {args.graph}...")
@@ -945,7 +1040,7 @@ def main():
                          aut_structure=data.get('aut_structure'),
                          style=args.style)
 
-    indiv_dir = os.path.join(GRAPHVIZ_DIR, "individual_graphs")
+    indiv_dir = args.out_dir or os.path.join(GRAPHVIZ_DIR, "individual_graphs")
     os.makedirs(indiv_dir, exist_ok=True)
     tex_file = os.path.join(indiv_dir, f"auto-{args.graph}.tex")
     pdf_file = os.path.join(indiv_dir, f"auto-{args.graph}.pdf")

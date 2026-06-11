@@ -1,42 +1,34 @@
-\documentclass[border=15pt]{standalone}
+\documentclass[border=12pt]{standalone}
 \usepackage{amsmath, amssymb}
 \usepackage{tikz}
-\usetikzlibrary{arrows.meta}
-
-\definecolor{block0}{HTML}{E53935}
-\definecolor{block1}{HTML}{1E88E5}
-
+\definecolor{ring0}{HTML}{0033CC}
+\definecolor{ring1}{HTML}{0066FF}
+\definecolor{ring2}{HTML}{0099FF}
+\definecolor{ring3}{HTML}{00CCCC}
+\definecolor{ring4}{HTML}{00CC66}
+\definecolor{ring5}{HTML}{33CC00}
+\definecolor{ring6}{HTML}{99CC00}
+\definecolor{ring7}{HTML}{CCCC00}
+\definecolor{ring8}{HTML}{FF9900}
+\definecolor{ring9}{HTML}{FF6600}
+\definecolor{ring10}{HTML}{FF3300}
+\definecolor{ring11}{HTML}{CC0000}
+\definecolor{gap0}{HTML}{E53935}
+\definecolor{gap1}{HTML}{1E88E5}
+\definecolor{gapfar}{HTML}{CCCCCC}
 \begin{document}
-\begin{tikzpicture}[
-  vertex/.style={circle, draw, thick, minimum size=6.5mm, inner sep=0pt,
-                 font=\scriptsize\bfseries},
-  edge/.style={thick, gray!45},
-  title/.style={font=\Large\bfseries},
-  subtitle/.style={font=\small, text=gray},
-]
-
-\node[title] at (0, 6.5) {K4};
-\node[subtitle] at (0, 5.8) {$\mathrm{Aut} = S4$, $|\mathrm{Aut}| = 24$};
-\node[subtitle] at (0, 5.2) {$H = C2$ $\leq$ $\mathrm{Aut}$, 2 orbits of [2, 2]};
-
-\node[vertex, fill=block0!30] (v1) at (0.000, 4.500) {1};
-\node[vertex, fill=block0!30] (v2) at (-0.000, -4.500) {2};
-\node[vertex, fill=block1!30] (v3) at (0.000, 1.575) {3};
-\node[vertex, fill=block1!30] (v4) at (-0.000, -1.575) {4};
-
-\draw[thick, block0!60] (v1) -- (v2);
-\draw[edge] (v1) -- (v3);
-\draw[edge] (v1) -- (v4);
-\draw[edge] (v2) -- (v3);
-\draw[edge] (v2) -- (v4);
-\draw[thick, block1!60] (v3) -- (v4);
-
-\node[draw, rounded corners, fill=gray!5, text width=12cm, align=left, font=\small]
-  at (0, -6.5) {
-  \textbf{Orbit decomposition} ($C2$, order 2) \\[4pt]
-  \textcolor{block0}{$\blacksquare$} $O_{1}$ = \{1,2\} (cycle) \\
-  \textcolor{block1}{$\blacksquare$} $O_{2}$ = \{3,4\} (cycle)
-};
-
+\begin{tikzpicture}
+\node[font=\Large\bfseries] at (0, 5.70) {K4};
+\node[font=\small, text=gray] at (0, 5.05) {$\mathrm{Aut} = S4$, $|\mathrm{Aut}| = 24$, 4 vertices};
+\draw[line width=0.84pt, gap1, opacity=0.50] (0.000, 4.500) -- (-4.500, 0.000);
+\draw[line width=0.84pt, gap1, opacity=0.50] (0.000, 4.500) -- (4.500, -0.000);
+\draw[line width=0.84pt, gap1, opacity=0.50] (-0.000, -4.500) -- (-4.500, 0.000);
+\draw[line width=0.84pt, gap1, opacity=0.50] (-0.000, -4.500) -- (4.500, -0.000);
+\draw[line width=1.05pt, gap0, opacity=0.75] (0.000, 4.500) -- (-0.000, -4.500);
+\draw[line width=1.05pt, gap0, opacity=0.75] (-4.500, 0.000) -- (4.500, -0.000);
+\fill[ring0] (0.000, 4.500) circle (3.4pt);
+\fill[ring0] (-0.000, -4.500) circle (3.4pt);
+\fill[ring6] (-4.500, 0.000) circle (3.4pt);
+\fill[ring6] (4.500, -0.000) circle (3.4pt);
 \end{tikzpicture}
 \end{document}

@@ -1,0 +1,191 @@
+% Generated companion to docs/GROUP_CATEGORIES.md — compile from repo root:
+%   pdflatex -jobname=GROUP_CATEGORIES group-categories.tex
+% One page per graph formalized in clayworth/CSSCode/*.lean (the Lean
+% Sabidussi family), with the Sab(G,H) statement proved there.
+\documentclass[11pt]{article}
+\usepackage[margin=2.2cm]{geometry}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{amsmath,amssymb}
+\usepackage[hidelinks]{hyperref}
+\setlength{\parindent}{0pt}
+
+\newcommand{\Sab}{\mathrm{Sab}}
+
+% One graph per page: title, construction line, image, lean file, note
+\newcommand{\graphpage}[5]{%
+  \subsection*{#1}
+  {\large $#2$}\hfill {\small\texttt{#4}}\par\medskip
+  \begin{center}
+    \includegraphics[width=0.88\textwidth,height=0.6\textheight,keepaspectratio]{#3}
+  \end{center}
+  \medskip
+  #5\par
+  \newpage
+}
+
+\title{\bfseries The Lean Sabidussi Family\\[1ex]
+  \large Every graph formalized in \texttt{clayworth/CSSCode/}, with its
+  proved coset representation $\Sab(G, H)$}
+\author{}
+\date{2026-06-10}
+
+\begin{document}
+\maketitle
+
+Each page shows one graph from the Lean formalization
+(\texttt{clayworth/CSSCode/*Sabidussi.lean} and companions), the theorem
+proved there --- an explicit graph isomorphism $\Gamma \simeq_g \Sab(G, H, D)$
+onto a Sabidussi coset graph --- and its drawing. Ordered by vertex count.
+
+\medskip
+The graphs fall into the stabilizer categories of
+\texttt{docs/GROUP\_CATEGORIES.md}: the $C_3$ genus tower (Cube,
+Dodecahedron, M\"obius--Kantor via $\mathrm{GL}(2,3)$, Klein, Clayworth),
+the $S_3$ census (Petersen, Zhou-3), order-24 and order-192 stabilizers
+(Heawood, Langer), and $D_{12}$ (Zhou-6). The two covering theorems
+(Dodecahedron $\to$ Petersen in \texttt{DodecPetersenCovering.lean},
+Cube $\to K_4$ in \texttt{CubeK4Covering.lean}) are noted on the pages of
+their total spaces.
+
+\medskip
+References: Sabidussi, \emph{Vertex-transitive graphs}, Monatsh.\ Math.\ 68
+(1964); Langer, \emph{Symmetric Graphs and their Quotients}, arXiv:1306.4798.
+Images from \texttt{lean/named\_graphs/} (the stable-URL directory linked
+from the mathlib4 PRs) and \texttt{individual\_graphs/}.
+
+\tableofcontents
+\newpage
+
+\section{The Sabidussi theorems, by vertex count}
+
+\graphpage{Cube $Q_3$ --- 8 vertices}
+  {Q_3 \simeq_g \Sab(S_4, C_3),\qquad 24/3 = 8}
+  {lean/named_graphs/cube-F008A.jpg}
+  {CubeSabidussi.lean}
+  {Proved via two generators of the rotation group $S_4$: a $90^\circ$
+   $z$-axis rotation of order 4 and a $120^\circ$ rotation about the
+   $(1,1,1)$ diagonal of order 3. A member of the $C_3$ genus tower.
+   Its antipodal $\mathbb{Z}_2$ quotient is $K_4$, proved in
+   \texttt{CubeK4Covering.lean} (edge counts $12 \to 6$, both 3-regular).}
+
+\graphpage{Petersen (F010A) --- 10 vertices}
+  {\simeq_g \Sab(A_5, S_3),\qquad 60/6 = 10}
+  {lean/named_graphs/petersen-F010A.jpg}
+  {PetersenSabidussi.lean}
+  {$A_5 \cong \mathrm{PSL}(2,5)$ on $60/6 = 10$ cosets: the Kneser graph
+   $K(5,2)$, drawn as the classic pentagon + pentagram $GP(5,2)$.
+   The $S_3$ census member for $q = 5$.}
+
+\graphpage{Heawood (F014A) --- 14 vertices}
+  {\simeq_g \Sab(\mathrm{PGL}(2,7), H_{24}),\qquad 336/24 = 14}
+  {lean/named_graphs/heawood-F014A.jpg}
+  {HeawoodSabidussi.lean}
+  {Levi graph of the Fano plane $PG(2,2)$, with an order-24 stabilizer
+   ($\cong S_4$) --- the deep end of the $C_3 \subset S_3 \subset S_4$
+   tower. Also $\Sab(G_{42}, C_3)$, giving the genus-1 surface tiling
+   $\{14V, 21E, 7F\}$ and CSS code $[[21, 2]]$
+   (\texttt{Heawood.lean}).}
+
+\graphpage{M\"obius--Kantor (F016A) --- 16 vertices}
+  {\simeq_g \Sab(\mathrm{GL}(2,3), C_3),\qquad 48/3 = 16}
+  {lean/named_graphs/mobius-kantor-F016A.jpg}
+  {MkSabidussi.lean}
+  {Generalized Petersen graph $GP(8,3)$. Skeleton of the Bolza surface
+   tiling $\{16V, 24E, 6F\}$, genus 2, CSS code $[[24, 4]]$
+   (\texttt{Bolza.lean}).}
+
+\graphpage{Dodecahedron (F020B) --- 20 vertices}
+  {\simeq_g \Sab(A_5, C_3),\qquad 60/3 = 20}
+  {lean/named_graphs/dodecahedron-F020B.jpg}
+  {DodecSabidussi.lean}
+  {The $C_3$ tower member over $A_5$: the rotation group acting on the
+   20 cosets of a vertex-stabilizing $C_3$. Its antipodal $\mathbb{Z}_2$
+   quotient is the Petersen graph, proved in
+   \texttt{DodecPetersenCovering.lean} (edge counts $30 \to 15$, both
+   3-regular) --- inside $A_5$, this is the tower step $C_3 \subset S_3$.}
+
+\graphpage{Klein graph (F056A) --- 56 vertices}
+  {\simeq_g \Sab(\mathrm{PSL}(2,7), C_3),\qquad 168/3 = 56}
+  {lean/named_graphs/klein-F056A.jpg}
+  {KleinSabidussi.lean}
+  {Skeleton of the Klein quartic tiling $\{56V, 84E, 24F\}$, genus 3,
+   CSS code $[[84, 6]]$ (\texttt{KleinSurface.lean}). Primitive:
+   $\mathrm{Aut} \cong \mathrm{PGL}(2,7)$ acts with no non-trivial block
+   system. Vertices are the 56 left cosets of $\langle S \rangle$ in
+   $\mathrm{PSL}(2,7)$.}
+
+\graphpage{Langer graph --- 63 vertices, 6-regular}
+  {\simeq_g \Sab(G_2(2), H_{192}),\qquad 12096/192 = 63}
+  {lean/named_graphs/langer-63v.jpg}
+  {LangerSabidussi.lean}
+  {The distance-2 graph on the points of $GH(2,2)$
+   (\texttt{Tutte12Cage.lean}: \texttt{langer\_eq\_tutte12\_distance2}),
+   equivalently the Zorn-product construction on $Q(6,2)$
+   (\texttt{Q62.lean}). Primitive, arc-transitive (vertex stabilizer
+   order 192, arc stabilizer order 32). \textbf{NOT} a quotient of
+   Clayworth --- the Clayworth $C_3$ fixes zero points of $GH(2,2)$, so
+   no coset map exists (\texttt{clayworth/PR\_NOTE.md}).}
+
+\graphpage{Dual Langer graph --- 63 vertices}
+  {\text{distance-2 on the \emph{lines} of } GH(2,2)}
+  {lean/named_graphs/dual-langer-63v.jpg}
+  {DualLanger.lean, GH22Duality.lean}
+  {The same construction on the line orbit of the Tutte 12-cage. Since
+   $GH(2,2)$ admits no polarity over $\mathbb{F}_2$ (verified by nauty
+   and bliss), the dual is genuinely distinct from the Langer graph.}
+
+\graphpage{Zhou-6 graph --- 91 vertices, 6-regular}
+  {\simeq_g \Sab(\mathrm{PSL}(2,13), D_{12}),\qquad 1092/12 = 91}
+  {lean/named_graphs/zhou6-91v.jpg}
+  {Zhou6Sabidussi.lean}
+  {The $D_{12}$ stabilizer halves the Zhou-3 vertex count at double the
+   valency.}
+
+\graphpage{Tutte 12-cage (F126A) --- 126 vertices}
+  {\text{incidence graph of } GH(2,2) \quad (\text{not a Sabidussi graph})}
+  {lean/named_graphs/tutte-12cage.jpg}
+  {Tutte12Cage.lean}
+  {Semisymmetric: edge- but not vertex-transitive, so it has no Sabidussi
+   representation --- $\mathrm{Aut} \cong G_2(2)$ (order 12096) preserves
+   the bipartition into 63 points $+$ 63 lines. Proved in Lean: 3-regular,
+   189 edges, bipartite. It is the incidence graph of the rank-2 coset
+   geometry $G_2(2)/P_1 \cup G_2(2)/P_2$ (Tits building of type $G_2$),
+   and the parent of both Langer graphs.}
+
+\graphpage{Zhou-3 graph (F182A) --- 182 vertices}
+  {\simeq_g \Sab(\mathrm{PSL}(2,13), S_3),\qquad 1092/6 = 182}
+  {lean/named_graphs/zhou3-F182A.jpg}
+  {Zhou3Sabidussi.lean}
+  {Cubic, primitive: $\mathrm{Aut} \cong \mathrm{PSL}(2,13)$, order 1092.
+   The $S_3$ census member for $q = 13$.}
+
+\graphpage{Twisted triality hexagon $GH(2,8)$ --- 819 vertices, 18-regular}
+  {\text{collinearity graph of } GH(2,8),\quad {}^3D_4(2) \text{ suborbit } 18}
+  {individual_graphs/dmt.jpg}
+  {(not yet formalized)}
+  {The triality twist: $D_4$ is the unique Dynkin diagram with $S_3$
+   symmetry, and twisting by the order-3 automorphism folds it to $G_2$,
+   producing ${}^3D_4(q)$ acting on $GH(q, q^3)$ --- versus $G_2(q)$ on
+   the split hexagon $GH(q,q)$. For $q=2$: $|{}^3D_4(2)| = 211{,}341{,}312$,
+   819 points, suborbits $1+18+288+512$ (all self-paired), distance-regular
+   of diameter 3. Hecke algebra of type $G_2$ with unequal parameters
+   $(2,8)$. Contains $G_2(2)$ and $GH(2,2)$ --- the parent of every graph
+   in the $G_2$ family above. Not in the Lean family yet; built by
+   \texttt{surfaces/build\_triality\_hexagon.g}.}
+
+\subsection*{Clayworth graph --- 4032 vertices (not drawn)}
+{\large $\simeq_g \Sab(G_2(2), C_3),\qquad 12096/3 = 4032$}
+\hfill {\small\texttt{ClayworthSabidussiNew.lean}}
+\par\medskip
+The largest member of the $C_3$ tower: surface tiling
+$\{4032V, 6048E, 1008F\}$ of genus 505, CSS code $[[6048, 1010]]$
+(\texttt{ClayworthSurface.lean}, mathlib4 PR \#39654 --- with dart-level
+algebraic proofs running $O(12096)$ \texttt{native\_decide}).
+Too large to draw; all its small quotients are degenerate ($K_{28}$,
+$2 \times K_{28}$, $63 \times K_4$, \dots\ --- see
+\texttt{clayworth/clayworth-quotients/CLAYWORTH\_QUOTIENTS.md}), so no
+quotient drawing exists either.
+\newpage
+
+\end{document}

@@ -1,73 +1,59 @@
-\documentclass[border=15pt]{standalone}
+\documentclass[border=12pt]{standalone}
 \usepackage{amsmath, amssymb}
 \usepackage{tikz}
-\usetikzlibrary{arrows.meta}
-
-\definecolor{block0}{HTML}{E53935}
-\definecolor{block1}{HTML}{1E88E5}
-\definecolor{block2}{HTML}{43A047}
-\definecolor{block3}{HTML}{FB8C00}
-\definecolor{block4}{HTML}{8E24AA}
-
+\definecolor{ring0}{HTML}{0033CC}
+\definecolor{ring1}{HTML}{0066FF}
+\definecolor{ring2}{HTML}{0099FF}
+\definecolor{ring3}{HTML}{00CCCC}
+\definecolor{ring4}{HTML}{00CC66}
+\definecolor{ring5}{HTML}{33CC00}
+\definecolor{ring6}{HTML}{99CC00}
+\definecolor{ring7}{HTML}{CCCC00}
+\definecolor{ring8}{HTML}{FF9900}
+\definecolor{ring9}{HTML}{FF6600}
+\definecolor{ring10}{HTML}{FF3300}
+\definecolor{ring11}{HTML}{CC0000}
+\definecolor{gap0}{HTML}{E53935}
+\definecolor{gap1}{HTML}{1E88E5}
+\definecolor{gapfar}{HTML}{CCCCCC}
 \begin{document}
-\begin{tikzpicture}[
-  vertex/.style={circle, draw, thick, minimum size=6.5mm, inner sep=0pt,
-                 font=\scriptsize\bfseries},
-  edge/.style={thick, gray!45},
-  title/.style={font=\Large\bfseries},
-  subtitle/.style={font=\small, text=gray},
-]
-
-\node[title] at (0, 6.5) {Heawood (voltage)};
-\node[subtitle] at (0, 5.8) {$\mathrm{Aut} = PSL(3,2) : C2$, $|\mathrm{Aut}| = 336$};
-\node[subtitle] at (0, 5.2) {$H = C2 x C2$ $\leq$ $\mathrm{Aut}$, 5 orbits of [2, 2, 4, 2, 4]};
-
-\node[vertex, fill=block0!30] (v1) at (0.000, 4.500) {1};
-\node[vertex, fill=block1!30] (v2) at (-3.518, 2.806) {2};
-\node[vertex, fill=block2!30] (v3) at (-4.387, -1.001) {3};
-\node[vertex, fill=block3!30] (v4) at (-1.952, -4.054) {4};
-\node[vertex, fill=block4!30] (v5) at (1.952, -4.054) {5};
-\node[vertex, fill=block2!30] (v6) at (4.387, -1.001) {6};
-\node[vertex, fill=block4!30] (v7) at (3.518, 2.806) {7};
-\node[vertex, fill=block3!30] (v8) at (-1.952, 4.054) {8};
-\node[vertex, fill=block4!30] (v9) at (-4.387, 1.001) {9};
-\node[vertex, fill=block0!30] (v10) at (-3.518, -2.806) {10};
-\node[vertex, fill=block1!30] (v11) at (-0.000, -4.500) {11};
-\node[vertex, fill=block2!30] (v12) at (3.518, -2.806) {12};
-\node[vertex, fill=block4!30] (v13) at (4.387, 1.001) {13};
-\node[vertex, fill=block2!30] (v14) at (1.952, 4.054) {14};
-
-\draw[edge] (v1) -- (v8);
-\draw[edge] (v1) -- (v12);
-\draw[edge] (v1) -- (v14);
-\draw[edge] (v2) -- (v8);
-\draw[edge] (v2) -- (v9);
-\draw[edge] (v2) -- (v13);
-\draw[edge] (v3) -- (v9);
-\draw[edge] (v3) -- (v10);
-\draw[thick, block2!60] (v3) -- (v14);
-\draw[thick, block3!60] (v4) -- (v8);
-\draw[edge] (v4) -- (v10);
-\draw[edge] (v4) -- (v11);
-\draw[thick, block4!60] (v5) -- (v9);
-\draw[edge] (v5) -- (v11);
-\draw[edge] (v5) -- (v12);
-\draw[edge] (v6) -- (v10);
-\draw[thick, block2!60] (v6) -- (v12);
-\draw[edge] (v6) -- (v13);
-\draw[edge] (v7) -- (v11);
-\draw[thick, block4!60] (v7) -- (v13);
-\draw[edge] (v7) -- (v14);
-
-\node[draw, rounded corners, fill=gray!5, text width=12cm, align=left, font=\small]
-  at (0, -6.5) {
-  \textbf{Orbit decomposition} ($C2 x C2$, order 4) \\[4pt]
-  \textcolor{block0}{$\blacksquare$} $O_{1}$ = \{1,10\} \\
-  \textcolor{block1}{$\blacksquare$} $O_{2}$ = \{2,11\} \\
-  \textcolor{block2}{$\blacksquare$} $O_{3}$ = \{3,6,12,14\} \\
-  \textcolor{block3}{$\blacksquare$} $O_{4}$ = \{4,8\} \\
-  \textcolor{block4}{$\blacksquare$} $O_{5}$ = \{5,7,9,13\}
-};
-
+\begin{tikzpicture}
+\node[font=\Large\bfseries] at (0, 5.70) {Heawood (voltage)};
+\node[font=\small, text=gray] at (0, 5.05) {$\mathrm{Aut} = PSL(3,2) : C2$, $|\mathrm{Aut}| = 336$, 14 vertices};
+\draw[line width=0.74pt, gap1, opacity=0.50] (0.000, 4.500) -- (-1.952, 4.054);
+\draw[line width=0.74pt, gap1, opacity=0.50] (0.000, 4.500) -- (3.518, -2.806);
+\draw[line width=0.74pt, gap1, opacity=0.50] (0.000, 4.500) -- (1.952, 4.054);
+\draw[line width=0.74pt, gap1, opacity=0.50] (-3.518, 2.806) -- (-1.952, 4.054);
+\draw[line width=0.74pt, gap1, opacity=0.50] (-3.518, 2.806) -- (-4.387, 1.001);
+\draw[line width=0.74pt, gap1, opacity=0.50] (-3.518, 2.806) -- (4.387, 1.001);
+\draw[line width=0.74pt, gap1, opacity=0.50] (-4.387, -1.001) -- (-4.387, 1.001);
+\draw[line width=0.74pt, gap1, opacity=0.50] (-4.387, -1.001) -- (-3.518, -2.806);
+\draw[line width=0.74pt, gap1, opacity=0.50] (-1.952, -4.054) -- (-3.518, -2.806);
+\draw[line width=0.74pt, gap1, opacity=0.50] (-1.952, -4.054) -- (-0.000, -4.500);
+\draw[line width=0.74pt, gap1, opacity=0.50] (1.952, -4.054) -- (-0.000, -4.500);
+\draw[line width=0.74pt, gap1, opacity=0.50] (1.952, -4.054) -- (3.518, -2.806);
+\draw[line width=0.74pt, gap1, opacity=0.50] (4.387, -1.001) -- (-3.518, -2.806);
+\draw[line width=0.74pt, gap1, opacity=0.50] (4.387, -1.001) -- (4.387, 1.001);
+\draw[line width=0.74pt, gap1, opacity=0.50] (3.518, 2.806) -- (-0.000, -4.500);
+\draw[line width=0.74pt, gap1, opacity=0.50] (3.518, 2.806) -- (1.952, 4.054);
+\draw[line width=0.93pt, gap0, opacity=0.75] (-4.387, -1.001) -- (1.952, 4.054);
+\draw[line width=0.93pt, gap0, opacity=0.75] (-1.952, -4.054) -- (-1.952, 4.054);
+\draw[line width=0.93pt, gap0, opacity=0.75] (1.952, -4.054) -- (-4.387, 1.001);
+\draw[line width=0.93pt, gap0, opacity=0.75] (4.387, -1.001) -- (3.518, -2.806);
+\draw[line width=0.93pt, gap0, opacity=0.75] (3.518, 2.806) -- (4.387, 1.001);
+\fill[ring0] (0.000, 4.500) circle (3.3pt);
+\fill[ring2] (-3.518, 2.806) circle (3.3pt);
+\fill[ring4] (-4.387, -1.001) circle (3.3pt);
+\fill[ring7] (-1.952, -4.054) circle (3.3pt);
+\fill[ring9] (1.952, -4.054) circle (3.3pt);
+\fill[ring4] (4.387, -1.001) circle (3.3pt);
+\fill[ring9] (3.518, 2.806) circle (3.3pt);
+\fill[ring7] (-1.952, 4.054) circle (3.3pt);
+\fill[ring9] (-4.387, 1.001) circle (3.3pt);
+\fill[ring0] (-3.518, -2.806) circle (3.3pt);
+\fill[ring2] (-0.000, -4.500) circle (3.3pt);
+\fill[ring4] (3.518, -2.806) circle (3.3pt);
+\fill[ring9] (4.387, 1.001) circle (3.3pt);
+\fill[ring4] (1.952, 4.054) circle (3.3pt);
 \end{tikzpicture}
 \end{document}

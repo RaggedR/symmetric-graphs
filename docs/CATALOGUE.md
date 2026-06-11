@@ -1,7 +1,8 @@
 # Catalogue: Groups Studied, Algorithms, Artifacts
 
 Companion to `RESEARCH_PROGRAM.md` ("Drawable Shadows of Lie Groups over Finite
-Fields"). For each group we record: the graph(s) drawn, the script that
+Fields") and `HECKE_RESEARCH.md` (Hecke algebra H(G,H) + irreps for every entry
+below). For each group we record: the graph(s) drawn, the script that
 builds/draws them, and where the rendered output lives. Last updated 2026-06-10.
 
 All paths relative to `~/git/symmetric-graphs/` unless noted. The standard pipeline is
@@ -97,7 +98,7 @@ TikZ sources mirrored in `named_graphs_tikz/`.
 | Tutte–Coxeter (30) | order 1440 (Aut S₆) | F030A; GQ(2,2) |
 | F056A (56) | — | `F056A.{pdf,jpg}`, `F056A-minimal.*` |
 | Biggs–Smith (102) | PSL(2,17) | F102A; distance-transitive |
-| Tutte 12-cage (126) | G₂(2)·2 | F126A; GH(2,2) |
+| Tutte 12-cage (126) | G₂(2) (order 12096), **not vertex-transitive**: point/line orbits 63+63 (no duality at q=2; H(q) self-dual only for q=3^h) | F126A; GH(2,2); corrected 2026-06-10 via `~/git/hecke/hecke_census.g` |
 
 ## 7. Quotients & surfaces side-programme
 

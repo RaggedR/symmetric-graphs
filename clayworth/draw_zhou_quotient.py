@@ -119,7 +119,7 @@ def precompute_trig(k):
 
 def compute_radii(n_rings):
     """Radii for concentric rings."""
-    R_max, R_min = 6.5, 1.0
+    R_max, R_min = 7.5, 2.2
     if n_rings == 1:
         return np.array([R_max])
     return np.array([R_max - i * (R_max - R_min) / (n_rings - 1)
@@ -381,51 +381,70 @@ def exhaustive_z13(orbits):
 # TikZ generation
 # ============================================================
 
-COLORS_13 = [
-    "red", "blue", "green!60!black", "orange", "purple",
-    "cyan!70!black", "brown", "magenta", "olive",
-    "pink!80!black", "teal", "violet", "lime!60!black",
-]
-
-COLORS_7 = [
-    "red", "blue", "green!60!black", "orange", "purple",
-    "cyan!70!black", "brown",
+# Ring palette (same as draw_langer.py / draw_triality_hexagon.py):
+# blue outer -> red inner. Orbit 0 is the innermost ring, so reverse.
+RING_PALETTE = [
+    "0033CC", "0066FF", "0099FF", "00CCCC", "00CC66",
+    "33CC00", "99CC00", "CCCC00", "FF9900", "FF6600",
+    "FF3300", "CC0000",
 ]
 
 
-def generate_tikz(coords_np, orbits, title, subtitle, colors, crossings):
-    k = len(orbits[0])
+def generate_tikz(coords_np, orbits, title, subtitle, crossings):
     n_rings = len(orbits)
     orbit_of, _ = build_orbit_arrays(orbits)
+
+    # Rank orbits by mean radius: outermost ring -> ring0 (blue), innermost -> red
+    mean_r = []
+    for orb in orbits:
+        mean_r.append(sum(math.hypot(*coords_np[v - 1]) for v in orb) / len(orb))
+    rank = {oi: r for r, oi in enumerate(sorted(range(n_rings), key=lambda oi: -mean_r[oi]))}
+
+    def ring_color_idx(oi):
+        return min(11, int(rank[oi] * 12 / n_rings))
 
     lines = []
     lines.append(r"\documentclass[border=12pt]{standalone}")
     lines.append(r"\usepackage{tikz}")
+    lines.append(r"\usepackage{amsmath, amssymb}")
+    for idx, hex_c in enumerate(RING_PALETTE):
+        lines.append(f"\\definecolor{{ring{idx}}}{{HTML}}{{{hex_c}}}")
+    lines.append(r"\definecolor{gap0}{HTML}{E53935}")   # same ring: red
+    lines.append(r"\definecolor{gap1}{HTML}{1E88E5}")   # nearby rings: blue
+    lines.append(r"\definecolor{gapfar}{HTML}{CCCCCC}") # far: light grey
     lines.append(r"\begin{document}")
-    lines.append(r"\begin{tikzpicture}[")
-    lines.append(r"  edge/.style={very thin, black!20},")
-    lines.append(r"  intedge/.style={very thin, black!12},")
-    lines.append(r"]")
+    lines.append(r"\begin{tikzpicture}")
 
     y_title = coords_np[:, 1].max() + 1.5
     lines.append(f"\\node[font=\\Large\\bfseries] at (0, {y_title:.1f}) {{{title}}};")
     lines.append(f"\\node[font=\\small, text=gray] at (0, {y_title - 0.7:.1f}) {{{subtitle}}};")
     lines.append(f"\\node[font=\\footnotesize, text=gray!70] at (0, {y_title - 1.2:.1f}) {{{crossings} crossings}};")
 
-    # Edges
-    for ei in range(len(EDGES)):
-        v, u = EDGES[ei]
-        x1, y1 = coords_np[v]
-        x2, y2 = coords_np[u]
-        style = "intedge" if orbit_of[v] == orbit_of[u] else "edge"
-        lines.append(f"\\draw[{style}] ({x1:.3f}, {y1:.3f}) -- ({x2:.3f}, {y2:.3f});")
+    # Edges by ring gap (far edges first, close edges on top — dmt style,
+    # same convention as clayworth/draw_langer.py): same ring red, nearby
+    # rings blue, far rings light grey.
+    edges_by_gap = {}
+    for v, u in EDGES:
+        gap = abs(rank[int(orbit_of[v])] - rank[int(orbit_of[u])])
+        edges_by_gap.setdefault(gap, []).append((v, u))
 
-    # Vertices
+    for gap in sorted(edges_by_gap.keys(), reverse=True):
+        if gap == 0:
+            style = "line width=0.5pt, gap0, opacity=0.6"
+        elif gap <= 3:
+            style = "line width=0.4pt, gap1, opacity=0.3"
+        else:
+            style = "line width=0.35pt, gapfar, opacity=0.45"
+        for v, u in edges_by_gap[gap]:
+            x1, y1 = coords_np[v]
+            x2, y2 = coords_np[u]
+            lines.append(f"\\draw[{style}] ({x1:.3f}, {y1:.3f}) -- ({x2:.3f}, {y2:.3f});")
+
+    # Vertices colored by ring (blue outer -> red inner)
     for v in range(N):
         x, y = coords_np[v]
-        oi = orbit_of[v]
-        c = colors[oi % len(colors)]
-        lines.append(f"\\fill[{c}] ({x:.3f}, {y:.3f}) circle (1.8pt);")
+        c = f"ring{ring_color_idx(int(orbit_of[v]))}"
+        lines.append(f"\\fill[{c}] ({x:.3f}, {y:.3f}) circle (2.2pt);")
 
     lines.append(r"\end{tikzpicture}")
     lines.append(r"\end{document}")
@@ -464,12 +483,12 @@ if __name__ == "__main__":
     random.seed(42)
 
     print("=== Z₇ layout: 13 heptagonal rings ===")
-    z7_offs, z7_seqs, z7_cross, z7_coords = search_layout(Z7_ORBITS, n_mirror_samples=256)
+    z7_offs, z7_seqs, z7_cross, z7_coords = exhaustive_z13(Z7_ORBITS)
     z7_tikz = generate_tikz(
         z7_coords, z7_seqs,
         r"Zhou $Z_2$ quotient --- $Z_7$ layout",
         r"$\mathrm{Sab}(\mathrm{PSL}(2,13), D_{12})$, 91 vertices, 6-regular, 13 heptagonal rings",
-        COLORS_13, z7_cross,
+        z7_cross,
     )
     compile_and_convert("zhou_quotient_z7", z7_tikz)
 
@@ -480,7 +499,7 @@ if __name__ == "__main__":
         z13_coords, z13_seqs,
         r"Zhou $Z_2$ quotient --- $Z_{13}$ layout",
         r"$\mathrm{Sab}(\mathrm{PSL}(2,13), D_{12})$, 91 vertices, 6-regular, 7 tridecagonal rings",
-        COLORS_7, z13_cross,
+        z13_cross,
     )
     compile_and_convert("zhou_quotient_z13", z13_tikz)
 

@@ -105,38 +105,64 @@ def vertex_pos(v, scale=1.0):
     angle = 2 * math.pi * ((pos_in_orbit + offsets[oi]) % 7) / 7 + math.pi/2
     return (r * math.cos(angle) * scale, r * math.sin(angle) * scale)
 
+# Ring palette (same as surfaces/draw_triality_hexagon.py): blue outer -> red inner.
+# Orbit 0 is the innermost ring here, so reverse the index.
+RING_PALETTE = [
+    "0033CC", "0066FF", "0099FF", "00CCCC", "00CC66",
+    "33CC00", "99CC00", "CCCC00", "FF9900", "FF6600",
+    "FF3300", "CC0000",
+]
+N_RINGS = 9
+
+def ring_color_idx(oi):
+    return min(11, int((N_RINGS - 1 - oi) * 12 / N_RINGS))
+
 lines = []
 lines.append(r"\documentclass[border=12pt]{standalone}")
 lines.append(r"\usepackage{tikz}")
+lines.append(r"\usepackage{amsmath, amssymb}")
+for idx, hex_c in enumerate(RING_PALETTE):
+    lines.append(f"\\definecolor{{ring{idx}}}{{HTML}}{{{hex_c}}}")
+lines.append(r"\definecolor{gap0}{HTML}{E53935}")   # same ring: red
+lines.append(r"\definecolor{gap1}{HTML}{1E88E5}")   # adjacent rings: blue
+lines.append(r"\definecolor{gapfar}{HTML}{CCCCCC}") # far: light grey
 lines.append(r"\begin{document}")
-lines.append(r"\begin{tikzpicture}[")
-lines.append(r"  edge/.style={thin, black!25},")
-lines.append(r"  intedge/.style={thin, black!15},")
-lines.append(r"]")
+lines.append(r"\begin{tikzpicture}")
 
 # Title
-lines.append(r"\node[font=\Large\bfseries] at (0, 8.2) {Langer graph (63 vertices)};")
-lines.append(r"\node[font=\small, text=gray] at (0, 7.5) "
+lines.append(r"\node[font=\Large\bfseries] at (0, 8.6) {Langer graph (63 vertices)};")
+lines.append(r"\node[font=\small, text=gray] at (0, 7.9) "
              r"{Collinearity graph of $\mathrm{GH}(2,2)$ on $Q(6,2)$, "
-             r"$Z_7$ layout (9 heptagonal rings)};")
+             r"$\mathrm{Aut} = G_2(2)$, $|\mathrm{Aut}| = 12096$};")
+lines.append(r"\node[font=\small, text=gray] at (0, 7.3) "
+             r"{$\mathrm{Sab}(G_2(2), H_{192})$ --- $Z_7$ layout, "
+             r"9 heptagonal rings};")
 
-# Draw edges
-drawn = set()
+# Edges by ring gap (far edges first, close edges on top — dmt style)
+edges_by_gap = {}
 for v in range(63):
     for u in adj[v]:
         if v < u:
-            x1, y1 = vertex_pos(v)
-            x2, y2 = vertex_pos(u)
-            style = "intedge" if orbit_map[v] == orbit_map[u] else "edge"
-            lines.append(f"\\draw[{style}] ({x1:.3f}, {y1:.3f}) -- ({x2:.3f}, {y2:.3f});")
+            gap = abs(orbit_map[v] - orbit_map[u])
+            edges_by_gap.setdefault(gap, []).append((v, u))
 
-# Draw vertices colored by orbit
-colors = ["red", "blue", "green!60!black", "orange", "purple",
-          "cyan!70!black", "brown", "magenta", "olive"]
+for gap in sorted(edges_by_gap.keys(), reverse=True):
+    if gap == 0:
+        style = "line width=0.5pt, gap0, opacity=0.6"
+    elif gap <= 3:
+        style = "line width=0.4pt, gap1, opacity=0.3"
+    else:
+        style = "line width=0.35pt, gapfar, opacity=0.45"
+    for v, u in edges_by_gap[gap]:
+        x1, y1 = vertex_pos(v)
+        x2, y2 = vertex_pos(u)
+        lines.append(f"\\draw[{style}] ({x1:.3f}, {y1:.3f}) -- ({x2:.3f}, {y2:.3f});")
+
+# Vertices colored by ring (blue outer -> red inner)
 for v in range(63):
     x, y = vertex_pos(v)
-    c = colors[orbit_map[v]]
-    lines.append(f"\\fill[{c}] ({x:.3f}, {y:.3f}) circle (2pt);")
+    c = f"ring{ring_color_idx(orbit_map[v])}"
+    lines.append(f"\\fill[{c}] ({x:.3f}, {y:.3f}) circle (2.2pt);")
 
 lines.append(r"\end{tikzpicture}")
 lines.append(r"\end{document}")
@@ -151,6 +177,8 @@ with open("/tmp/langer_full.tex", "w") as f:
 lines2 = []
 lines2.append(r"\documentclass[border=12pt]{standalone}")
 lines2.append(r"\usepackage{tikz}")
+for idx, hex_c in enumerate(RING_PALETTE):
+    lines2.append(f"\\definecolor{{ring{idx}}}{{HTML}}{{{hex_c}}}")
 lines2.append(r"\begin{document}")
 lines2.append(r"\begin{tikzpicture}[")
 lines2.append(r"  qnode/.style={circle, draw, fill=#1!30, minimum size=18pt, "
@@ -177,8 +205,7 @@ for (a, b) in q_edges:
 # Draw vertices
 for i in range(9):
     x, y = qpos[i]
-    c = colors[i].split("!")[0]  # simplified color
-    lines2.append(f"\\node[qnode={c}] at ({x:.3f}, {y:.3f}) {{{i}}};")
+    lines2.append(f"\\node[qnode=ring{ring_color_idx(i)}] at ({x:.3f}, {y:.3f}) {{{i}}};")
 
 lines2.append(r"\end{tikzpicture}")
 lines2.append(r"\end{document}")
