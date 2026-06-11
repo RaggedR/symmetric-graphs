@@ -228,3 +228,51 @@ Meinhold geometry. What is the general synthetic meaning of N? (→ why13.tex §
 Side findings worth keeping: a Hecke generator of **finite order 3** (PSL(2,7)/C₃, χ₆);
 genuinely **cubic** eigenvalues (x³+x−6) in the 3-dim irrep; **√17** in PSL(2,7)/C₃'s
 3-dim block; the dodecahedron's **√5** living entirely in the 1-dim irreps.
+
+---
+
+## 6. The PSL(2,q)/C₃ family: 2D blocks exist only for q = 5 and 7
+
+Computed by `hecke_psl2_survey.g` (2026-06-11). The Wedderburn decomposition of
+H(PSL(2,q), C₃) was computed for all primes 5 ≤ q ≤ 47. The minimum multiplicity
+m > 1 (= dimension of the smallest non-commutative block) grows with q:
+
+| q | n | rank | Wedderburn blocks | Min mult > 1 | Steinberg mult |
+|---|---|------|-------------------|-------------|----------------|
+| 5 | 20 | 8 | C⁴ ⊕ M₂ | **2** | 1 |
+| 7 | 56 | 20 | C³ ⊕ M₂² ⊕ M₃ | **2** | 3 |
+| 11 | 220 | 76 | C³ ⊕ M₃ ⊕ M₄⁴ | 3 | 3 |
+| 13 | 364 | 124 | C ⊕ M₃² ⊕ M₄³ ⊕ M₅ ⊕ M₄² | 3 | 5 |
+| 17 | 816 | 276 | C ⊕ M₃² ⊕ M₄ ⊕ M₅ ⊕ M₆⁶ | 3 | 5 |
+| 19 | 1140 | 384 | C ⊕ M₃² ⊕ M₆⁴ ⊕ M₇ ⊕ M₈ ⊕ M₆³ | 3 | 7 |
+| 23 | 2024 | 680 | C ⊕ M₃² ⊕ M₆ ⊕ M₇ ⊕ M₈⁹ | 3 | 7 |
+| 29 | 4060 | 1360 | C ⊕ M₅² ⊕ M₈² ⊕ M₉ ⊕ M₁₀¹¹ | 5 | 9 |
+| 31 | 4960 | 1660 | C ⊕ M₅² ⊕ M₁₀⁷ ⊕ M₁₁ ⊕ M₁₂² ⊕ M₁₀⁴ | 5 | 11 |
+
+**The Steinberg multiplicity has an exact formula.** An element g of order 3 in
+PSL(2,q) is semisimple; its eigenvalues live in F_q when 3|(q−1) and in F_{q²}
+when 3|(q+1), giving Steinberg character value +1 or −1 respectively:
+
+- q ≡ 1 (mod 3): m_St = (q + 2)/3
+- q ≡ 2 (mod 3): m_St = (q − 2)/3
+
+**Why mult 2 is impossible for q ≥ 11.** The multiplicity of χ in ind_{C₃}^G 1
+is m_χ = dim(χ^{C₃}) = (χ(1) + χ(g) + χ(g²))/3. For m = 2 we need
+χ(1) + χ(g) + χ(g²) = 6. As q grows, all character degrees grow (the smallest
+non-trivial degrees are (q−1)/2 for q ≥ 11), and the character values on
+order-3 elements are bounded, so m ≥ 3 is forced. **The B² = NI phenomenon
+in the PSL(2,q)/C₃ family is confined to exactly two primes: q = 5 and q = 7.**
+
+### PSL(2,11)/C₃ detail (computed by `hecke_psl2_11.g`)
+
+Wedderburn: C(1) ⊕ C(5) ⊕ C(5) ⊕ M₄(10)² ⊕ M₃(11) ⊕ M₄(12)².
+
+The 1-dim irreps on the degree-5 pair are Galois conjugates over **ℚ(√−11)**,
+with spherical values involving Gauss periods η₀ = (−1+√−11)/2. The 3-dim
+block (Steinberg, degree 11) has eigenvalues involving **√5** and the **golden
+ratio** (1±√5)/2 — the same irrationality as the dodecahedron, now appearing
+in the non-commutative block rather than the spherical functions.
+
+Four orbitals act as −I on the 3-dim block (T₃₆ = T₆₀ = T₆₅ = T₆₆ = −I),
+and elements of **finite order 6** appear (charpoly x² − x + 1, primitive
+6th roots of unity).

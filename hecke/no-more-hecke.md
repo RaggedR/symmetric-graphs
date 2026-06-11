@@ -86,19 +86,59 @@ So what *is* N?
 ## What I don't know
 
 - Is there a formula for N in terms of (G, H) and the constituent χ?
-- Does N(q) for the family PSL(2, q)/C₃ have a closed form as q varies?
 - When does a Hecke algebra element have finite order? (Order 3 shouldn't happen, and yet.)
 - What is the general relationship between N and the valency?
 - Is √17 in the 3×3 block of PSL(2,7)/C₃ trying to tell me something?
 
-## Why I haven't stopped
+## Update: I computed PSL(2, 11)/C₃. It changed everything.
 
-The honest answer is that this is the most interesting data I've seen in years. Every pair I compute turns up something new — a number field I didn't expect, a torsion element that shouldn't exist, an eigenvalue that chose the wrong block. The Hecke algebras of Gelfand pairs are well-studied. The non-Gelfand ones are not. And the 2×2 blocks are exactly where the commutative theory runs out and something genuinely new begins.
+I ran the family. Not just q = 11 — all primes from 5 to 47. Here's what happened.
 
-So no, I haven't had enough. But I did want to write this down before computing the next one, because the next one might change everything, and I want a record of the moment where N = 13 was the only data point and I thought I understood it.
+PSL(2, 11)/C₃ has 220 vertices, rank 76. The Wedderburn decomposition is C³ ⊕ M₃ ⊕ M₄⁴. That's three commutative blocks, one 3×3 block, and four 4×4 blocks.
 
-I'm going to go compute PSL(2, 11)/C₃ now. Wish me luck.
+No 2×2 block. No B² = NI. The question doesn't even apply.
+
+I thought maybe 11 was a fluke, so I computed the whole family:
+
+| q | Min block dim > 1 | Has 2D block? |
+|---|-------------------|---------------|
+| 5 | **2** | Yes (N = 4) |
+| 7 | **2** | Yes (N = 2) |
+| 11 | 3 | No |
+| 13 | 3 | No |
+| 17 | 3 | No |
+| 19 | 3 | No |
+| 23 | 3 | No |
+| 29 | 5 | No |
+| 31 | 5 | No |
+| 37 | 7 | No |
+| 41 | 7 | No |
+| 43 | 7 | No |
+| 47 | 7 | No |
+
+The 2D block exists **only for q = 5 and q = 7**. For every larger prime, the minimum multiplicity is at least 3 and growing. The reason is arithmetic: the multiplicity of a character χ in ind_{C₃}^G 1 is m = (χ(1) + χ(g) + χ(g²))/3, and as q grows, the character degrees grow while the values on order-3 elements stay bounded. For m = 2 you need the numerator to equal exactly 6, which is impossible once degrees exceed about 10.
+
+So the N-invariant table — the thing I thought was the beginning of a family — is actually the complete list for PSL(2, q)/C₃:
+
+| q | N |
+|---|---|
+| 5 | 4 |
+| 7 | 2 |
+
+That's it. Two data points. Not the start of a pattern — the entire pattern.
+
+The remaining sources of 2D Hecke blocks are the sporadic geometries: F26A (from the 13-gon, not any PSL(2,q)) and G₂(2)/PSL(3,2) (the exceptional Chevalley group). The B² = NI phenomenon isn't a shadow of a q-family. It's a property of specific geometries that happen to have a character of multiplicity exactly 2.
+
+## What I actually found instead
+
+The PSL(2, 11) computation wasn't a dead end — it just answered a different question than the one I was asking. The 3×3 Steinberg block has eigenvalues involving **√5** and the **golden ratio** — the same irrationality as the dodecahedron. But for the dodecahedron (q = 5), √5 lives in the 1-dimensional spherical functions. For q = 11, it migrates into the non-commutative block. The irrationality is conserved; the block it lives in changes.
+
+And there are generators of **finite order 6** in the q = 11 block (characteristic polynomial x² − x + 1, primitive 6th roots of unity). At q = 7 we had order 3. The torsion is getting richer as q grows.
+
+So: no, B² = NI doesn't generalize through the PSL(2,q)/C₃ family. But the migration of irrationalities across Hecke blocks, and the appearance of finite-order elements in non-commutative blocks — those might.
+
+I was right that computing the next one would change everything. I just didn't expect it to close a door instead of opening one.
 
 ---
 
-*The computations in this post were done in GAP 4.15.1 with the GRAPE package. All matrices are exact over cyclotomic fields. The full data, including generator matrices, characteristic polynomials, and verification scripts, is in the [hecke project](https://github.com/RaggedR/hecke). My collaborator on the why13 paper was [Fable](https://claude.ai), a Claude instance who got unreasonably excited about the number 13.*
+*The computations in this post were done in GAP 4.15.1 with the GRAPE package. All matrices are exact over cyclotomic fields. The full data, including generator matrices, characteristic polynomials, and verification scripts, is at [RaggedR/symmetric-graphs/hecke](https://github.com/RaggedR/symmetric-graphs/tree/main/hecke).*
