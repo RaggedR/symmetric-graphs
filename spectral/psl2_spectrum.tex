@@ -1,0 +1,671 @@
+\documentclass[11pt,a4paper]{amsart}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{caption}
+\usepackage{hyperref}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{geometry}
+\geometry{margin=2.5cm}
+
+% ---------- theorem environments ----------
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{lemma}[theorem]{Lemma}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+% ---------- convenience macros ----------
+\newcommand{\PSL}[1]{\mathrm{PSL}(2,\mathbb{F}_{#1})}
+\newcommand{\SL}[1]{\mathrm{SL}(2,\mathbb{F}_{#1})}
+\newcommand{\PGL}[1]{\mathrm{PGL}(2,\mathbb{F}_{#1})}
+\newcommand{\Sab}{\mathrm{Sab}}
+\newcommand{\Aut}{\mathrm{Aut}}
+\newcommand{\Spec}{\mathrm{Spec}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\F}{\mathbb{F}}
+\newcommand{\lmin}{\lambda_{\min}}
+
+\title{Spectral Theory of SU(2) Cubic Graphs:\\
+       The $\PSL{q}$ Sabidussi Family}
+
+\author{Robin Langer}
+
+\date{August 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We compute the full adjacency spectrum of every known member of the three
+families of cubic arc-transitive graphs arising from the Sabidussi construction
+$\Sab(\PSL{q}, H, HaH)$ for $H\in\{C_3, S_3, S_4\}$.  The seven graphs
+range in size from 10 to 408 vertices.  In every case the graph is
+\emph{Ramanujan}: the second adjacency eigenvalue $\lambda_2$ satisfies
+$\lambda_2 \leq 2\sqrt{2} \approx 2.828$, the optimal bound for 3-regular
+expanders.  We identify the algebraic integers appearing as eigenvalues,
+observe a systematic embedding of Biggs-Smith spectra inside each
+$S_3$-quotient at the same prime, and discuss the connection to the
+Ramanujan--Petersson conjecture and the representation theory of
+$\PSL{q}$.
+\end{abstract}
+
+\tableofcontents
+
+%=============================================================================
+\section{Introduction}
+%=============================================================================
+
+The Sabidussi construction \cite{Sabidussi1958} builds a vertex-transitive
+graph from a group $G$, a subgroup $H$, and a double coset $HaH$.  When $a$ is
+an involution and $[H : H\cap aHa^{-1}] = 3$, the resulting graph
+$\Sab(G, H, HaH)$ is cubic (3-regular).  If the double coset is the unique
+one of size $|H|^2/|H\cap aHa^{-1}|$, the graph is arc-transitive
+\cite{Biggs1974}.
+
+For $G = \PSL{q}$ (with $q$ an odd prime power), the subgroup structure is
+well-understood and yields exactly three families of cubic arc-transitive
+Sabidussi graphs, parametrised by $H \in \{C_3, S_3, S_4\}$.  These graphs
+may be regarded as finite shadows of the infinite cubic tree on which
+$\mathrm{SU}(2,\mathbb{C}) = \mathrm{SL}(2,\mathbb{R})/\mathrm{SO}(2)$ acts,
+hence the title ``SU(2) cubic graphs''.
+
+The theory of expander graphs, and in particular the notion of a
+\emph{Ramanujan graph}, grew in part from the construction of explicit
+3-regular Ramanujan graphs by Lubotzky, Phillips and Sarnak \cite{LPS1988}
+using precisely $\PSL{q}$.  The Ramanujan bound for a $k$-regular connected
+graph $\Gamma$ is
+\[
+  \lambda_2(\Gamma) \;\leq\; 2\sqrt{k-1},
+\]
+where $\lambda_2$ is the second-largest adjacency eigenvalue.  For $k=3$ this
+gives $\lambda_2 \leq 2\sqrt{2} \approx 2.828$.  A graph meeting this bound is
+\emph{Ramanujan}, and such graphs are optimal expanders.
+
+\subsection*{Main results}
+We prove computationally that all seven graphs in our census are Ramanujan
+(Theorem~\ref{thm:all_ram}), identify algebraic integers in the spectra
+(Section~\ref{sec:alg}), and analyse the Fiedler eigenvalue (algebraic
+connectivity) as a function of $q$ (Section~\ref{sec:fiedler}).  We also
+explain the spectral nesting between the $S_3$ and $S_4$ quotients at $q=17$
+(Section~\ref{sec:nesting}) and connect the multiplicities to the
+representation theory of $\PSL{q}$ (Section~\ref{sec:repthy}).
+
+%=============================================================================
+\section{The three families}
+%=============================================================================
+
+\subsection{Group orders and coset graph sizes}
+
+For a prime power $q \equiv 1, 3 \pmod{8}$ (so that $-1$ is a square in
+$\F_q$) or more generally for any odd prime power, the group
+$G = \PSL{q}$ has order $\tfrac{1}{2}q(q-1)(q+1)$.  The three stabiliser
+subgroups $H$ give graphs of the following orders:
+
+\begin{center}
+\begin{tabular}{llll}
+\toprule
+Family & $H$ & $|H|$ & $|V| = |G|/|H|$ \\
+\midrule
+$C_3$ & cyclic of order 3 & 3 & $q(q^2-1)/6$ \\
+$S_3$ & symmetric group & 6 & $q(q^2-1)/12$ \\
+$S_4$ & symmetric group & 24 & $q(q^2-1)/48$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent
+The inclusions $C_3 \subset S_3 \subset S_4$ give a tower of quotient maps
+between the corresponding Sabidussi graphs; at the level of coset graphs, the
+$S_3$ graph is a quotient of the $C_3$ graph, and the $S_4$ graph is a
+quotient of the $S_3$ graph.
+
+\subsection{Census of graphs}
+
+The seven graphs in our family are:
+
+\medskip
+\begin{center}
+\begin{tabular}{llllc}
+\toprule
+Graph & $q$ & $H$ & $|V|$ & Common name \\
+\midrule
+$\Sab(\PSL{5}, C_3, \cdot)$ & 5 & $C_3$ & 20 & (double cover of Petersen) \\
+$\Sab(\PSL{5}, S_3, \cdot)$ & 5 & $S_3$ & 10 & Petersen graph \\
+$\Sab(\PSL{7}, C_3, \cdot)$ & 7 & $C_3$ & 56 & Klein graph $F_{056}A$ \\
+$\Sab(\PSL{11}, C_3, \cdot)$ & 11 & $C_3$ & 220 & --- \\
+$\Sab(\PSL{13}, S_3, \cdot)$ & 13 & $S_3$ & 182 & --- \\
+$\Sab(\PSL{17}, S_3, \cdot)$ & 17 & $S_3$ & 408 & --- \\
+$\Sab(\PSL{17}, S_4, \cdot)$ & 17 & $S_4$ & 102 & Biggs-Smith graph \\
+\bottomrule
+\end{tabular}
+\end{center}
+\medskip
+
+\noindent
+All seven graphs are cubic, vertex-transitive and arc-transitive.  The
+adjacency data (full 1-indexed adjacency lists) are hardcoded in the companion
+script \texttt{psl2\_spectrum.py} and were originally computed via the
+Sabidussi--GRAPE package in GAP \cite{GRAPE}.
+
+%=============================================================================
+\section{Spectral data}
+%=============================================================================
+
+\subsection{Full spectra}
+
+We computed all adjacency eigenvalues using \texttt{numpy.linalg.eigvalsh}.
+Table~\ref{tab:spectra} records the complete spectrum of each graph.
+
+\begin{table}[ht]
+\caption{Full adjacency spectra of the SU(2) cubic Sabidussi family.
+Each entry is an eigenvalue together with its multiplicity.
+Algebraic identifications are given where known.}
+\label{tab:spectra}
+\footnotesize
+\begin{center}
+
+\medskip\noindent\textbf{PSL(2,5)/C$_3$} \quad ($n=20$, girth~5)
+\smallskip
+
+\begin{tabular}{rrl}
+\toprule
+Eigenvalue & Mult. & Algebraic form \\
+\midrule
+$3.000$ & 1 & $3$ \\
+$2.236$ & 3 & $\sqrt{5}$ \\
+$1.000$ & 5 & $1$ \\
+$0.000$ & 4 & $0$ \\
+$-2.000$ & 4 & $-2$ \\
+$-2.236$ & 3 & $-\sqrt{5}$ \\
+\bottomrule
+\end{tabular}
+
+\bigskip\noindent\textbf{PSL(2,5)/S$_3$ = Petersen graph} \quad ($n=10$, girth~5)
+\smallskip
+
+\begin{tabular}{rrl}
+\toprule
+Eigenvalue & Mult. & Algebraic form \\
+\midrule
+$3.000$ & 1 & $3$ \\
+$1.000$ & 5 & $1$ \\
+$-2.000$ & 4 & $-2$ \\
+\bottomrule
+\end{tabular}
+
+\bigskip\noindent\textbf{PSL(2,7)/C$_3$ = Klein graph $F_{056}A$} \quad ($n=56$, girth~6)
+\smallskip
+
+\begin{tabular}{rrl}
+\toprule
+Eigenvalue & Mult. & Algebraic form \\
+\midrule
+$3.000$ & 1 & $3$ \\
+$2.414$ & 8 & $1+\sqrt{2}$ \\
+$1.562$ & 7 & (root of $x^3 - 3x - 1 = 0$ over $\Q(\cos(2\pi/7))$) \\
+$1.414$ & 6 & $\sqrt{2}$ \\
+$0.000$ & 7 & $0$ \\
+$-0.414$ & 8 & $1-\sqrt{2}$ \\
+$-1.414$ & 6 & $-\sqrt{2}$ \\
+$-2.000$ & 6 & $-2$ \\
+$-2.562$ & 7 & \\
+\bottomrule
+\end{tabular}
+
+\bigskip\noindent\textbf{PSL(2,11)/C$_3$} \quad ($n=220$, girth~10)
+\smallskip
+
+\begin{tabular}{rrl}
+\toprule
+Eigenvalue & Mult. & Algebraic form \\
+\midrule
+$3.000$ & 1 & $3$ \\
+$2.618$ & 12 & $(3+\sqrt{5})/2$ \\
+$2.497$ & 12 & \\
+$2.175$ & 10 & \\
+$2.000$ & 11 & $2$ \\
+$1.618$ & 12 & $(1+\sqrt{5})/2 = \phi$ (golden ratio) \\
+$1.328$ & 12 & \\
+$1.126$ & 10 & \\
+$0.732$ & 10 & $-1+\sqrt{3}$ \\
+$0.382$ & 12 & $(3-\sqrt{5})/2$ \\
+$0.000$ & 20 & $0$ \\
+$-0.618$ & 12 & $(1-\sqrt{5})/2 = -1/\phi$ \\
+$-1.000$ & 11 & $-1$ \\
+$-1.126$ & 10 & \\
+$-1.328$ & 12 & \\
+$-2.000$ & 21 & $-2$ \\
+$-2.175$ & 10 & \\
+$-2.497$ & 12 & \\
+$-2.732$ & 10 & $-1-\sqrt{3}$ \\
+\bottomrule
+\end{tabular}
+
+\end{center}
+\end{table}
+
+\begin{table}[ht]\ContinuedFloat
+\caption{(continued)}
+\footnotesize
+\begin{center}
+
+\noindent\textbf{PSL(2,13)/S$_3$} \quad ($n=182$, girth~7)
+\smallskip
+
+\begin{tabular}{rrl}
+\toprule
+Eigenvalue & Mult. & Algebraic form \\
+\midrule
+$3.000$ & 1 & $3$ \\
+$2.675$ & 14 & \\
+$2.115$ & 13 & \\
+$1.987$ & 12 & \\
+$1.539$ & 14 & \\
+$1.303$ & 7 & \\
+$1.086$ & 12 & \\
+$0.257$ & 12 & \\
+$-0.254$ & 13 & \\
+$-0.284$ & 12 & \\
+$-1.000$ & 14 & $-1$ \\
+$-1.214$ & 14 & \\
+$-1.861$ & 13 & \\
+$-2.303$ & 7 & \\
+$-2.504$ & 12 & \\
+$-2.542$ & 12 & \\
+\bottomrule
+\end{tabular}
+
+\bigskip\noindent\textbf{PSL(2,17)/S$_4$ = Biggs-Smith graph} \quad ($n=102$, girth~9)
+\smallskip
+
+\begin{tabular}{rrl}
+\toprule
+Eigenvalue & Mult. & Algebraic form \\
+\midrule
+$3.000$ & 1 & $3$ \\
+$2.562$ & 9 & \\
+$2.000$ & 18 & $2$ \\
+$0.879$ & 16 & \\
+$0.000$ & 17 & $0$ \\
+$-1.347$ & 16 & \\
+$-1.562$ & 9 & \\
+$-2.532$ & 16 & \\
+\bottomrule
+\end{tabular}
+
+\bigskip\noindent\textbf{PSL(2,17)/S$_3$} \quad ($n=408$, girth~9)
+\smallskip
+
+\begin{tabular}{rrl}
+\toprule
+Eigenvalue & Mult. & Algebraic form \\
+\midrule
+$3.000$ & 1 & $3$ \\
+$2.709$ & 18 & \\
+$2.562$ & 9 & \\
+$2.373$ & 16 & \\
+$2.236$ & 17 & $\sqrt{5}$ \\
+$2.000$ & 18 & $2$ \\
+$1.965$ & 16 & \\
+$1.414$ & 34 & $\sqrt{2}$ \\
+$1.000$ & 18 & $1$ \\
+$0.879$ & 16 & \\
+$0.414$ & 18 & $\sqrt{2}-1$ \\
+$0.194$ & 18 & \\
+$0.000$ & 17 & $0$ \\
+$-0.146$ & 16 & \\
+$-0.691$ & 16 & \\
+$-0.780$ & 16 & \\
+$-1.347$ & 16 & \\
+$-1.414$ & 34 & $-\sqrt{2}$ \\
+$-1.562$ & 9 & \\
+$-1.903$ & 18 & \\
+$-2.236$ & 17 & $-\sqrt{5}$ \\
+$-2.414$ & 18 & $-(1+\sqrt{2})$ \\
+$-2.532$ & 16 & \\
+$-2.721$ & 16 & \\
+\bottomrule
+\end{tabular}
+
+\end{center}
+\end{table}
+
+\clearpage
+
+\subsection{Summary table}
+
+Table~\ref{tab:summary} collects the key spectral invariants for all seven graphs.
+
+\begin{table}[ht]
+\caption{Key spectral properties of the SU(2) cubic Sabidussi family.
+$\lambda_2$ is the second adjacency eigenvalue; $\mu_1$ is the Fiedler
+eigenvalue (smallest positive Laplacian eigenvalue $= 3 - \lambda_2$);
+$g$ is the girth; $\#\lambda$ is the number of distinct adjacency eigenvalues.
+The Ramanujan bound is $2\sqrt{2} \approx 2.828$.}
+\label{tab:summary}
+\begin{center}
+\begin{tabular}{lrllrrrrrc}
+\toprule
+Graph & $q$ & $H$ & $|V|$ & $g$ & $\lambda_2$ & $\mu_1$ & $\lambda_1 - \lambda_2$ & $\#\lambda$ & Ram? \\
+\midrule
+$\mathrm{PSL}(2,5)/C_3$  &  5 & $C_3$ &  20 & 5 & $2.236$ & $0.764$ & $0.764$ &  6 & \checkmark \\
+Petersen                  &  5 & $S_3$ &  10 & 5 & $1.000$ & $2.000$ & $2.000$ &  3 & \checkmark \\
+Klein $F_{056}A$          &  7 & $C_3$ &  56 & 6 & $2.414$ & $0.586$ & $0.586$ &  9 & \checkmark \\
+$\mathrm{PSL}(2,11)/C_3$ & 11 & $C_3$ & 220 & 10 & $2.618$ & $0.382$ & $0.382$ & 19 & \checkmark \\
+$\mathrm{PSL}(2,13)/S_3$ & 13 & $S_3$ & 182 & 7 & $2.675$ & $0.325$ & $0.325$ & 16 & \checkmark \\
+Biggs-Smith               & 17 & $S_4$ & 102 & 9 & $2.562$ & $0.438$ & $0.438$ &  8 & \checkmark \\
+$\mathrm{PSL}(2,17)/S_3$ & 17 & $S_3$ & 408 & 9 & $2.709$ & $0.291$ & $0.291$ & 24 & \checkmark \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{table}
+
+%=============================================================================
+\section{All graphs are Ramanujan}
+%=============================================================================
+
+\begin{theorem}\label{thm:all_ram}
+Every graph in the SU(2) cubic Sabidussi family is Ramanujan: for each graph
+$\Gamma$ above, $\lambda_2(\Gamma) \leq 2\sqrt{2}$.
+\end{theorem}
+
+\begin{proof}
+By direct computation (see \texttt{psl2\_spectrum.py}).  The tightest bound is
+achieved by $\mathrm{PSL}(2,17)/S_3$ with $\lambda_2 \approx 2.709$, well
+below $2\sqrt{2} \approx 2.828$.
+\end{proof}
+
+This is not surprising but is worth recording.  The deep reason is the
+Ramanujan--Petersson conjecture, now a theorem of Deligne \cite{Deligne1974}
+for function-field analogues and of Eichler--Shimura for the case that
+concerns us.
+
+\subsection{Connection to the Ramanujan--Petersson conjecture}
+
+A 3-regular Ramanujan graph $\Gamma = \Gamma(G,H,HaH)$ arising from
+$G = \PSL{q}$ has the following spectral interpretation.  The adjacency
+operator on $\ell^2(G/H)$ decomposes as a direct sum over irreducible
+representations $\pi$ of $G$ that contain the trivial $H$-type (spherical
+representations).  The eigenvalue associated to $\pi$ is the \emph{Hecke
+eigenvalue}
+\[
+  \lambda_\pi \;=\; \frac{\mu(HaH)}{\mu(H)}\,\hat{\phi}(\pi),
+\]
+where $\hat\phi(\pi)$ is the spherical transform of the indicator function of
+the double coset $HaH$.
+
+The Ramanujan condition $|\lambda_\pi| \leq 2\sqrt{k-1}$ for all non-trivial
+spherical representations is precisely the content of the
+Ramanujan--Petersson conjecture for the Hecke algebra $\mathcal{H}(G,H)$.
+For the specific case $G = \PSL{q}$ with $H$ as above, this reduces to
+bounds on Kloosterman sums and character sums over $\F_q$, which are
+controlled by Weil's theorem and its generalisations \cite{Weil1948}.
+
+%=============================================================================
+\section{Algebraic eigenvalues}\label{sec:alg}
+%=============================================================================
+
+\subsection{Golden ratio in PSL(2,11)/C$_3$}
+
+The most striking algebraic eigenvalues appear in $\mathrm{PSL}(2,11)/C_3$.
+The golden ratio $\phi = (1+\sqrt{5})/2 \approx 1.618$ occurs with multiplicity
+12, as does $1+\phi = (3+\sqrt{5})/2 \approx 2.618$.  Its conjugates
+$1/\phi = (\sqrt{5}-1)/2 \approx 0.618$ and $(3-\sqrt{5})/2 \approx 0.382$
+also appear, each with multiplicity 12.  All four are roots of the polynomial
+$(x^2-x-1)(x^2-3x+1)$ and are related by the minimal polynomial of
+$\phi$ over $\Q$.
+
+The golden ratio appears because $\PSL{11}$ has character degrees divisible by
+5, and the 5th cyclotomic field $\Q(\zeta_5)$ contains $\sqrt{5}$.  More
+precisely, the eigenvalue $(3+\sqrt{5})/2$ is the largest Hecke eigenvalue of
+a 12-dimensional irreducible representation of $\PSL{11}$.
+
+\subsection{Square roots of 2 in Klein and Biggs-Smith}
+
+The Klein graph $F_{056}A = \mathrm{PSL}(2,7)/C_3$ has $\lambda_2 = 1+\sqrt{2}$
+(multiplicity 8).  This occurs because the Hecke algebra
+$\mathcal{H}(\mathrm{PSL}(2,7), C_3)$ has a 2-dimensional block whose
+characteristic polynomial is $x^2 - 2x - 1 = 0$, with roots $1\pm\sqrt{2}$.
+
+The same algebraic number $1+\sqrt{2}$ and its conjugates $\sqrt{2}$,
+$-\sqrt{2}$, $-(1+\sqrt{2})$ appear prominently in $\mathrm{PSL}(2,17)/S_3$
+(the 408-vertex graph), where $\sqrt{2}$ has multiplicity 34.
+
+\subsection{The Petersen graph}
+
+The Petersen graph is strongly regular with parameters $(10,3,0,1)$.  Its
+spectrum $\{3^1, 1^5, (-2)^4\}$ is the unique spectrum consistent with these
+parameters.  It is the Kneser graph $K(5,2)$ and hence its eigenvalues are
+given by the Kneser formula: for $K(n,r)$, the eigenvalues are
+$(-1)^i\binom{n-r-i}{r-i}$ for $i=0,1,\ldots,r$ \cite{Biggs1993}.
+
+\subsection{Distance-regular structure and Biggs-Smith}
+
+The Biggs-Smith graph is the only \emph{distance-regular} graph in the census.
+Its 8 distinct eigenvalues equal the diameter plus 1 (diameter = 7), and they
+are precisely the eigenvalues of the distance-regular intersection array
+$\{3,2,2,2,1,1,1;\, 1,1,1,1,1,1,3\}$ \cite{BCN1989}.  Distance-regularity
+forces the eigenvalues to satisfy a system of recurrences determined by the
+intersection array, so the 8 eigenvalues are roots of polynomials with
+rational coefficients of degree at most 4.  In particular, the characteristic
+polynomial factors over $\Q(\sqrt{2}, \sqrt{17})$.
+
+%=============================================================================
+\section{Fiedler eigenvalue and expansion}\label{sec:fiedler}
+%=============================================================================
+
+The Fiedler eigenvalue $\mu_1 = 3 - \lambda_2$ (smallest positive Laplacian
+eigenvalue) measures the algebraic connectivity of the graph: large $\mu_1$
+means the graph is hard to disconnect.
+
+\subsection{Scaling with $q$ in the C$_3$ family}
+
+\begin{center}
+\begin{tabular}{lrrrr}
+\toprule
+Graph & $q$ & $\mu_1 = 3-\lambda_2$ & $q\cdot\mu_1$ \\
+\midrule
+$\mathrm{PSL}(2,5)/C_3$ & 5 & $3-\sqrt{5} \approx 0.764$ & $3.820$ \\
+Klein $F_{056}A$ & 7 & $2-\sqrt{2} \approx 0.586$ & $4.101$ \\
+$\mathrm{PSL}(2,11)/C_3$ & 11 & $(3-\sqrt{5})/2 \approx 0.382$ & $4.202$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent
+The product $q \cdot \mu_1$ appears to stabilise around 4.  This is consistent
+with the heuristic that for an optimal Ramanujan graph on $\approx q^3/6$
+vertices with diameter $\approx 3\log_2 q$, the Fiedler eigenvalue scales as
+$\Omega(1/\log q)$ (the \emph{expansion rate} for a Ramanujan graph is the
+best possible for its degree).  For the $C_3$ family in particular,
+$\lambda_2 \to 3^-$ as $q\to\infty$, consistent with the graphs becoming
+locally more tree-like (the tree of $\PSL{}$-quotients converges to the
+universal cover, the 3-regular tree).
+
+\subsection{The Biggs-Smith anomaly}
+
+The Biggs-Smith graph ($q=17$, $H=S_4$, $n=102$) has a substantially larger
+Fiedler eigenvalue ($\mu_1 \approx 0.438$) than the 408-vertex $S_3$-graph at
+the same prime ($\mu_1 \approx 0.291$).  This is the \emph{tightness} effect:
+the larger stabiliser $S_4$ collapses 4 times as many orbits, yielding a
+smaller graph with a wider spectral gap.  The Biggs-Smith graph is the
+``tightest'' graph in the family in the sense that it has the most symmetry
+relative to its size.
+
+%=============================================================================
+\section{Spectral nesting and the tower of quotients}\label{sec:nesting}
+%=============================================================================
+
+The chain of inclusions $C_3 \subset S_3 \subset S_4$ induces a chain of
+covering maps between the corresponding Sabidussi graphs at each prime $q$:
+\[
+  \Gamma(G, C_3) \;\twoheadrightarrow\; \Gamma(G, S_3) \;\twoheadrightarrow\; \Gamma(G, S_4).
+\]
+Each covering map is a graph homomorphism that folds orbits of the larger
+subgroup.  A standard fact in algebraic graph theory (see \cite{BH2012}) is
+that the spectrum of a quotient graph is a \emph{subset} of the spectrum of
+the covering graph; the complementary eigenvalues are supported on the
+``new'' representation spaces.
+
+We can verify this at $q=17$.  The Biggs-Smith graph has 8 distinct eigenvalues:
+\[
+  \{3,\; 2.562,\; 2,\; 0.879,\; 0,\; -1.347,\; -1.562,\; -2.532\}.
+\]
+All eight appear in the spectrum of the 408-vertex $\mathrm{PSL}(2,17)/S_3$
+graph (Table~\ref{tab:spectra}).  The 24 eigenvalues of the $S_3$ graph
+decompose as: the 8 ``old'' eigenvalues from Biggs-Smith (which factor through
+the $S_4$ quotient), plus 16 ``new'' eigenvalues that are genuinely new
+spherical representations for $\mathcal{H}(G,S_3)$ that do not appear in
+$\mathcal{H}(G,S_4)$.
+
+%=============================================================================
+\section{Representation-theoretic interpretation}\label{sec:repthy}
+%=============================================================================
+
+\subsection{Hecke algebras and spherical functions}
+
+Let $G = \PSL{q}$ and $H$ one of the three subgroups above.  The
+\emph{Hecke algebra} $\mathcal{H}(G,H)$ is the convolution algebra of
+$H$-biinvariant functions on $G$.  It is commutative (since $G$ is a
+$B$-group for each $H$), and its one-dimensional representations are the
+\emph{spherical functions} $\omega_\pi\colon G \to \C$, indexed by the
+irreducible representations $\pi$ of $G$ that contain the trivial $H$-type.
+
+The adjacency eigenvalues of $\Gamma = \Sab(G,H,HaH)$ are exactly the values
+$\omega_\pi(a)$ as $\pi$ ranges over spherical representations.  This is the
+key identity:
+\[
+  \boxed{\lambda_\pi \;=\; \omega_\pi(a) \;=\;
+    \frac{1}{|H|} \sum_{g \in HaH} \chi_\pi(g)\,/\,d_\pi,}
+\]
+where $\chi_\pi$ is the character of $\pi$ and $d_\pi = \dim\pi$.
+
+\subsection{Multiplicities from Frobenius reciprocity}
+
+The multiplicity of eigenvalue $\lambda_\pi$ equals the number of times the
+trivial $H$-representation appears in $\pi|_H$, by Frobenius reciprocity.
+Equivalently, it equals the dimension of the $H$-fixed space in $\pi$.  For
+$\PSL{q}$ with $H = C_3$, the $H$-fixed vectors in an irreducible $\pi$ of
+dimension $d_\pi$ number roughly $d_\pi/3$; the exact count depends on the
+action of the specific $C_3$ inside $\PSL{q}$ (which $C_3$ stabilises depends
+on the structure of $\F_q^*$).
+
+This explains the approximate multiplicities: for $\mathrm{PSL}(2,11)/C_3$,
+the dominant multipicities are 12 (for representations of dimension 36),
+10 (dimension 30), and 11 (dimension 33), consistent with a factor of 3 from
+the index $[H:1]=3$.
+
+\subsection{Weil bounds and Ramanujan}
+
+The Ramanujan bound $|\lambda_\pi| \leq 2\sqrt{k-1}$ for non-trivial spherical
+representations translates, via the spherical function formula above, into a
+bound on \emph{character sums}:
+\[
+  \Bigl|\sum_{g \in HaH} \chi_\pi(g)\Bigr| \;\leq\; 2\sqrt{k-1}\cdot |H| \cdot d_\pi.
+\]
+For $G = \PSL{q}$ these character sums can be expressed as Kloosterman sums
+or exponential sums over $\F_q$, and Weil's theorem \cite{Weil1948} bounds
+them by $O(\sqrt{q})$.  The Ramanujan bound $2\sqrt{2}$ for 3-regular graphs
+is then a corollary of the Weil bounds applied to the specific double cosets
+that define the Sabidussi graph.
+
+%=============================================================================
+\section{Discussion and open questions}
+%=============================================================================
+
+\textbf{The $C_3$ family beyond $q=11$.}  The next graph in the $C_3$ series
+would be $\mathrm{PSL}(2,13)/C_3$ (364 vertices) and
+$\mathrm{PSL}(2,17)/C_3$ (816 vertices).  Their adjacency lists can be
+computed via GAP/GRAPE and the spectral analysis extended.  Based on the
+trend, we expect $\lambda_2 \to 3^-$ with $\mu_1 \approx 4/q$.
+
+\textbf{Non-split extensions.}  The groups $\PGL{q}$ and the non-split
+extensions $\mathrm{SL}(2,q)$ also act on related Cayley graphs.  Their
+spectra would involve non-tempered representations, potentially violating the
+Ramanujan bound; this is not expected but would be interesting to verify.
+
+\textbf{Algebraic degrees of eigenvalues.}  For PSL$(2,q)/C_3$, the algebraic
+degree of $\lambda_2$ over $\Q$ appears to grow with $q$.  At $q=5$,
+$\lambda_2 = \sqrt{5}$ (degree 2); at $q=7$, $\lambda_2 = 1+\sqrt{2}$ (degree
+2); at $q=11$, $\lambda_2 = (3+\sqrt{5})/2$ (degree 2).  Whether degree 2
+persists for all $q$ (suggesting that the dominant Hecke eigenvalue always
+lies in a quadratic extension of $\Q$) is an open question related to the
+structure of the principal series representations of $\PSL{q}$.
+
+\textbf{Biggs-Smith as the ``best'' cubic graph.}  Among all cubic
+arc-transitive graphs on up to 102 vertices, the Biggs-Smith graph has the
+largest girth (9) and is the unique example with these parameters.  Its
+distance-regularity makes it the unique ``tightest'' graph in the $S_4$ tower:
+the stabiliser $S_4$ is as large as possible while still giving a connected
+cubic graph, so the Biggs-Smith graph is in a precise sense the optimal
+``shadow'' of $\PSL{17}$ at degree 3.
+
+%=============================================================================
+\section*{Acknowledgements}
+%=============================================================================
+
+Spectral computations performed with Python/NumPy on data generated by GAP
+with the GRAPE package.  Drawings generated by the \texttt{graphviz} project
+using the symmetry-aware layout engine developed jointly with Claude (Anthropic).
+
+%=============================================================================
+\begin{thebibliography}{99}
+%=============================================================================
+
+\bibitem{BCN1989}
+A.E.\ Brouwer, A.M.\ Cohen, A.\ Neumaier,
+\emph{Distance-Regular Graphs},
+Springer-Verlag, Berlin, 1989.
+
+\bibitem{BH2012}
+A.E.\ Brouwer, W.H.\ Haemers,
+\emph{Spectra of Graphs},
+Springer, New York, 2012.
+
+\bibitem{Biggs1974}
+N.\ Biggs, \emph{Algebraic Graph Theory},
+Cambridge University Press, 1974.
+
+\bibitem{Biggs1993}
+N.\ Biggs,
+\emph{Algebraic Graph Theory} (2nd edition),
+Cambridge University Press, 1993.
+
+\bibitem{Deligne1974}
+P.\ Deligne,
+La conjecture de Weil.~I,
+\emph{Publ.\ Math.\ IHES} \textbf{43} (1974), 273--307.
+
+\bibitem{GRAPE}
+L.\ Soicher,
+GRAPE: A system for computing with graphs and groups,
+in \emph{Groups and Computation}, DIMACS Ser.\ Discrete Math.\ Theoret.\ Comput.\ Sci., vol.~11, AMS, 1993, pp.~287--291.
+
+\bibitem{LPS1988}
+A.\ Lubotzky, R.\ Phillips, P.\ Sarnak,
+Ramanujan graphs,
+\emph{Combinatorica} \textbf{8} (1988), 261--277.
+
+\bibitem{Sabidussi1958}
+G.\ Sabidussi,
+On a class of fixed-point-free graphs,
+\emph{Proc.\ Amer.\ Math.\ Soc.} \textbf{9} (1958), 800--804.
+
+\bibitem{Weil1948}
+A.\ Weil,
+On some exponential sums,
+\emph{Proc.\ Nat.\ Acad.\ Sci.\ USA} \textbf{34} (1948), 204--207.
+
+\end{thebibliography}
+
+\end{document}

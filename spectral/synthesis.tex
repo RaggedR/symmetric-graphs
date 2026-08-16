@@ -1,0 +1,565 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{multirow}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{conjecture}[theorem]{Conjecture}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{observation}[theorem]{Observation}
+
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\F}{\mathbb{F}}
+\newcommand{\Aut}{\operatorname{Aut}}
+\newcommand{\PSL}{\operatorname{PSL}}
+\newcommand{\PGL}{\operatorname{PGL}}
+\newcommand{\SU}{\operatorname{SU}}
+\newcommand{\Sab}{\operatorname{Sab}}
+\newcommand{\PSU}{\operatorname{PSU}}
+
+\title{Spectral Synthesis:\\
+  A Unified Survey of Eigenvalues Across the\\
+  Cubic Arc-Transitive Graph Programme}
+\author{Robin Langer}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We present a unified spectral survey of 30+ graphs arising from the
+programme of constructing cubic arc-transitive graphs as Sabidussi
+coset graphs of groups of Lie type. The survey spans four families:
+the Foster census (13 small cubic arc-transitive graphs), the
+$\PSL(2,q)$ tower (7 graphs from $\SU(2)$ over finite fields),
+the exceptional Lie group $G_2(2)$ (3 graphs of varying regularity),
+and voltage covers via cubic residues (6 bipartite lifts).
+Every graph in the census is Ramanujan for its degree,
+a fact we trace to the Weil conjectures.
+Cross-family comparison reveals universal structural patterns:
+eigenvalues in small algebraic number fields,
+Fiedler values decaying as $O(1/q)$, and eigenvalue multiplicities
+governed by the representation theory of the acting group.
+\end{abstract}
+
+
+% ==========================================================================
+\section{Introduction}
+% ==========================================================================
+
+The Sabidussi construction $\Sab(G, H, HaH)$ builds a graph from a group
+$G$, a subgroup $H$, and a double coset $HaH$: the vertices are cosets
+$G/H$ and two cosets $Hx$, $Hy$ are adjacent iff $xy^{-1} \in HaH$. When
+$|HaH|/|H| = 3$, the result is a cubic (3-regular) graph; when $G$ acts
+arc-transitively, the graph is arc-transitive.
+
+This paper synthesises spectral data from a computational census of such
+graphs, focusing on four families that exemplify the broader programme of
+realising finite groups of Lie type as graph automorphisms.
+Each family is treated in a companion paper; here we extract the
+cross-cutting themes.
+
+The four companion papers are:
+\begin{enumerate}
+\item \textbf{Foster census} --- the 13 smallest cubic arc-transitive
+  graphs ($|V| \le 30$), all computable without group theory.
+\item \textbf{$\PSL(2,q)$ family} --- cubic Sabidussi graphs from the
+  $A_1$ Lie type, with stabilisers $H \in \{C_3, S_3, S_4\}$.
+\item \textbf{$G_2(2)$ family} --- three graphs (cubic, 6-regular,
+  7-regular) from the smallest exceptional Lie group.
+\item \textbf{Voltage graphs} --- cyclic covers $\Z_p \to K_2$ with cubic
+  residue voltages, connecting number theory to graph spectra.
+\end{enumerate}
+
+
+% ==========================================================================
+\section{The universal Ramanujan phenomenon}
+% ==========================================================================
+
+\begin{definition}
+A connected $d$-regular graph is \emph{Ramanujan} if every nontrivial
+eigenvalue $\lambda$ (i.e., $|\lambda| < d$) satisfies
+$|\lambda| \le 2\sqrt{d-1}$.
+\end{definition}
+
+\begin{theorem}[Computational]
+\label{thm:all-ramanujan}
+Every graph in the census is Ramanujan for its degree:
+\begin{itemize}
+\item All 13 Foster census graphs (cubic, bound $2\sqrt{2} \approx 2.828$).
+\item All 7 $\PSL(2,q)$ Sabidussi graphs (cubic).
+\item The Tutte 12-cage (cubic, $\lambda_2 = \sqrt{6} \approx 2.449$).
+\item The $GH(2,2)$ collinearity graph (6-regular, $\lambda_2 = 3$
+  vs.\ bound $2\sqrt{5} \approx 4.472$).
+\item The Meinhold-72 graph (7-regular, $\lambda_2 = \sqrt{13} \approx 3.606$
+  vs.\ bound $2\sqrt{6} \approx 4.899$).
+\item All 6 cubic residue voltage lifts $\mathrm{CR}(p)$
+  ($p = 7, 13, 19, 31, 37, 43$).
+\end{itemize}
+\end{theorem}
+
+This universality is not a coincidence. For the $\PSL(2,q)$ family, the
+Ramanujan property follows from Deligne's proof of the Weil conjectures:
+the nontrivial eigenvalues of a Hecke operator on $\mathrm{GL}(2)$ over
+a function field are bounded by $2\sqrt{q}$, and the graph eigenvalues
+are evaluations of these operators at specific representations.
+The Lubotzky--Phillips--Sarnak construction~\cite{LPS} made this
+connection explicit for Cayley graphs of $\PSL(2,q)$.
+
+For the voltage lifts, the eigenvalues are Gauss-type character sums
+$f_j = \sum_{v \in V} \omega^{jv}$ where $V$ is the set of cubic residues
+and $\omega = e^{2\pi i/p}$. The Weil bound gives
+$|f_j| \le 2\sqrt{p}$ for nontrivial characters, which after normalisation
+yields $\lambda_2 \le 2\sqrt{2}$.
+
+\begin{observation}
+The $G_2(2)$ graphs are Ramanujan despite coming from an exceptional Lie
+group rather than a classical one. This suggests the Ramanujan property
+may extend beyond the $A_1$ setting to all Chevalley groups, at least for
+small field sizes.
+\end{observation}
+
+
+% ==========================================================================
+\section{Master spectral table}
+% ==========================================================================
+
+Table~\ref{tab:master} collects the key spectral invariants across all
+families. Graphs are grouped by family and sorted by vertex count within
+each family.
+
+\begin{table}[htbp]
+\centering
+\caption{Spectral invariants of all graphs in the census.
+  $d$ = degree, $g$ = girth, $\lambda_2$ = second-largest adjacency eigenvalue,
+  $\mu_1$ = Fiedler (algebraic connectivity), \#$\lambda$ = number of
+  distinct eigenvalues. All are Ramanujan.}
+\label{tab:master}
+\smallskip
+\renewcommand{\arraystretch}{1.05}
+\small
+\begin{tabular}{@{}l r r r r r r l@{}}
+\toprule
+Graph & $|V|$ & $d$ & $g$ & $\lambda_2$ & $\mu_1$ & \#$\lambda$ & Source \\
+\midrule
+\multicolumn{8}{@{}l}{\textit{Foster census}} \\
+$K_4$         &   4 & 3 & 3 & $-1.000$ & $4.000$ &  2 & \\
+$K_{3,3}$     &   6 & 3 & 4 & $0.000$  & $3.000$ &  3 & \\
+Cube $Q_3$    &   8 & 3 & 4 & $1.000$  & $2.000$ &  4 & $\Z_2^3$ \\
+Petersen      &  10 & 3 & 5 & $1.000$  & $2.000$ &  3 & $\PSL(2,5)/S_3$ \\
+Heawood       &  14 & 3 & 6 & $\sqrt{2}$  & $1.586$ &  4 & $\PGL(2,7)/S_4$ \\
+M\"ob.-Kantor &  16 & 3 & 6 & $\sqrt{3}$  & $1.268$ &  6 & \\
+Pappus        &  18 & 3 & 6 & $\sqrt{3}$  & $1.268$ &  5 & \\
+Dodecahedron  &  20 & 3 & 5 & $\sqrt{5}$  & $0.764$ &  6 & $A_5$ \\
+Desargues     &  20 & 3 & 6 & $2.000$  & $1.000$ &  6 & \\
+Nauru         &  24 & 3 & 6 & $2.000$  & $1.000$ &  7 & \\
+F26A          &  26 & 3 & 6 & $2.074$  & $0.926$ &  6 & $\Z_{13}$ \\
+Coxeter       &  28 & 3 & 7 & $2.000$  & $1.000$ &  5 & \\
+Tutte-Coxeter &  30 & 3 & 8 & $2.000$  & $1.000$ &  5 & $\mathrm{GQ}(2,2)$ \\
+\midrule
+\multicolumn{8}{@{}l}{\textit{$\PSL(2,q)$ Sabidussi family ($A_1$ type)}} \\
+$\PSL(2,5)/S_3$  &  10 & 3 & 5 & $1.000$  & $2.000$ &  3 & Petersen \\
+$\PSL(2,5)/C_3$  &  20 & 3 & 5 & $\sqrt{5}$  & $0.764$ &  6 & $2 \times$ Petersen \\
+$\PSL(2,7)/C_3$  &  56 & 3 & 6 & $\sqrt{2}{+}1$  & $0.586$ &  9 & Klein \\
+$\PSL(2,17)/S_4$ & 102 & 3 & 9 & $2.562$  & $0.438$ &  8 & Biggs-Smith \\
+$\PSL(2,13)/S_3$ & 182 & 3 & 7 & $2.675$  & $0.325$ & 16 & \\
+$\PSL(2,11)/C_3$ & 220 & 3 &10 & $\varphi{+}1$ & $0.382$ & 19 & $\varphi = \tfrac{1+\sqrt{5}}{2}$ \\
+$\PSL(2,17)/S_3$ & 408 & 3 & 9 & $2.709$  & $0.291$ & 24 & \\
+\midrule
+\multicolumn{8}{@{}l}{\textit{$G_2(2)$ exceptional family}} \\
+GH(2,2) collin.  &  63 & 6 & 3 & $3.000$  & $3.000$ &  4 & $G_2(2)$ \\
+Meinhold-72       &  72 & 7 & 4 & $\sqrt{13}$ & $3.394$ &  6 & $G_2(2)$ \\
+Tutte 12-cage    & 126 & 3 &12 & $\sqrt{6}$  & $0.551$ &  7 & $G_2(2)$ \\
+\midrule
+\multicolumn{8}{@{}l}{\textit{Cubic residue voltage lifts $\mathrm{CR}(p)/K_2$}} \\
+$\mathrm{CR}(7)$  &  14 & 3 & 6 & $\sqrt{2}$  & $1.586$ &  4 & $= $ Heawood \\
+$\mathrm{CR}(13)$ &  26 & 3 & 6 & $2.074$  & $0.926$ &  6 & $= $ F26A \\
+$\mathrm{CR}(19)$ &  38 & 3 & 6 & $2.347$  & $0.653$ &  8 & \\
+$\mathrm{CR}(31)$ &  62 & 3 & 6 & $2.591$  & $0.409$ &  8 & \\
+$\mathrm{CR}(37)$ &  74 & 3 & 6 & $2.655$  & $0.345$ &  8 & \\
+$\mathrm{CR}(43)$ &  86 & 3 & 6 & $2.702$  & $0.298$ &  8 & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+% ==========================================================================
+\section{Eigenvalues as algebraic numbers}
+% ==========================================================================
+
+A striking pattern across all families is that eigenvalues belong to small
+algebraic number fields over $\mathbb{Q}$.
+
+\begin{observation}[Algebraic number fields in the spectrum]
+\label{obs:fields}
+The following fields appear:
+\begin{center}
+\small
+\begin{tabular}{@{}l l l@{}}
+\toprule
+Field & Graphs & Group-theoretic origin \\
+\midrule
+$\mathbb{Q}$ & $K_4$, $K_{3,3}$, Cube, Petersen, & Integer eigenvalues from \\
+              & Coxeter, Tutte-Coxeter, GH(2,2) & highly symmetric quotients \\
+$\mathbb{Q}(\sqrt{2})$ & Heawood, Klein, Biggs-Smith, & $|S_4| = 24 = 2^3 \cdot 3$; \\
+              & Tutte 12-cage, CR(7) & $\sqrt{2}$ from $S_4$ representations \\
+$\mathbb{Q}(\sqrt{3})$ & M\"obius-Kantor, Pappus & $\sqrt{3}$ from order-3 elements \\
+$\mathbb{Q}(\sqrt{5})$ & Dodecahedron, PSL(2,5)/C$_3$, & $|A_5| = 60$; \\
+              & PSL(2,11)/C$_3$ & golden ratio $\varphi \in \mathbb{Q}(\sqrt{5})$ \\
+$\mathbb{Q}(\sqrt{6})$ & Tutte 12-cage & $12096 = 2^6 \cdot 3^3 \cdot 7$ \\
+$\mathbb{Q}(\sqrt{13})$ & F26A, Meinhold-72, CR(13) & $\Z_{13}$ symmetry \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{observation}
+
+The discriminant of the number field consistently matches the prime
+structure of the acting group. When $p$ divides $|G|$ and appears as
+the size of a cyclic factor in the stabiliser chain, $\sqrt{p}$ tends
+to appear in the spectrum. This is not mysterious: the eigenvalues of a
+Sabidussi graph are character sums over the double coset $HaH$, and
+character values of finite groups lie in cyclotomic fields
+$\mathbb{Q}(\zeta_n)$, whose real subfields contain square roots of the
+relevant primes.
+
+\begin{remark}
+The golden ratio $\varphi = (1 + \sqrt{5})/2$ appears in three different
+contexts: as $\lambda_2 = 1 = 2\varphi - 2$ of the Petersen graph
+(trivially), as $\lambda_2 = \sqrt{5}$ of the dodecahedron ($A_5$ has
+order divisible by 5), and as $\lambda_2 = \varphi + 1 \approx 2.618$
+of $\PSL(2,11)/C_3$. Since $\PSL(2,11) \cong L_2(11)$ has order
+$660 = 2^2 \cdot 3 \cdot 5 \cdot 11$, the appearance of $\sqrt{5}$ is
+predicted by Observation~\ref{obs:fields}.
+\end{remark}
+
+
+% ==========================================================================
+\section{Fiedler eigenvalue scaling}
+% ==========================================================================
+
+The Fiedler eigenvalue (algebraic connectivity) $\mu_1 = d - \lambda_2$
+measures the bottleneck of the graph. For graphs from $\PSL(2,q)$, it
+decays with~$q$.
+
+\begin{proposition}[Fiedler scaling in the $A_1$ family]
+For the $\PSL(2,q)/C_3$ subfamily, the Fiedler eigenvalue satisfies
+$\mu_1 \approx C/q$ for a constant $C \approx 4$:
+\begin{center}
+\begin{tabular}{@{}c c c c@{}}
+\toprule
+$q$ & $|V|$ & $\mu_1$ & $q \cdot \mu_1$ \\
+\midrule
+5  &  20 & 0.764 & 3.82 \\
+7  &  56 & 0.586 & 4.10 \\
+11 & 220 & 0.382 & 4.20 \\
+\bottomrule
+\end{tabular}
+\end{center}
+The product $q \cdot \mu_1$ is approximately constant, suggesting
+$\mu_1 \sim 4/q$ asymptotically.
+\end{proposition}
+
+This scaling has a representation-theoretic explanation. The Fiedler
+eigenvalue corresponds to the eigenvalue of the adjacency operator on
+the ``first nontrivial'' spherical function of the Hecke algebra
+$\mathcal{H}(G, H)$. As $q$ grows, the Plancherel measure of
+$\PSL(2,q)$ concentrates and this spherical eigenvalue approaches the
+edge of the spectrum, driving $3 - \lambda_2 \to 0$.
+
+For the voltage lift family $\mathrm{CR}(p)$, the scaling is
+$\mu_1 \approx 6/p$:
+\begin{center}
+\begin{tabular}{@{}c c c c@{}}
+\toprule
+$p$ & $|V|$ & $\mu_1$ & $p \cdot \mu_1$ \\
+\midrule
+7  & 14 & 1.586 & 11.10 \\
+13 & 26 & 0.926 & 12.03 \\
+19 & 38 & 0.653 & 12.41 \\
+31 & 62 & 0.409 & 12.69 \\
+37 & 74 & 0.345 & 12.78 \\
+43 & 86 & 0.298 & 12.82 \\
+\bottomrule
+\end{tabular}
+\end{center}
+Here $p \cdot \mu_1 \to 4\pi/\sqrt{3} \approx 12.87$ (conjectured),
+arising from the equidistribution of cubic residues on the unit circle.
+
+
+% ==========================================================================
+\section{Spectral nesting and the tower of covers}
+% ==========================================================================
+
+The three $\PSL(2,q)$ families form a tower of covering maps:
+\[
+\frac{\PSL(2,q)}{C_3}
+\;\xrightarrow{\ 2:1\ }\;
+\frac{\PSL(2,q)}{S_3}
+\;\xrightarrow{\ 4:1\ }\;
+\frac{\PSL(2,q)}{S_4}
+\]
+corresponding to the subgroup chain $C_3 \subset S_3 \subset S_4$.
+Each covering map induces spectral containment: the spectrum of the
+quotient graph is a subset of the spectrum of the cover.
+
+\begin{observation}[Spectral nesting at $q = 17$]
+The Biggs-Smith graph $\PSL(2,17)/S_4$ has 8 distinct eigenvalues.
+The larger graph $\PSL(2,17)/S_3$ has 24 distinct eigenvalues, and
+every Biggs-Smith eigenvalue appears among them (with equal or greater
+multiplicity). The 16 ``new'' eigenvalues in the $S_3$ graph arise from
+representations of $\PSL(2,17)$ that are trivial on $S_4$ but nontrivial
+on $S_3/S_4$.
+\end{observation}
+
+This nesting is a direct consequence of the Hecke algebra structure.
+The spectrum of $\Sab(G, H, HaH)$ is determined by the spherical functions
+of $\mathcal{H}(G, H)$. When $H' \supset H$, the Hecke algebra
+$\mathcal{H}(G, H')$ embeds in $\mathcal{H}(G, H)$, and its spherical
+functions restrict to spherical functions of the smaller algebra.
+
+
+% ==========================================================================
+\section{The Biggs-Smith extremum}
+% ==========================================================================
+
+Among all graphs in the census, the Biggs-Smith graph occupies a
+distinguished position:
+
+\begin{itemize}
+\item It has the fewest distinct eigenvalues (8) relative to its size
+  (102 vertices) --- fewer than the 56-vertex Klein graph (9 eigenvalues).
+\item It is distance-transitive with diameter 7, achieving the minimum
+  $\#\lambda = \text{diameter} + 1$.
+\item Its stabiliser $S_4$ is \textbf{maximal} in $\PSL(2,17)$, leaving
+  no room for intermediate quotients. This maximality forces
+  distance-transitivity and collapses the spectrum.
+\item Its $\lambda_2 \approx 2.562$ is lower than the larger
+  $\PSL(2,13)/S_3$ ($\lambda_2 \approx 2.675$), despite having fewer
+  vertices. The maximal stabiliser produces a ``tighter'' graph.
+\end{itemize}
+
+\begin{remark}
+The Biggs-Smith graph is one of only 12 cubic distance-transitive graphs
+(the full classification is due to Biggs and Smith, 1971). The other 11
+all appear in the Foster census portion of our table. The spectral
+simplicity of these graphs --- few eigenvalues, high multiplicities ---
+is the spectral signature of distance-transitivity.
+\end{remark}
+
+
+% ==========================================================================
+\section{$G_2(2)$: three faces of an exceptional group}
+% ==========================================================================
+
+The exceptional Lie group $G_2(2)$ (order 12096) provides a natural test
+case for extending the programme beyond $A_1$. Three graphs share
+$\Aut(G) = G_2(2)$ but have wildly different spectral profiles:
+
+\begin{center}
+\small
+\begin{tabular}{@{}l c c l c@{}}
+\toprule
+Graph & $d$ & $\lambda_2$ & Spectrum shape & DT? \\
+\midrule
+Tutte 12-cage & 3 & $\sqrt{6}$ & $\{{\pm}3, {\pm}\sqrt{6}, {\pm}\sqrt{2}, 0\}$ & Yes \\
+GH(2,2) collinearity & 6 & 3 & $\{6, 3, -1, -3\}$ & Yes \\
+Meinhold-72 & 7 & $\sqrt{13}$ & $\{{\pm}7, {\pm}\sqrt{13}, {\pm}1\}$ & No \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{observation}
+The Tutte 12-cage and Meinhold-72 are both bipartite (spectrum symmetric
+about~0), while the GH(2,2) collinearity graph is not. All three are
+Ramanujan. The eigenvalue $\sqrt{6}$ in the Tutte 12-cage and $\sqrt{13}$
+in Meinhold-72 both arise from the same $G_2(2)$ representation theory,
+but evaluated on different double cosets.
+\end{observation}
+
+\begin{observation}
+The GH(2,2) collinearity graph has spectral gap $6 - 3 = 3$, which equals
+half the degree --- an unusually large gap. For comparison, the Petersen
+graph (also strongly regular) has gap $3 - 1 = 2 = 2d/3$. This reflects the
+exceptional expansion quality of $G_2$-geometries.
+\end{observation}
+
+
+% ==========================================================================
+\section{Approaching the Alon--Boppana bound}
+% ==========================================================================
+
+The Alon--Boppana theorem states that for any infinite family of
+$d$-regular graphs, $\liminf \lambda_2 \ge 2\sqrt{d-1}$.
+The voltage lift family $\mathrm{CR}(p)$ provides a concrete example of
+approach to this bound:
+
+\[
+\begin{array}{c|cccccc}
+p & 7 & 13 & 19 & 31 & 37 & 43 \\
+\hline
+\lambda_2 & 1.414 & 2.074 & 2.347 & 2.591 & 2.655 & 2.702 \\
+2\sqrt{2} - \lambda_2 & 1.414 & 0.754 & 0.482 & 0.238 & 0.174 & 0.127
+\end{array}
+\]
+
+The approach is slow (roughly $O(1/\sqrt{p})$), consistent with the Weil
+bound: $\lambda_2 \le 2\sqrt{2}\bigl(1 - c/\sqrt{p}\bigr)$ for some
+constant $c$. These graphs are ``asymptotically optimal'' expanders in the
+Ramanujan sense, saturating the bound from below.
+
+The $\PSL(2,q)$ family also approaches the bound but more slowly,
+because the graphs grow as $q^3$ (not linearly in $q$):
+\[
+\begin{array}{c|ccccc}
+q & 5 & 7 & 11 & 13 & 17 \\
+\hline
+\lambda_2\text{ (best)} & 1.000 & 2.414 & 2.618 & 2.675 & 2.709 \\
+2\sqrt{2} - \lambda_2 & 1.828 & 0.414 & 0.210 & 0.153 & 0.120
+\end{array}
+\]
+
+
+% ==========================================================================
+\section{The spectral--geometric dictionary}
+% ==========================================================================
+
+The census reveals a dictionary between spectral and geometric/algebraic
+properties:
+
+\begin{center}
+\small
+\begin{tabular}{@{}l l@{}}
+\toprule
+Spectral property & Geometric/algebraic meaning \\
+\midrule
+$\lambda_{\min} = -d$ & Bipartite (incidence graph) \\
+$\#\lambda = \text{diam} + 1$ & Distance-transitive \\
+$\lambda_2$ small & Large stabiliser, ``tight'' graph \\
+$\mu_1$ large & Good bottleneck, small diameter \\
+Integer eigenvalues & Highly degenerate double cosets \\
+$\sqrt{p}$ in spectrum & $p \mid |\Aut(G)|$, character field $\mathbb{Q}(\sqrt{p})$ \\
+Spectrum $\subset$ larger spectrum & Covering/quotient relationship \\
+All Ramanujan & Group of Lie type (Weil conjectures) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{conjecture}[Universal Ramanujan property]
+Every cubic arc-transitive graph arising as a Sabidussi construction
+$\Sab(G, H, HaH)$ from a simple group $G$ of Lie type is Ramanujan.
+More generally, every Sabidussi graph from a Chevalley group over
+$\F_q$ is Ramanujan for its degree.
+\end{conjecture}
+
+The evidence is strong: all 30+ graphs tested satisfy the bound, spanning
+the Lie types $A_1$ (PSL), $G_2$ (exceptional), and the abelian case
+($\Z_p$ via Weil sums). The conjecture would follow from a suitable
+generalisation of the Ramanujan--Petersson conjecture to automorphic forms
+on arbitrary reductive groups over function fields --- a theorem of
+Lafforgue for $\mathrm{GL}(n)$ but still open in general.
+
+
+% ==========================================================================
+\section{Open directions}
+% ==========================================================================
+
+\begin{enumerate}
+\item \textbf{Other Lie types.} Compute spectra for Sabidussi graphs from
+  $\PSL(3,q)$, $\mathrm{Sp}(4,q)$, $\PSU(3,q)$, and the Suzuki/Ree
+  groups. The main obstacle is constructing cubic double cosets
+  computationally.
+
+\item \textbf{Fiedler asymptotics.} Prove the scaling
+  $\mu_1 \sim C/q$ for the $\PSL(2,q)/C_3$ family and identify the
+  constant $C$ in terms of the Plancherel measure.
+
+\item \textbf{Eigenvalue field tower.} As $q$ grows, do the eigenvalue
+  fields $\mathbb{Q}(\lambda_2)$ stabilise, grow, or cycle? For
+  $\mathrm{CR}(p)$, the field is $\mathbb{Q}(\cos(2\pi/p))$, which
+  grows with $p$. For $\PSL(2,q)$, the pattern is less clear.
+
+\item \textbf{Spectral rigidity.} When does the spectrum of a Sabidussi
+  graph determine the full automorphism group? The companion work on the
+  Klein quartic (SPECTRAL\_RIGIDITY.md) shows that irreducibility of
+  eigenspaces under the automorphism group prevents ``hidden symmetries.''
+  Extend this to the full census.
+
+\item \textbf{Halved cubes and quotients.} The hypercube $Q_n$ is Ramanujan
+  for $n \le 6$. Can passage to the halved cube $\tfrac{1}{2}Q_n$ restore
+  the Ramanujan property for $n \ge 7$?
+\end{enumerate}
+
+
+% ==========================================================================
+\section{Conclusion}
+% ==========================================================================
+
+The universal Ramanujan property of Sabidussi graphs from groups of Lie
+type is the central finding of this census. It is not a single theorem but
+a web of connections: the Weil conjectures bound character sums, character
+sums are graph eigenvalues, and the Ramanujan bound is the spectral shadow
+of deep arithmetic geometry. The spectral data reveals this structure
+concretely: eigenvalues in number fields predicted by group orders, Fiedler
+values scaling with field size, and multiplicities reflecting representation
+dimensions.
+
+The programme of drawing Lie groups as graphs --- starting from SU(2) over
+$\F_{17}$ producing the Biggs-Smith graph --- has a spectral counterpart:
+\emph{hearing} the group in the graph's spectrum. The census shows that you
+can hear quite a lot.
+
+\begin{thebibliography}{10}
+\bibitem{LPS}
+A.~Lubotzky, R.~Phillips, P.~Sarnak,
+\emph{Ramanujan graphs},
+Combinatorica \textbf{8} (1988), 261--277.
+
+\bibitem{Deligne}
+P.~Deligne,
+\emph{La conjecture de Weil. I},
+Publ.\ Math.\ IH\'ES \textbf{43} (1974), 273--307.
+
+\bibitem{Sabidussi}
+G.~Sabidussi,
+\emph{Vertex-transitive graphs},
+Monatsh.\ Math.\ \textbf{68} (1964), 426--438.
+
+\bibitem{BiggsSm}
+N.~Biggs, D.~H.~Smith,
+\emph{On trivalent graphs},
+Bull.\ London Math.\ Soc.\ \textbf{3} (1971), 155--158.
+
+\bibitem{BCN}
+A.~E.~Brouwer, A.~M.~Cohen, A.~Neumaier,
+\emph{Distance-Regular Graphs},
+Springer, 1989.
+
+\bibitem{Lafforgue}
+L.~Lafforgue,
+\emph{Chtoucas de Drinfeld et correspondance de Langlands},
+Invent.\ Math.\ \textbf{147} (2002), 1--241.
+
+\bibitem{Alon}
+N.~Alon,
+\emph{Eigenvalues and expanders},
+Combinatorica \textbf{6} (1986), 83--96.
+
+\bibitem{Weil}
+A.~Weil,
+\emph{Sur les courbes alg\'ebriques et les vari\'et\'es qui s'en d\'eduisent},
+Hermann, 1948.
+\end{thebibliography}
+
+\end{document}

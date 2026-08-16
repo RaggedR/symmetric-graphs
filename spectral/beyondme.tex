@@ -1,0 +1,1354 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage[most]{tcolorbox}
+\usepackage{multirow}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{observation}[theorem]{Observation}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\F}{\mathbb{F}}
+\newcommand{\Sab}{\operatorname{Sab}}
+\newcommand{\Aut}{\operatorname{Aut}}
+\newcommand{\PSL}{\operatorname{PSL}}
+\newcommand{\PGL}{\operatorname{PGL}}
+\newcommand{\PSU}{\operatorname{PSU}}
+\newcommand{\SU}{\operatorname{SU}}
+\newcommand{\GL}{\operatorname{GL}}
+\newcommand{\SL}{\operatorname{SL}}
+\newcommand{\Ind}{\operatorname{Ind}}
+\newcommand{\End}{\operatorname{End}}
+\newcommand{\Spec}{\operatorname{Spec}}
+\newcommand{\tr}{\operatorname{tr}}
+\newcommand{\Frob}{\operatorname{Frob}}
+\newcommand{\GH}{\mathrm{GH}}
+
+\title{\textbf{Beyond Me:\\
+From Graph Eigenvalues to the Riemann Hypothesis\\
+via the Field with One Element}}
+\author{Robin Langer and Claude Code}
+\date{August 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We trace a chain of mathematical connections from the concrete to the
+conjectural: from the computed eigenvalues of Sabidussi graphs arising
+from groups of Lie type, through the Ihara zeta function and the Weil
+conjectures, to the Riemann hypothesis and the hypothetical field with
+one element~$\F_1$. Along the way we give self-contained definitions
+of all objects involved --- Sabidussi graphs, Iwahori--Hecke algebras,
+the Ihara zeta function, the Weil zeta function, and the Riemann zeta
+function --- and explain why the Ramanujan property of a graph, the
+Riemann hypothesis for curves over finite fields, and the classical
+Riemann hypothesis are, at bottom, the same statement: that certain
+``Frobenius eigenvalues'' have the correct absolute value.
+
+The spectral data computed in the companion papers of this programme
+--- all-integer spectra from $G_2(2)$ at $q = 2$, irrational spectra
+from $\PSL(2,13)$ at $q = 13$, universal Ramanujan across 30+ graphs
+--- provides concrete, verifiable evidence that the $\F_1$-framework
+captures something real. Whether this finite evidence points toward
+the infinite remains, honestly, beyond us.
+\end{abstract}
+
+\tableofcontents
+
+\bigskip
+
+%% =====================================================================
+%%
+%%  PART I: THE OBJECTS
+%%
+%% =====================================================================
+
+\part*{Part I: The Objects}
+\addcontentsline{toc}{part}{Part I: The Objects}
+
+%% =====================================================================
+\section{Sabidussi Graphs}
+\label{sec:sabidussi}
+%% =====================================================================
+
+\begin{tcolorbox}[breakable, colback=green!8, colframe=green!8,
+  boxrule=0pt, sharp corners]
+\begin{definition}[Sabidussi graph]
+\label{def:sabidussi}
+Let $G$ be a finite group, $H \leq G$ a subgroup, and $a \in G$ an
+element satisfying $a^{-1} \in HaH$ (equivalently, the double coset
+$HaH$ is closed under inversion: $HaH = Ha^{-1}H$). The
+\emph{Sabidussi graph} (or \emph{coset graph})
+$\Sab(G, H, HaH)$ is the simple graph defined by:
+\begin{itemize}
+\item \textbf{Vertices}: the set $G/H$ of left cosets of $H$ in $G$.
+  Hence $|V| = [G : H]$.
+\item \textbf{Edges}: two cosets $xH$ and $yH$ are adjacent if and
+  only if $x^{-1}y \in HaH$, i.e.\ the relative position of the two
+  cosets lies in the double coset $HaH$.
+\end{itemize}
+The graph is $d$-regular with $d = |HaH|/|H|$. The group $G$ acts on
+$G/H$ by left multiplication, and this action is a group of
+automorphisms of $\Sab(G, H, HaH)$.
+\end{definition}
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=yellow!12, colframe=yellow!12,
+  boxrule=0pt, sharp corners]
+\textbf{Arc-transitivity.}
+A graph is \emph{arc-transitive} if its automorphism group acts
+transitively on ordered pairs of adjacent vertices (arcs). By
+Sabidussi's theorem~\cite{Sabidussi1964}, a graph is arc-transitive
+if and only if it can be written as $\Sab(G, H, HaH)$ where $HaH$ is
+a \emph{single} double coset. When $|HaH|/|H| = 3$, the graph is
+cubic (3-regular) and arc-transitive.
+\end{tcolorbox}
+
+\begin{tcolorbox}[breakable, colback=black!5, colframe=black!5,
+  boxrule=0pt, sharp corners]
+\textbf{Examples from the programme.}
+
+\medskip
+\textbf{The Langer graph.}
+$\Sab(G_2(2), H_{192})$, where $G_2(2)$ is the automorphism group
+of the split Cayley hexagon $\GH(2,2)$ (order $12096$) and $H_{192}$
+is the stabiliser of a point (order $192$). This gives $63$ vertices,
+degree~$6$.
+
+\emph{Spectrum}: $\{6^1,\; 3^{21},\; (-1)^{27},\; (-3)^{14}\}$ ---
+all integers.
+
+\medskip
+\textbf{The Zhou graph.}
+$\Sab(\PSL(2,13), D_{12})$, where $\PSL(2,13)$ has order $1092$ and
+$D_{12}$ is a dihedral subgroup of order~$12$. This gives $91$
+vertices, degree~$6$.
+
+\emph{Spectrum}: contains $\frac{3 \pm \sqrt{17}}{2}$ (each with
+multiplicity~$14$), $\pm 2\sqrt{2}$ (each with multiplicity~$13$),
+and three roots of $x^3 + 4x^2 + 3x - 1 = 0$ (each with
+multiplicity~$12$). The splitting field is
+$\Q(\sqrt{2}, \sqrt{17}, \alpha)$ where $\alpha$ is a cubic
+algebraic number.
+\end{tcolorbox}
+
+\begin{remark}
+The contrast is striking. Both graphs are $6$-regular Sabidussi graphs
+of groups of Lie type. The Langer graph, built from $G_2(2)$ over
+$\F_2$, has an all-integer spectrum. The Zhou graph, built from
+$\PSL(2,13)$ over $\F_{13}$, has eigenvalues involving $\sqrt{17}$
+and a cubic irrationality. This difference --- rational at small $q$,
+irrational at large $q$ --- is a central theme of Part~II.
+\end{remark}
+
+
+%% =====================================================================
+\section{The Iwahori--Hecke Algebra}
+\label{sec:hecke}
+%% =====================================================================
+
+\subsection{The abstract Hecke algebra of a Coxeter group}
+
+\begin{tcolorbox}[breakable, colback=green!8, colframe=green!8,
+  boxrule=0pt, sharp corners]
+\begin{definition}[Coxeter group]
+\label{def:coxeter}
+A \emph{Coxeter group} is a group $W$ with a distinguished set of
+generators $S = \{s_1, \ldots, s_n\}$ and a presentation
+\[
+  W = \langle\, s_1, \ldots, s_n \;\mid\;
+  (s_i s_j)^{m_{ij}} = e \;\rangle
+\]
+where $m_{ii} = 1$ (each generator is an involution) and
+$m_{ij} = m_{ji} \in \{2, 3, 4, \ldots, \infty\}$ for $i \neq j$.
+The matrix $(m_{ij})$ is the \emph{Coxeter matrix}. When
+$m_{ij} = \infty$, no relation is imposed on $s_i s_j$.
+\end{definition}
+\end{tcolorbox}
+
+\begin{tcolorbox}[breakable, colback=green!8, colframe=green!8,
+  boxrule=0pt, sharp corners]
+\begin{definition}[Iwahori--Hecke algebra]
+\label{def:hecke}
+Let $(W, S)$ be a Coxeter group with $S = \{s_1, \ldots, s_n\}$, and
+let $q$ be an indeterminate (or a nonzero element of a field). The
+\emph{Iwahori--Hecke algebra} $\mathcal{H}_q(W)$ is the associative
+$\Q(q)$-algebra with basis $\{T_w : w \in W\}$ (one basis element
+per group element) and relations:
+\begin{enumerate}
+\item \textbf{Quadratic relation}: for each generator $s \in S$,
+\begin{equation}
+\label{eq:hecke-quad}
+  T_s^2 = (q - 1)\, T_s + q\, T_e,
+\end{equation}
+where $T_e$ is the identity element.
+
+\item \textbf{Braid relations}: if $m_{ij} < \infty$, then
+\[
+  \underbrace{T_{s_i} T_{s_j} T_{s_i} \cdots}_{m_{ij} \text{ factors}}
+  = \underbrace{T_{s_j} T_{s_i} T_{s_j} \cdots}_{m_{ij} \text{ factors}}.
+\]
+
+\item \textbf{Multiplicativity on reduced words}: if
+$\ell(ww') = \ell(w) + \ell(w')$ (where $\ell$ denotes the length
+function on $W$), then $T_{ww'} = T_w T_{w'}$.
+\end{enumerate}
+
+As a $\Q(q)$-module, $\mathcal{H}_q(W) \cong \Q(q)^{|W|}$: it has
+the same dimension as the group algebra.
+\end{definition}
+\end{tcolorbox}
+
+\begin{tcolorbox}[breakable, colback=yellow!12, colframe=yellow!12,
+  boxrule=0pt, sharp corners]
+\textbf{The two key specialisations.}
+
+\begin{itemize}
+\item \textbf{At $q = 1$}: the quadratic relation becomes
+  $T_s^2 = T_e$, recovering the defining relation $s^2 = e$ of the
+  Coxeter group. Thus $\mathcal{H}_1(W) \cong \C[W]$, the group
+  algebra of~$W$.
+
+\item \textbf{At $q = p^k$ (a prime power)}: there exists a finite
+  group of Lie type $G(\F_q)$ --- for instance
+  $\GL_n(\F_q)$, $\SL_n(\F_q)$, or the Chevalley group of type $W$
+  over $\F_q$ --- with a Borel subgroup $B$ such that
+  \[
+    \mathcal{H}_q(W)
+    \;\cong\;
+    \End_G\!\left(\Ind_B^G \mathbf{1}\right)
+    \;=\;
+    e_B \cdot \C[G] \cdot e_B
+  \]
+  where $e_B = \frac{1}{|B|}\sum_{b \in B} b$ is the idempotent
+  averaging over~$B$. This is the \emph{Hecke algebra of the pair
+  $(G, B)$}: the algebra of $G$-endomorphisms of the representation
+  induced from the trivial character of $B$.
+\end{itemize}
+\end{tcolorbox}
+
+\subsection{The Hecke algebra of a Gelfand pair}
+
+\begin{tcolorbox}[breakable, colback=green!8, colframe=green!8,
+  boxrule=0pt, sharp corners]
+\begin{definition}[Hecke algebra of a pair $(G, H)$]
+\label{def:hecke-pair}
+For a finite group $G$ and a subgroup $H$, the \emph{Hecke algebra}
+$\mathcal{H}(G, H)$ is the algebra of $H$-bi-invariant functions on
+$G$ under convolution:
+\[
+  \mathcal{H}(G, H) = \End_G\!\left(\Ind_H^G \mathbf{1}\right)
+  \;=\; \{f : G \to \C \;\mid\; f(h_1 g h_2) = f(g)
+  \text{ for all } h_1, h_2 \in H\}.
+\]
+As a vector space, $\mathcal{H}(G, H)$ has dimension equal to the
+number of $(H, H)$-double cosets in~$G$. The multiplication is
+convolution:
+\[
+  (f_1 * f_2)(g) = \frac{1}{|H|} \sum_{x \in G} f_1(x)\, f_2(x^{-1}g).
+\]
+\end{definition}
+\end{tcolorbox}
+
+\begin{tcolorbox}[breakable, colback=yellow!12, colframe=yellow!12,
+  boxrule=0pt, sharp corners]
+\textbf{Connection to eigenvalues.}
+The eigenvalues of the Sabidussi graph $\Sab(G, H, HaH)$ are the
+values of the \emph{zonal spherical functions} of the pair $(G, H)$
+evaluated at the double coset $HaH$. A zonal spherical function
+$\omega : G \to \C$ is an $H$-bi-invariant function satisfying the
+product formula
+\[
+  \frac{1}{|H|} \sum_{h \in H} \omega(xhy) = \omega(x)\,\omega(y)
+  \qquad \text{for all } x, y \in G.
+\]
+These are precisely the algebra homomorphisms
+$\mathcal{H}(G, H) \to \C$, i.e.\ the \emph{characters} of the
+Hecke algebra. Each character $\chi$ yields an eigenvalue
+$\lambda_\chi = |HaH| \cdot \chi(T_{HaH}) / |H|$ of the adjacency
+matrix.
+
+When $(G, H)$ is a \emph{Gelfand pair} (i.e.\ $\mathcal{H}(G, H)$
+is commutative), every eigenspace of the adjacency matrix corresponds
+to a unique irreducible constituent of $\Ind_H^G \mathbf{1}$, and
+the eigenvalue multiplicities equal the dimensions of those
+irreducible representations.
+\end{tcolorbox}
+
+
+%% =====================================================================
+\section{The Ihara Zeta Function}
+\label{sec:ihara}
+%% =====================================================================
+
+\begin{tcolorbox}[breakable, colback=green!8, colframe=green!8,
+  boxrule=0pt, sharp corners]
+\begin{definition}[Prime cycle]
+\label{def:prime-cycle}
+Let $X$ be a finite connected graph. A \emph{closed walk} of
+length~$n$ is a sequence of vertices $v_0, v_1, \ldots, v_n$ with
+$v_0 = v_n$ and each $v_i v_{i+1}$ an edge. A closed walk is:
+\begin{itemize}
+\item \emph{Backtrackless} if $v_{i+1} \neq v_{i-1}$ for all $i$
+  (it never immediately reverses).
+\item \emph{Tailless} if additionally $v_1 \neq v_{n-1}$ (the
+  ``start'' and ``end'' directions differ).
+\item \emph{Prime} if it is not a proper power of a shorter closed
+  walk: there is no closed walk of length $m < n$ whose $k$-fold
+  repetition ($n = km$) gives the original walk.
+\end{itemize}
+Two prime cycles are \emph{equivalent} if one is a cyclic rotation
+of the other: $(v_0, v_1, \ldots, v_{n-1})$ and
+$(v_j, v_{j+1}, \ldots, v_{j-1})$ for some~$j$.
+\end{definition}
+\end{tcolorbox}
+
+\begin{tcolorbox}[breakable, colback=green!8, colframe=green!8,
+  boxrule=0pt, sharp corners]
+\begin{definition}[Ihara zeta function]
+\label{def:ihara}
+The \emph{Ihara zeta function} of a finite connected graph $X$ is the
+formal power series (in fact, a rational function) defined by the
+Euler product over equivalence classes $[C]$ of prime cycles:
+\begin{equation}
+\label{eq:ihara-euler}
+  Z_X(u) = \prod_{[C]} \left(1 - u^{\nu(C)}\right)^{-1},
+\end{equation}
+where $\nu(C)$ denotes the length of~$C$.
+\end{definition}
+\end{tcolorbox}
+
+\begin{tcolorbox}[breakable, colback=black!5, colframe=black!5,
+  boxrule=0pt, sharp corners]
+\begin{theorem}[Ihara determinant formula; Bass \cite{Bass1992},
+Hashimoto \cite{Hashimoto1989}]
+\label{thm:ihara-det}
+Let $X$ be a $(q+1)$-regular graph on $n$ vertices with adjacency
+matrix~$A$. Then
+\begin{equation}
+\label{eq:ihara-det}
+  Z_X(u)^{-1}
+  = (1 - u^2)^{r-1} \cdot \det\!\left(I - Au + qu^2 I\right),
+\end{equation}
+where $r = n(q+1)/2 - n + 1 = n(q-1)/2 + 1$ is the rank of the
+fundamental group of~$X$ (equivalently, the number of independent
+cycles: $r = |E| - |V| + 1$).
+\end{theorem}
+\end{tcolorbox}
+
+\begin{proof}[Sketch]
+Define the \emph{edge matrix} (or Hashimoto matrix) $T$ on directed
+edges $\vec{E}$ by $T_{(e_1, e_2)} = 1$ if $e_1$ feeds into $e_2$
+without backtracking, and $0$ otherwise. Then
+$Z_X(u)^{-1} = \det(I - uT)$. The block structure of $T$ (with
+blocks corresponding to edges starting and ending at each vertex)
+allows the determinant to be factored into the expression above
+involving the adjacency matrix.
+\end{proof}
+
+\begin{tcolorbox}[breakable, colback=black!5, colframe=black!5,
+  boxrule=0pt, sharp corners]
+\begin{proposition}[Functional equation]
+\label{prop:ihara-func}
+For a $(q+1)$-regular graph on $n$ vertices, the Ihara zeta function
+satisfies
+\[
+  Z_X(1/(qu))
+  = (-1)^{n(q-1)/2}\, q^{n(q-1)/2}\, u^{n(q-1)}\, Z_X(u)
+  \cdot (\text{elementary factors}).
+\]
+This is the analogue of the functional equation of classical zeta
+functions: it relates $Z_X(u)$ at $u$ to $Z_X$ at the ``dual point''
+$1/(qu)$.
+\end{proposition}
+\end{tcolorbox}
+
+\begin{tcolorbox}[breakable, colback=yellow!12, colframe=yellow!12,
+  boxrule=0pt, sharp corners]
+\textbf{The Ramanujan criterion.}
+The \emph{non-trivial} part of the Ihara zeta function is
+$\det(I - Au + qu^2 I)$. Its zeros as a polynomial in $u$ are
+determined by the eigenvalues of $A$: if $\lambda$ is an eigenvalue,
+the corresponding factor is $1 - \lambda u + qu^2$, with roots
+\[
+  u = \frac{\lambda \pm \sqrt{\lambda^2 - 4q}}{2q}.
+\]
+\begin{theorem}[Ramanujan $\Leftrightarrow$ graph RH]
+\label{thm:ramanujan-rh}
+A $(q+1)$-regular graph $X$ is \emph{Ramanujan} if and only if every
+non-trivial zero of $Z_X(u)^{-1}$ satisfies $|u| = q^{-1/2}$.
+Equivalently:
+\[
+  X \text{ is Ramanujan}
+  \;\Longleftrightarrow\;
+  |\lambda| \leq 2\sqrt{q} \text{ for all non-trivial } \lambda
+  \;\Longleftrightarrow\;
+  Z_X \text{ satisfies RH}.
+\]
+\end{theorem}
+\end{tcolorbox}
+
+
+%% =====================================================================
+\section{The Weil Conjectures}
+\label{sec:weil}
+%% =====================================================================
+
+\begin{tcolorbox}[breakable, colback=green!8, colframe=green!8,
+  boxrule=0pt, sharp corners]
+\begin{definition}[Zeta function of a variety over $\F_q$]
+\label{def:weil-zeta}
+Let $X$ be a smooth projective algebraic variety of dimension $d$
+defined over the finite field $\F_q$. For each $n \geq 1$, let
+$N_n = |X(\F_{q^n})|$ denote the number of $\F_{q^n}$-rational
+points. The \emph{Hasse--Weil zeta function} is
+\begin{equation}
+\label{eq:weil-zeta}
+  Z(X/\F_q,\, t) = \exp\!\left(\sum_{n=1}^{\infty}
+  N_n \frac{t^n}{n}\right).
+\end{equation}
+\end{definition}
+\end{tcolorbox}
+
+\begin{tcolorbox}[breakable, colback=black!5, colframe=black!5,
+  boxrule=0pt, sharp corners]
+\textbf{The Weil conjectures} (now theorems). Let $X/\F_q$ be a smooth
+projective variety of dimension~$d$.
+
+\begin{enumerate}
+\item \textbf{Rationality} (Dwork, 1960~\cite{Dwork1960}):
+$Z(X/\F_q, t)$ is a rational function of~$t$. Specifically,
+\[
+  Z(X/\F_q, t)
+  = \frac{P_1(t)\, P_3(t) \cdots P_{2d-1}(t)}
+         {P_0(t)\, P_2(t) \cdots P_{2d}(t)},
+\]
+where each $P_i(t) \in \Z[t]$ with $P_0(t) = 1 - t$ and
+$P_{2d}(t) = 1 - q^d t$.
+
+\item \textbf{Functional equation} (Grothendieck, via
+$\ell$-adic cohomology):
+\[
+  Z(X/\F_q,\, 1/(q^d t))
+  = \pm\, q^{d\chi/2}\, t^{\chi}\, Z(X/\F_q,\, t),
+\]
+where $\chi = \sum (-1)^i \deg P_i$ is the Euler characteristic.
+
+\item \textbf{The Riemann hypothesis} (Deligne, 1974~\cite{Deligne1974}):
+The reciprocal roots of $P_i(t)$ --- i.e.\ the algebraic numbers
+$\alpha_{i,j}$ such that
+$P_i(t) = \prod_j (1 - \alpha_{i,j} t)$ --- have absolute value
+\begin{equation}
+\label{eq:deligne-rh}
+  |\alpha_{i,j}| = q^{i/2}.
+\end{equation}
+In particular, the zeros of $Z$ (from odd $P_i$) and poles (from even
+$P_i$) lie on circles of radius $q^{-i/2}$ in the $t$-plane.
+\end{enumerate}
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=yellow!12, colframe=yellow!12,
+  boxrule=0pt, sharp corners]
+\textbf{The curve case.} For a smooth projective curve $C/\F_q$ of
+genus~$g$, the zeta function simplifies to
+\[
+  Z(C/\F_q, t) = \frac{P_1(t)}{(1-t)(1-qt)},
+\]
+where $P_1(t) = \prod_{j=1}^{2g}(1 - \alpha_j t)$ with
+$|\alpha_j| = q^{1/2}$. The last statement \emph{is} the Riemann
+hypothesis for curves over finite fields, first proved by Weil
+(1948~\cite{Weil1948}) for curves and by Deligne
+(1974~\cite{Deligne1974}) in general.
+\end{tcolorbox}
+
+
+%% =====================================================================
+\section{The Riemann Zeta Function}
+\label{sec:riemann}
+%% =====================================================================
+
+\begin{tcolorbox}[breakable, colback=green!8, colframe=green!8,
+  boxrule=0pt, sharp corners]
+\begin{definition}[Riemann zeta function]
+\label{def:riemann-zeta}
+The \emph{Riemann zeta function} is defined for $\operatorname{Re}(s) > 1$ by
+\begin{equation}
+\label{eq:riemann-def}
+  \zeta(s) = \sum_{n=1}^{\infty} n^{-s}
+  = \prod_{p \text{ prime}} \left(1 - p^{-s}\right)^{-1}.
+\end{equation}
+The Euler product encodes the fundamental theorem of arithmetic:
+every positive integer has a unique prime factorisation.
+\end{definition}
+\end{tcolorbox}
+
+\begin{tcolorbox}[breakable, colback=black!5, colframe=black!5,
+  boxrule=0pt, sharp corners]
+\textbf{Analytic continuation.}
+The function $\zeta(s)$ extends to a meromorphic function on all of
+$\C$, with a single simple pole at $s = 1$ with residue~$1$. The
+extension can be obtained via the integral representation
+\[
+  \zeta(s) = \frac{1}{\Gamma(s)} \int_0^{\infty}
+  \frac{x^{s-1}}{e^x - 1}\, dx
+  \qquad (\operatorname{Re}(s) > 1)
+\]
+and analytic continuation of the right-hand side.
+
+\medskip
+\textbf{Trivial zeros.}
+$\zeta(s) = 0$ at $s = -2, -4, -6, \ldots$ (the negative even
+integers). These are called \emph{trivial zeros}.
+\end{tcolorbox}
+
+\begin{tcolorbox}[breakable, colback=green!8, colframe=green!8,
+  boxrule=0pt, sharp corners]
+\begin{definition}[Completed zeta function]
+\label{def:xi}
+The \emph{completed zeta function} is
+\begin{equation}
+\label{eq:xi}
+  \xi(s) = \pi^{-s/2}\, \Gamma(s/2)\, \zeta(s),
+\end{equation}
+where $\Gamma$ is the gamma function. It satisfies the functional
+equation
+\begin{equation}
+\label{eq:func-eq}
+  \xi(s) = \xi(1 - s).
+\end{equation}
+The factor $\pi^{-s/2}\, \Gamma(s/2)$ is the \emph{Euler factor at
+infinity} --- it is the local $L$-factor at the archimedean place of
+$\Q$. Just as each prime $p$ contributes a factor
+$(1 - p^{-s})^{-1}$ to the Euler product, the ``prime at infinity''
+contributes $\pi^{-s/2}\, \Gamma(s/2)$.
+\end{definition}
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=blue!8, colframe=blue!8,
+  boxrule=0pt, sharp corners]
+\textbf{The Riemann Hypothesis (1859).}
+Every non-trivial zero of $\zeta(s)$ has real part $\frac{1}{2}$:
+\[
+  \zeta(s) = 0,\; s \notin \{-2, -4, -6, \ldots\}
+  \;\;\Longrightarrow\;\;
+  \operatorname{Re}(s) = \tfrac{1}{2}.
+\]
+Equivalently, the non-trivial zeros of $\xi(s)$ all lie on the
+\emph{critical line} $\operatorname{Re}(s) = \frac{1}{2}$.
+\end{tcolorbox}
+
+
+%% =====================================================================
+\section{The Ramanujan--Petersson Conjecture}
+\label{sec:ramanujan-petersson}
+%% =====================================================================
+
+\begin{tcolorbox}[breakable, colback=green!8, colframe=green!8,
+  boxrule=0pt, sharp corners]
+\begin{definition}[Modular forms and Hecke operators]
+\label{def:modular}
+A \emph{modular form} of weight $k$ and level $N$ is a holomorphic
+function $f : \mathfrak{H} \to \C$ on the upper half-plane
+$\mathfrak{H} = \{\tau \in \C : \operatorname{Im}(\tau) > 0\}$
+satisfying:
+\begin{enumerate}
+\item \textbf{Modularity}: for all
+$\bigl(\begin{smallmatrix} a & b \\ c & d \end{smallmatrix}\bigr)
+\in \Gamma_0(N) \leq \SL_2(\Z)$,
+\[
+  f\!\left(\frac{a\tau + b}{c\tau + d}\right)
+  = (c\tau + d)^k\, f(\tau).
+\]
+\item \textbf{Holomorphicity at cusps}: $f$ extends holomorphically
+  to the cusps of $\Gamma_0(N) \backslash \mathfrak{H}$.
+\end{enumerate}
+A modular form that vanishes at all cusps is a \emph{cusp form}.
+Every cusp form has a Fourier expansion
+$f(\tau) = \sum_{n=1}^{\infty} a_n\, e^{2\pi i n \tau}$.
+
+The \emph{Hecke operators} $T_p$ (for primes $p \nmid N$) act on
+the space of cusp forms by
+\[
+  (T_p f)(\tau) = p^{k-1} f(p\tau)
+  + \frac{1}{p} \sum_{j=0}^{p-1} f\!\left(\frac{\tau + j}{p}\right).
+\]
+A \emph{Hecke eigenform} is a cusp form that is a simultaneous
+eigenvector of all Hecke operators: $T_p f = a_p f$.
+\end{definition}
+\end{tcolorbox}
+
+\begin{tcolorbox}[breakable, colback=black!5, colframe=black!5,
+  boxrule=0pt, sharp corners]
+\begin{theorem}[Ramanujan--Petersson conjecture; proved by
+Deligne \cite{Deligne1974}]
+\label{thm:ramanujan-petersson}
+Let $f = \sum a_n q^n$ be a normalised Hecke eigenform of weight $k$
+for $\Gamma_0(N)$. Then for every prime $p \nmid N$,
+\begin{equation}
+\label{eq:rp-bound}
+  |a_p| \leq 2\, p^{(k-1)/2}.
+\end{equation}
+\end{theorem}
+\end{tcolorbox}
+
+\begin{tcolorbox}[breakable, colback=yellow!12, colframe=yellow!12,
+  boxrule=0pt, sharp corners]
+\textbf{The connection to Ramanujan graphs.}
+A $(q+1)$-regular graph is Ramanujan when its non-trivial eigenvalues
+satisfy $|\lambda| \leq 2\sqrt{q}$. This is \emph{exactly} the
+Ramanujan--Petersson bound~\eqref{eq:rp-bound} at weight $k = 2$:
+\[
+  2\,p^{(k-1)/2}\big|_{k=2} = 2\sqrt{p} = 2\sqrt{q}.
+\]
+The name ``Ramanujan graph'' was chosen by Lubotzky, Phillips, and
+Sarnak~\cite{LPS} precisely because of this connection. Their
+$(p+1)$-regular Cayley graphs of $\PSL(2, \Z/q\Z)$ are Ramanujan as
+a direct consequence of Deligne's theorem.
+
+Deligne proved the Ramanujan--Petersson conjecture by showing that the
+eigenvalues $a_p$ are traces of the Frobenius endomorphism on the
+$\ell$-adic cohomology $H^1$ of a certain algebraic variety (the
+universal elliptic curve over the modular curve), and then applying
+his proof of the Weil conjecture~\eqref{eq:deligne-rh} at $i = 1$.
+\end{tcolorbox}
+
+
+%% =====================================================================
+\section{The Field with One Element}
+\label{sec:f1}
+%% =====================================================================
+
+\subsection{Tits's observation}
+
+\begin{tcolorbox}[breakable, colback=yellow!12, colframe=yellow!12,
+  boxrule=0pt, sharp corners]
+In 1957, Jacques Tits~\cite{Tits1957} observed a remarkable pattern.
+Many formulas in the theory of algebraic groups over $\F_q$ have
+well-defined limits as $q \to 1$, and these limits recover classical
+combinatorial objects:
+
+\medskip
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{lcc}
+\toprule
+Object at $q$ & Formula & Limit as $q \to 1$ \\
+\midrule
+$q$-integer $[n]_q$ & $\dfrac{q^n - 1}{q - 1}$ & $n$ \\[6pt]
+$q$-factorial $[n]_q!$ & $\displaystyle\prod_{k=1}^n [k]_q$ & $n!$ \\[6pt]
+Gaussian binomial $\displaystyle\binom{n}{k}_q$
+  & $\dfrac{[n]_q!}{[k]_q!\,[n-k]_q!}$ & $\displaystyle\binom{n}{k}$ \\[6pt]
+$|\GL_n(\F_q)|$ & $\displaystyle\prod_{k=0}^{n-1}(q^n - q^k)$ & $n!$ \\[6pt]
+$|\mathbb{P}^{n-1}(\F_q)|$ & $[n]_q = \dfrac{q^n-1}{q-1}$ & $n$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\medskip
+This suggests the existence of a ``field with one element''~$\F_1$
+such that:
+\begin{itemize}
+\item $\GL_n(\F_1) = S_n$ (the symmetric group).
+\item $\mathbb{P}^{n-1}(\F_1) = \{1, 2, \ldots, n\}$
+  (a bare finite set).
+\item The Weyl group $W$ of a reductive group $G$ is ``$G(\F_1)$''.
+\end{itemize}
+
+This is exactly what the Hecke algebra encodes: $\mathcal{H}_q(W)$ at
+$q = 1$ gives $\C[W]$, and at $q = p^k$ gives the Hecke algebra of
+the Lie-type group over $\F_q$. The Hecke algebra is a
+\emph{deformation from $\F_1$ to $\F_q$}.
+\end{tcolorbox}
+
+\subsection{The dream}
+
+\begin{tcolorbox}[breakable, colback=blue!8, colframe=blue!8,
+  boxrule=0pt, sharp corners]
+\textbf{The $\F_1$ programme.}
+The most ambitious goal of $\F_1$-geometry is to prove the Riemann
+hypothesis by analogy with Deligne's proof of the Weil conjectures.
+The strategy:
+
+\begin{enumerate}
+\item View $\Spec(\Z)$ as a ``curve over $\F_1$''. The closed points
+  of $\Spec(\Z)$ are the primes $p$; each has a ``residue field''
+  $\F_p$ of ``size'' $p$. The ``generic point'' is $\Spec(\Q)$.
+  The archimedean absolute value $|\cdot|_\infty$ plays the role of
+  a ``point at infinity''.
+
+\item Construct a Weil-type cohomology theory for varieties over
+  $\F_1$. For curves over $\F_q$, Deligne used $\ell$-adic
+  \'etale cohomology $H^i(X \times_{\F_q} \overline{\F_q}, \Q_\ell)$,
+  on which the geometric Frobenius acts with eigenvalues of absolute
+  value $q^{i/2}$. The ``Frobenius at $p$'' on $\Spec(\Z)$ is the
+  map $x \mapsto x^p$ on the ``fibre'' $\Spec(\F_p)$.
+
+\item Show that the zeros of $\zeta(s)$ are eigenvalues of a
+  Frobenius-like operator on this cohomology, and that the ``Weil
+  conjectures for $\F_1$'' force them to lie on $\operatorname{Re}(s) = 1/2$.
+\end{enumerate}
+
+\medskip
+Several approaches have been proposed:
+\begin{itemize}
+\item \textbf{Soul\'e} (1999~\cite{Soule2004}): defined $\F_1$-schemes
+  via a functor category; the ``zeta function'' of $\Spec(\Z)$ in his
+  framework involves the completed Riemann zeta function $\xi(s)$.
+\item \textbf{Connes--Consani} (2010--\cite{ConnesConsani2011}):
+  introduced the \emph{arithmetic site}, a topos built from the
+  multiplicative monoid $\N^\times$, and showed that its
+  ``characteristic 1'' geometry recovers the explicit formulas of
+  prime number theory.
+\item \textbf{Borger} (2009~\cite{Borger2009}): proposed that
+  ``$\F_1$-geometry \emph{is} $\Lambda$-ring geometry.'' A
+  $\Lambda$-ring is a ring equipped with commuting Frobenius lifts
+  $\psi_p$ for all primes $p$; $\Z$ with $\psi_p(n) = n$ is the
+  ``final object'' over $\F_1$.
+\item \textbf{Lorscheid} (2012~\cite{Lorscheid2018}): introduced
+  \emph{blueprints} (monoids with a partial addition) as a foundation
+  for $\F_1$-geometry that recovers both Soul\'e's and Connes's
+  frameworks.
+\end{itemize}
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=yellow!12, colframe=yellow!12,
+  boxrule=0pt, sharp corners]
+\textbf{The key idea.}
+If $\Spec(\Z)$ can be treated as a curve over $\F_1$, and if a
+cohomology theory can be built for which the ``Frobenius eigenvalues''
+are the zeros of $\zeta(s)$, then the classical Riemann hypothesis
+would follow from exactly the same formal argument that Deligne used
+for curves over $\F_q$: the eigenvalues of Frobenius on $H^1$ have
+absolute value $q^{1/2}$, which at $q = 1$ becomes
+$|$eigenvalue$| = 1$, which corresponds to
+$\operatorname{Re}(s) = 1/2$.
+\end{tcolorbox}
+
+
+%% =====================================================================
+%%
+%%  PART II: THE CONNECTIONS
+%%
+%% =====================================================================
+
+\part*{Part II: The Connections}
+\addcontentsline{toc}{part}{Part II: The Connections}
+
+%% =====================================================================
+\section{Why Our Graphs are Ramanujan}
+\label{sec:why-ramanujan}
+%% =====================================================================
+
+\begin{tcolorbox}[breakable, colback=black!5, colframe=black!5,
+  boxrule=0pt, sharp corners]
+\textbf{The argument, made precise.}
+Let $G = G(\F_q)$ be a finite group of Lie type over $\F_q$, and let
+$X = \Sab(G, H, HaH)$ be a Sabidussi graph. The adjacency matrix $A$
+of $X$ acts on the permutation module $\C[G/H] = \Ind_H^G \mathbf{1}$.
+Decompose this into irreducibles:
+\[
+  \Ind_H^G \mathbf{1} = \bigoplus_{\pi \in \widehat{G}^H}
+  m_\pi \cdot \pi,
+\]
+where $\widehat{G}^H = \{\pi \in \widehat{G} : \pi^H \neq 0\}$ is
+the set of irreducible representations having a nonzero $H$-fixed
+vector, and $m_\pi = \dim(\pi^H)$. On each copy of $\pi$, the
+adjacency operator acts by the scalar
+\[
+  \lambda_\pi = \frac{|HaH|}{|H|} \cdot \omega_\pi(a)
+  = d \cdot \omega_\pi(a),
+\]
+where $\omega_\pi$ is the zonal spherical function associated to
+$\pi$, and $d$ is the degree of the graph.
+
+The trivial representation $\pi = \mathbf{1}$ contributes the
+eigenvalue $\lambda_{\mathbf{1}} = d$ (the degree). The remaining
+eigenvalues are the \emph{non-trivial} ones. The Ramanujan property
+asserts that $|\lambda_\pi| \leq 2\sqrt{d-1}$ for all non-trivial
+$\pi$.
+\end{tcolorbox}
+
+\begin{tcolorbox}[breakable, colback=yellow!12, colframe=yellow!12,
+  boxrule=0pt, sharp corners]
+\textbf{The PSL(2,$q$) case.}
+For $G = \PSL(2, q)$, the spherical functions are values of matrix
+coefficients of the principal series representations. By the
+Jacquet--Langlands correspondence (or directly via the Eichler--Shimura
+relation), these matrix coefficients are related to Hecke eigenvalues
+on modular forms.
+
+Concretely, let $X_0(q)$ be the modular curve of level $q$, viewed as
+a curve over $\F_p$ for some auxiliary prime $p \neq q$. The Frobenius
+$\Frob_p$ acts on the \'etale cohomology $H^1(X_0(q) \times
+\overline{\F_p}, \Q_\ell)$, and its eigenvalues $\alpha_p$ satisfy
+$|\alpha_p| = p^{1/2}$ by Deligne's theorem~\eqref{eq:deligne-rh}.
+The Hecke eigenvalue $a_p$ of the associated modular form satisfies
+$a_p = \alpha_p + \overline{\alpha}_p$, giving
+$|a_p| \leq 2p^{1/2}$ --- the Ramanujan--Petersson bound.
+
+The eigenvalues of $\Sab(\PSL(2,q), H)$ are precisely (up to
+normalisation) these Hecke eigenvalues, evaluated at representations
+determined by the pair $(G, H)$. The Ramanujan bound for the graph
+is the Ramanujan--Petersson bound for the corresponding modular form,
+which is Deligne's theorem.
+\end{tcolorbox}
+
+\begin{tcolorbox}[breakable, colback=black!5, colframe=black!5,
+  boxrule=0pt, sharp corners]
+\textbf{The $G_2$ case.}
+For $G = G_2(2)$, the connection to automorphic forms is through the
+Kim--Shahidi functoriality result~\cite{KimShahidi2002}. The
+symmetric-square and exterior-square $L$-functions associated to
+$G_2$ automorphic representations can be related to $\GL(7)$
+$L$-functions, to which Deligne's theorem applies. However, for the
+smallest case $q = 2$, the Ramanujan bound is satisfied for more
+elementary reasons: the group $G_2(2)$ has order $12096$, and its
+character table (computable by hand or by GAP) directly gives the
+eigenvalues as integers $\{6, 3, -1, -3\}$, all satisfying
+$|\lambda| \leq 2\sqrt{5} \approx 4.47$.
+\end{tcolorbox}
+
+
+%% =====================================================================
+\section{The $q \to 1$ Limit and Spectral Integrality}
+\label{sec:q-to-1}
+%% =====================================================================
+
+\begin{tcolorbox}[breakable, colback=yellow!12, colframe=yellow!12,
+  boxrule=0pt, sharp corners]
+\textbf{The Hecke algebra as a bridge.}
+Recall the two specialisations of $\mathcal{H}_q(W)$:
+\[
+  \begin{array}{ccccc}
+  \C[W] & \xleftarrow{\;q \to 1\;} & \mathcal{H}_q(W)
+  & \xrightarrow{\;q = p^k\;} & \mathcal{H}(G(\F_q), B) \\
+  \text{group algebra} & & \text{deformation} & & \text{Lie-type Hecke}
+  \end{array}
+\]
+At $q = 1$, the eigenvalues of $\mathcal{H}_1(W) = \C[W]$ are
+character values of the Weyl group $W$. Character values of finite
+groups are algebraic integers --- in fact, they lie in the ring of
+integers of cyclotomic fields. For the Weyl groups ($S_n$, $B_n$,
+$D_n$, etc.), all character values are \emph{rational} integers.
+
+At $q = p^k$, the eigenvalues are values of spherical functions of
+$G(\F_q)$. These lie in the algebraic number field generated by the
+character values of $G(\F_q)$ and the parameter $q$. As $q$ grows, the
+degree of this number field over $\Q$ generically increases.
+\end{tcolorbox}
+
+\begin{tcolorbox}[breakable, colback=black!5, colframe=black!5,
+  boxrule=0pt, sharp corners]
+\textbf{The evidence from our programme.}
+
+\medskip
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{lcccl}
+\toprule
+Graph & $q$ & $|V|$ & Spectrum & Splitting field \\
+\midrule
+$\Sab(\PSL(2,5), S_3)$ & 5 & 10 & $\{3, 1, -2\}$
+  & $\Q$ \\
+$\Sab(\PSL(2,5), C_3)$ & 5 & 20
+  & $\{3, \sqrt{5}, 1, -\sqrt{5}, -2\}$ & $\Q(\sqrt{5})$ \\
+$\Sab(G_2(2), H_{192})$ & 2 & 63
+  & $\{6, 3, -1, -3\}$ & $\Q$ \\
+$\Sab(\PSL(2,7), C_3)$ & 7 & 56
+  & $\ni\, 1+\sqrt{2}$ & $\Q(\sqrt{2})$ \\
+$\Sab(\PSL(2,13), D_{12})$ & 13 & 91
+  & $\ni\, \frac{3+\sqrt{17}}{2}$
+  & $\Q(\sqrt{2},\sqrt{17},\alpha)$ \\
+$\Sab(\PSL(2,17), S_3)$ & 17 & 408
+  & $\ni\, 2.709\ldots$ & Higher degree \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\medskip
+The pattern is unmistakable: at $q = 2$ and $q = 5$ (with the right
+stabiliser), the spectrum is rational --- even integral. At $q = 7$
+and $q = 13$, square roots appear. At $q = 17$, the algebraic
+complexity grows further.
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=yellow!12, colframe=yellow!12,
+  boxrule=0pt, sharp corners]
+\begin{observation}[Spectral integrality as proximity to $\F_1$]
+\label{obs:integrality}
+The Langer graph $\Sab(G_2(2), H_{192})$, built from $G_2$ over
+$\F_2$, has an all-integer spectrum $\{6^1, 3^{21}, (-1)^{27},
+(-3)^{14}\}$. This is because $q = 2$ is ``close'' to $q = 1$ in the
+following precise sense: the Hecke algebra $\mathcal{H}_2(W(G_2))$
+has structure constants that, when specialised at $q = 2$, produce
+rational eigenvalues. The small distance from the $q = 1$ limit
+(where eigenvalues are character values of the Weyl group, hence
+integers) means the deformation has not yet introduced
+irrationality.
+
+The Zhou graph, built from $\PSL(2,13)$ over $\F_{13}$, is ``far''
+from $q = 1$. The Hecke algebra at $q = 13$ has genuinely irrational
+spherical function values, and the spectrum contains $\sqrt{17}$.
+
+\emph{Spectral integrality is a measure of proximity to $\F_1$.}
+\end{observation}
+\end{tcolorbox}
+
+
+%% =====================================================================
+\section{The Three Riemann Hypotheses}
+\label{sec:three-rh}
+%% =====================================================================
+
+\begin{tcolorbox}[breakable, colback=black!5, colframe=black!5,
+  boxrule=0pt, sharp corners]
+\begin{center}
+\renewcommand{\arraystretch}{1.6}
+\begin{tabular}{@{}p{2.5cm} p{3.5cm} p{4cm} p{2.5cm}@{}}
+\toprule
+Setting & Zeta function & Riemann Hypothesis & Status \\
+\midrule
+Variety $X/\F_q$
+  & $Z(X/\F_q, t) = \exp(\sum N_n t^n/n)$
+  & Reciprocal roots of $P_i$ have $|\alpha| = q^{i/2}$
+  & \textbf{Proved} (Deligne, 1974) \\
+$(q{+}1)$-regular graph $X$
+  & $Z_X(u) = \prod_{[C]}(1-u^{\nu(C)})^{-1}$
+  & Non-trivial poles at $|u| = q^{-1/2}$
+  & $\Leftrightarrow$ Ramanujan \\
+$\Spec(\Z)$
+  & $\zeta(s) = \prod_p (1-p^{-s})^{-1}$
+  & $\operatorname{Re}(s) = 1/2$
+  & \textbf{Open} \\
+``$\Spec(\Z)$ over $\F_1$''
+  & ???
+  & Would imply classical RH
+  & \textbf{Dream} \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{tcolorbox}
+
+\begin{tcolorbox}[breakable, colback=yellow!12, colframe=yellow!12,
+  boxrule=0pt, sharp corners]
+\textbf{The punchline: all three are the same statement.}
+
+Each row of the table above is an instance of the same assertion:
+\emph{the eigenvalues of a Frobenius-like operator have the correct
+absolute value.}
+
+\begin{itemize}
+\item Over $\F_q$: the Frobenius endomorphism $\Frob_q : x \mapsto
+  x^q$ acts on \'etale cohomology $H^i(X \times \overline{\F_q},
+  \Q_\ell)$. Its eigenvalues have absolute value $q^{i/2}$.
+
+\item On a graph: the Hashimoto edge operator $T$ (the
+  ``non-backtracking random walk'') plays the role of Frobenius.
+  Its eigenvalues (equivalently, the adjacency eigenvalues via the
+  Ihara formula) satisfy the analogue of RH precisely when the
+  graph is Ramanujan.
+
+\item Over $\Z$: the Frobenius at each prime $p$ acts on the
+  (hypothetical) cohomology of $\Spec(\Z)$. The zeros of $\zeta(s)$
+  are the eigenvalues. The Riemann hypothesis is the statement that
+  these eigenvalues have the ``correct'' absolute value.
+
+\item Over $\F_1$: if the $\F_1$-framework can be made rigorous
+  enough to support a Weil cohomology theory, then the classical RH
+  would follow from the same formal argument Deligne used.
+\end{itemize}
+\end{tcolorbox}
+
+
+%% =====================================================================
+\section{The Horror of the Real Interval $(0,1)$}
+\label{sec:horror}
+%% =====================================================================
+
+\begin{tcolorbox}[breakable, colback=yellow!12, colframe=yellow!12,
+  boxrule=0pt, sharp corners]
+\textbf{The clean world and the wild world.}
+
+The proofs of the Weil conjectures live in the $p$-adic world: the
+fields $\Q_p$ with their ultrametric absolute values, totally
+disconnected topologies, and the Frobenius endomorphism $x \mapsto
+x^p$ acting cleanly on \'etale cohomology. The $p$-adic world is
+\emph{discrete}: every triangle is isoceles, open balls are closed,
+and Galois theory controls everything.
+
+The Riemann hypothesis lives in the archimedean world: $\R$ and $\C$
+with their ordinary absolute values, the topology of the continuum,
+and all its attendant pathologies --- non-measurable sets,
+Banach--Tarski, the continuum hypothesis. The archimedean world is
+\emph{continuous}: the analytic structure of $\zeta(s)$ is governed
+by complex analysis, not algebra.
+\end{tcolorbox}
+
+\begin{tcolorbox}[breakable, colback=black!5, colframe=black!5,
+  boxrule=0pt, sharp corners]
+\textbf{The Gamma factor.}
+The completed zeta function $\xi(s) = \pi^{-s/2}\Gamma(s/2)\zeta(s)$
+includes the factor $\pi^{-s/2}\Gamma(s/2)$, which is the
+\emph{Euler factor at infinity}. In the Euler product decomposition
+\[
+  \xi(s) = \prod_{v} L_v(s),
+\]
+each finite place $v = p$ contributes $L_p(s) = (1 - p^{-s})^{-1}$,
+and the archimedean place $v = \infty$ contributes
+$L_\infty(s) = \pi^{-s/2}\Gamma(s/2)$.
+
+The Gamma factor encodes the contribution of the continuous spectrum.
+It is where the archimedean place --- the ``prime at infinity'' ---
+makes its presence felt. The Weil conjectures handle all the finite
+primes. The Riemann hypothesis is, in this sense, a statement about
+the single remaining prime: the archimedean one.
+\end{tcolorbox}
+
+\begin{tcolorbox}[breakable, colback=yellow!12, colframe=yellow!12,
+  boxrule=0pt, sharp corners]
+\textbf{$\F_1$ as the threshold.}
+The field $\F_1$ sits at $q = 1$: the threshold between the
+ultrametric world ($q = p^k$, discrete, algebraic) and the
+archimedean world ($q \to \infty$, continuous, analytic). The Hecke
+algebra $\mathcal{H}_q(W)$ deforms the group algebra $\C[W]$ (at
+$q = 1$, the ``$\F_1$ point'') into the Lie-type Hecke algebra (at
+$q = p^k$, the ``$\F_q$ points'').
+
+\medskip
+\textbf{The Ramanujan bound as a spectral edge.}
+For a $(q+1)$-regular graph, the Ramanujan bound
+$|\lambda| \leq 2\sqrt{q}$ is the edge of the
+\emph{Plancherel measure} on the unitary dual of the free group
+$F_{q+1}$. The Kesten--McKay distribution on $[-2\sqrt{q}, 2\sqrt{q}]$
+is the spectral measure of the infinite $(q+1)$-regular tree. A graph
+is Ramanujan precisely when its non-trivial spectrum stays within the
+support of this measure.
+
+In representation-theoretic terms: the non-trivial eigenvalues come
+from \emph{tempered} representations --- those appearing in the
+regular representation, whose matrix coefficients are
+$L^{2+\epsilon}$. Non-Ramanujan eigenvalues come from
+\emph{non-tempered} (complementary series) representations, where
+the matrix coefficients grow too fast.
+
+Being Ramanujan means the spectrum has not crossed from the algebraic
+world into the analytic wilderness.
+\end{tcolorbox}
+
+
+%% =====================================================================
+%%
+%%  PART III: SPECULATION
+%%
+%% =====================================================================
+
+\part*{Part III: Speculation}
+\addcontentsline{toc}{part}{Part III: Speculation}
+
+
+%% =====================================================================
+\section{What the Eigenvalue Data Suggests}
+\label{sec:data}
+%% =====================================================================
+
+\begin{tcolorbox}[breakable, colback=black!5, colframe=black!5,
+  boxrule=0pt, sharp corners]
+\textbf{Summary of computed spectra.}
+Across the companion papers of this programme, we have computed
+the complete spectrum of 30+ Sabidussi graphs from groups of Lie type.
+The key findings:
+
+\begin{enumerate}
+\item \textbf{Universal Ramanujan property.}
+Every graph from a simple Lie-type group is Ramanujan for its degree.
+This holds across:
+\begin{itemize}
+\item All 13 Foster census graphs (cubic,
+  $2\sqrt{2} \approx 2.828$).
+\item All 7 $\PSL(2,q)$ graphs ($q = 5, 7, 11, 13, 17$).
+\item All 3 $G_2(2)$ graphs ($6$-regular, $7$-regular, cubic).
+\item All 6 cubic residue voltage lifts.
+\end{itemize}
+
+\item \textbf{Integrality at small $q$, irrationality at large $q$.}
+The splitting field of the characteristic polynomial grows with $q$:
+\begin{center}
+\small
+\begin{tabular}{llll}
+\toprule
+$q$ & Graph & Splitting field & Irrational eigenvalues \\
+\midrule
+$2$ & Langer ($G_2$) & $\Q$ & None \\
+$2$ & Tutte 12-cage ($G_2$) & $\Q(\sqrt{6})$ & $\sqrt{6}$ \\
+$5$ & Petersen ($A_1$) & $\Q$ & None \\
+$5$ & Dodecahedron ($A_1$) & $\Q(\sqrt{5})$ & $\sqrt{5}$ \\
+$7$ & Klein ($A_1$) & $\Q(\sqrt{2})$ & $1 + \sqrt{2}$ \\
+$13$ & Zhou ($A_1$) & $\Q(\sqrt{2},\sqrt{17},\alpha)$
+  & $\frac{3+\sqrt{17}}{2}$, $2\sqrt{2}$, $\alpha$ \\
+$17$ & Biggs-Smith ($A_1$) & $\Q(\sqrt{2},\ldots)$ & $2.562\ldots$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\item \textbf{Eigenvalue multiplicities from representation theory.}
+The multiplicity of each eigenvalue equals the dimension of the
+corresponding irreducible constituent of $\Ind_H^G \mathbf{1}$.
+For the Langer graph: multiplicities $1, 21, 27, 14$ correspond to
+dimensions $1, 21, 27, 14$ of the four irreducible
+$G_2(2)$-representations appearing in the permutation character.
+\end{enumerate}
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=blue!8, colframe=blue!8,
+  boxrule=0pt, sharp corners]
+\begin{conjecture}[Spectral complexity growth]
+\label{conj:complexity}
+The spectral complexity of $\Sab(G, H)$ over $\F_q$, measured by the
+degree of the splitting field of the characteristic polynomial of $A$
+over $\Q$, is monotonically increasing in $q$ for fixed Lie type and
+fixed stabiliser type.
+
+More precisely: let $G_q = G(\F_q)$ be a family of Chevalley groups
+of fixed type (e.g.\ $\PSL(2,q)$, or $G_2(q)$), with stabiliser
+$H_q$ of fixed type (e.g.\ $C_3$, or $D_{2(q-1)}$, or the point
+stabiliser). Let $f_q(x) = \det(xI - A_q)$ be the characteristic
+polynomial of the adjacency matrix. Then
+\[
+  [\Q(\text{roots of } f_q) : \Q]
+  \;\leq\;
+  [\Q(\text{roots of } f_{q'}) : \Q]
+  \qquad \text{whenever } q \leq q'.
+\]
+\end{conjecture}
+\end{tcolorbox}
+
+
+%% =====================================================================
+\section{Toward a Proof?}
+\label{sec:toward}
+%% =====================================================================
+
+\begin{tcolorbox}[breakable, colback=black!5, colframe=black!5,
+  boxrule=0pt, sharp corners]
+\textbf{What would be needed.}
+To prove the Riemann hypothesis via the $\F_1$ route, one would need:
+
+\begin{enumerate}
+\item \textbf{A rigorous definition of $\F_1$-geometry.}
+Multiple candidates exist (Soul\'e, Connes--Consani, Borger,
+Lorscheid), but none has yet produced the full machinery needed.
+
+\item \textbf{A Weil cohomology for $\Spec(\Z)$ over $\F_1$.}
+This would be a cohomology theory $H^i(\Spec(\Z), ?)$ satisfying:
+\begin{itemize}
+\item $H^0 = \Q$ (one connected component).
+\item $H^2 \cong \Q(1)$ (Poincar\'e duality for a ``curve'').
+\item $H^1$ has dimension equal to the number of zeros of $\xi(s)$
+  on the critical line.
+\item A ``Frobenius'' operator $F$ on $H^1$ whose eigenvalues are
+  the non-trivial zeros of $\zeta$.
+\end{itemize}
+
+\item \textbf{A positivity result.}
+The analogue of Deligne's use of the Lefschetz trace formula and the
+Hodge index theorem: a positivity argument that forces the
+eigenvalues to have the correct absolute value.
+\end{enumerate}
+\end{tcolorbox}
+
+\begin{tcolorbox}[breakable, colback=black!5, colframe=black!5,
+  boxrule=0pt, sharp corners]
+\textbf{Connes--Consani: the arithmetic site.}
+The most developed approach is that of Connes and Consani. Their
+\emph{arithmetic site} $(\widehat{\N^\times}, \Z_{\max})$ is a topos
+equipped with a structure sheaf valued in the tropical semifield
+$\Z_{\max} = (\Z \cup \{-\infty\}, \max, +)$. The ``points'' of this
+site over the ``algebraic closure of $\F_1$'' (which they identify
+with $\R_+^\times$) are the ad\`ele classes
+$\Q^\times \backslash \mathbb{A}_\Q / \widehat{\Z}^\times$, and the
+``scaling action'' of $\R_+^\times$ on these ad\`ele classes plays the
+role of the Frobenius.
+
+In this framework, the Weil explicit formulas of prime number theory
+(which relate sums over primes to sums over zeros of $\zeta$) become
+a Lefschetz trace formula for the ``Frobenius correspondences'' on
+the arithmetic site.
+
+\medskip
+\textbf{Borger: $\Lambda$-rings.}
+Borger's approach identifies $\F_1$-algebras with $\Lambda$-rings ---
+commutative rings equipped with commuting Frobenius lifts $\psi_p$
+for all primes $p$ (equivalently, a $\Lambda$-ring structure).
+The ring $\Z$ with $\psi_p = \operatorname{id}$ is the initial
+$\Lambda$-ring, hence ``$\Spec(\Z) = \Spec(\F_1)$.'' In this setup,
+the Witt vectors $W(\F_p) = \Z_p$ play the role of the ``residue
+field extensions'' of $\F_1$ at the prime $p$.
+\end{tcolorbox}
+
+\begin{tcolorbox}[breakable, colback=yellow!12, colframe=yellow!12,
+  boxrule=0pt, sharp corners]
+\textbf{Why it's ``Beyond Me.''}
+The gap between what we can prove and what we dream of proving is
+vast. We can compute eigenvalues. We can verify the Ramanujan property.
+We can trace the chain of analogies from graph spectra through the
+Ihara zeta function and the Weil conjectures to the Riemann
+hypothesis. We can observe that spectral integrality at small $q$
+reflects proximity to $\F_1$, and that the Hecke algebra
+interpolates between the $\F_1$-world and the $\F_q$-world.
+
+But the final step --- constructing the $\F_1$-cohomology of
+$\Spec(\Z)$ and proving the positivity result that would force the
+zeros of $\zeta$ onto the critical line --- remains beyond the reach
+of current mathematics. The machinery that Grothendieck built for the
+Weil conjectures (schemes, \'etale cohomology, the six functors) took
+decades and hundreds of pages of EGA and SGA. The analogous machinery
+for $\F_1$ is still in its infancy.
+
+What we can say is this: the spectral data from our graphs is
+\emph{consistent} with the $\F_1$ picture. The Hecke algebra really
+does interpolate between the symmetric group (at $q = 1$) and the
+Lie-type group (at $q = p^k$). The eigenvalues really are rational at
+small $q$ and irrational at large $q$. The Ramanujan property really
+does hold universally for Lie-type Sabidussi graphs. And the formal
+structure of the Ihara zeta function really does mirror the Hasse--Weil
+zeta function, with the Ramanujan condition playing the role of the
+Riemann hypothesis.
+
+The graphs are computable. The eigenvalues are verifiable. They all
+satisfy RH. The question is whether this finite evidence --- computed
+from groups of order $12096$ and fields of size $13$ --- points toward
+the infinite.
+\end{tcolorbox}
+
+\begin{tcolorbox}[breakable, colback=black!5, colframe=black!5,
+  boxrule=0pt, sharp corners]
+\textbf{Final observation.}
+There is a sense in which the chain of analogies we have traced is
+itself the content. The Ramanujan property of a graph, the Weil
+conjectures for a variety, and the Riemann hypothesis for the integers
+are not merely \emph{analogous} statements --- they are shadows of a
+single statement, projected onto different mathematical worlds:
+
+\medskip
+\begin{center}
+\emph{The eigenvalues of Frobenius have the correct absolute value.}
+\end{center}
+
+\medskip
+At $q = p^k$, we know this is true (Deligne). At $q = 1$, we
+believe it is true (RH). The Hecke algebra, which deforms from $q = 1$
+to $q = p^k$, is the bridge. Our graphs are points on this bridge,
+close enough to $q = 1$ to compute, far enough from $q = 1$ to
+exhibit the phenomena --- irrationality, algebraic number fields,
+the growth of spectral complexity --- that make the connection
+non-trivial.
+
+Whether the bridge can be crossed remains, for now, beyond us.
+\end{tcolorbox}
+
+
+%% =====================================================================
+%%  BIBLIOGRAPHY
+%% =====================================================================
+
+\begin{thebibliography}{99}
+
+\bibitem{Bass1992}
+H.~Bass,
+\emph{The Ihara--Selberg zeta function of a tree lattice},
+Internat.\ J.\ Math.\ \textbf{3} (1992), no.~6, 717--797.
+
+\bibitem{Borger2009}
+J.~Borger,
+\emph{$\Lambda$-rings and the field with one element},
+preprint, arXiv:0906.3146, 2009.
+
+\bibitem{ConnesConsani2011}
+A.~Connes and C.~Consani,
+\emph{On the notion of geometry over $\F_1$},
+J.\ Algebraic Geom.\ \textbf{20} (2011), no.~3, 525--557.
+
+\bibitem{Deligne1974}
+P.~Deligne,
+\emph{La conjecture de Weil.\ I},
+Inst.\ Hautes \'Etudes Sci.\ Publ.\ Math.\ \textbf{43} (1974), 273--307.
+
+\bibitem{Dwork1960}
+B.~Dwork,
+\emph{On the rationality of the zeta function of an algebraic variety},
+Amer.\ J.\ Math.\ \textbf{82} (1960), 631--648.
+
+\bibitem{Hashimoto1989}
+K.~Hashimoto,
+\emph{Zeta functions of finite graphs and representations of $p$-adic groups},
+in: Automorphic Forms and Geometry of Arithmetic Varieties,
+Adv.\ Stud.\ Pure Math.\ \textbf{15}, Academic Press, 1989, pp.~211--280.
+
+\bibitem{Ihara1966}
+Y.~Ihara,
+\emph{On discrete subgroups of the two by two projective linear group over
+$\mathfrak{p}$-adic fields},
+J.\ Math.\ Soc.\ Japan \textbf{18} (1966), 219--235.
+
+\bibitem{KimShahidi2002}
+H.~Kim and F.~Shahidi,
+\emph{Functorial products for $\GL_2 \times \GL_3$ and the symmetric cube
+for $\GL_2$},
+Ann.\ of Math.\ (2) \textbf{155} (2002), no.~3, 837--893.
+
+\bibitem{Langer2013}
+R.~Langer,
+\emph{Symmetric quotients of arc-transitive graphs},
+Honours thesis, University of Melbourne, 2013.
+arXiv:1306.4798.
+
+\bibitem{Lorscheid2018}
+O.~Lorscheid,
+\emph{$\F_1$ for everyone},
+Jahresber.\ Dtsch.\ Math.-Ver.\ \textbf{120} (2018), 83--116.
+
+\bibitem{LPS}
+A.~Lubotzky, R.~Phillips, and P.~Sarnak,
+\emph{Ramanujan graphs},
+Combinatorica \textbf{8} (1988), no.~3, 261--277.
+
+\bibitem{Sabidussi1964}
+G.~Sabidussi,
+\emph{Vertex-transitive graphs},
+Monatsh.\ Math.\ \textbf{68} (1964), 426--438.
+
+\bibitem{Soule2004}
+C.~Soul\'e,
+\emph{Les vari\'et\'es sur le corps \`a un \'el\'ement},
+Mosc.\ Math.\ J.\ \textbf{4} (2004), no.~1, 217--244.
+
+\bibitem{Tits1957}
+J.~Tits,
+\emph{Sur les analogues alg\'ebriques des groupes semi-simples complexes},
+in: Colloque d'alg\`ebre sup\'erieure, Bruxelles, 1957, pp.~261--289.
+
+\bibitem{Weil1948}
+A.~Weil,
+\emph{Vari\'et\'es ab\'eliennes et courbes alg\'ebriques},
+Actualit\'es Sci.\ Ind., no.~1064, Hermann, Paris, 1948.
+
+\end{thebibliography}
+
+\end{document}

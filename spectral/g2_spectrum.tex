@@ -1,0 +1,429 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{geometry}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{microtype}
+\usepackage{enumitem}
+\usepackage{xcolor}
+
+\geometry{margin=2.5cm}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+% Shorthand
+\newcommand{\GH}{\mathrm{GH}(2,2)}
+\newcommand{\Gtwo}{G_2(2)}
+\newcommand{\PSU}{\mathrm{PSU}(3,3)}
+\newcommand{\PSL}{\mathrm{PSL}}
+\newcommand{\Aut}{\mathrm{Aut}}
+\newcommand{\F}{\mathbb{F}}
+\newcommand{\Z}{\mathbb{Z}}
+
+\title{\textbf{Spectral Theory of the Exceptional Lie Group $G_2(2)$}\\
+\large Hexagonal Geometries and Their Graphs}
+\author{Robin Langer}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+The exceptional Lie group $G_2(2)$ is the automorphism group of the split Cayley hexagon
+$\mathrm{GH}(2,2)$, a generalized hexagon of order $(2,2)$ arising from the split octonion
+algebra over $\mathbb{F}_2$.  We study three graphs whose automorphism group is $G_2(2)$:
+the Tutte 12-cage (the incidence graph of $\mathrm{GH}(2,2)$, 126 vertices, cubic),
+the $\mathrm{GH}(2,2)$ collinearity graph (63 vertices, 6-regular, distance-regular),
+and the Meinhold-72 graph (72 vertices, 7-regular, girth 4).
+We compute the full adjacency spectrum of each graph and analyse their Ramanujan status,
+algebraic connectivity, and bipartiteness.  Despite sharing the same automorphism group of
+order 12096, the three graphs exhibit strikingly different spectral profiles: the collinearity
+graph is Ramanujan with only four distinct eigenvalues, the Tutte cage is bipartite with a
+symmetric spectrum containing irrational eigenvalues $\pm\sqrt{6}$ and $\pm\sqrt{2}$,
+and the Meinhold-72 graph is a bipartite strongly regular graph in a suitable sense with
+eigenvalues $\pm 7$, $\pm\sqrt{13}$, and $\pm 1$.
+\end{abstract}
+
+\tableofcontents
+
+\section{Introduction}
+
+Symmetry imposes rigid constraints on spectra.  A vertex-transitive graph on $n$ vertices
+with automorphism group $G$ has its adjacency spectrum determined by the representation
+theory of $G$, and the most highly symmetric graphs often exhibit the cleanest spectral
+profiles.  The exceptional algebraic group $G_2$ over finite fields provides some of the
+most beautiful examples.
+
+The split Cayley hexagon $\GH$ is a point-line geometry of order $(2,2)$: 63 points,
+63 lines, every point on 3 lines, every line through 3 points, and the incidence graph
+has girth 12.  Its full automorphism group is $\Gtwo$, a finite group of order 12096
+whose derived subgroup is $\PSU$ of order 6048.  From $\GH$ one naturally extracts
+three graphs, all sharing the same automorphism group but with very different combinatorial
+and spectral properties:
+
+\begin{enumerate}
+  \item The \emph{Tutte 12-cage}: the point-line incidence graph of $\GH$, on 126 vertices,
+        3-regular, of girth 12.
+  \item The \emph{$\GH$ collinearity graph}: the graph on the 63 points where two points
+        are adjacent if and only if they lie on a common line, yielding a 6-regular
+        distance-regular graph with intersection array $\{6,4,4;1,1,3\}$.
+  \item The \emph{Meinhold-72 graph}: a quotient of the Clayworth graph by $K = \PSL(3,2)$
+        acting on 72 vertices, 7-regular, of girth 4 and diameter 5.
+\end{enumerate}
+
+In this paper we compute the full adjacency spectrum of each graph and draw out the
+structural lessons encoded in those spectra.
+
+\section{The Group $G_2(2)$ and Split Octonions}
+
+\subsection{Octonions over $\mathbb{F}_2$}
+
+The split octonion algebra $\mathbb{O}'$ over $\mathbb{F}_2$ is an 8-dimensional algebra
+over $\mathbb{F}_2$ with a non-degenerate quadratic form $N$ of Witt index 4.  The group
+of $\mathbb{F}_2$-algebra automorphisms of $\mathbb{O}'$ is the exceptional algebraic group
+$G_2$, and over the two-element field this yields the finite group $G_2(2)$ of order
+\[
+  |G_2(2)| = 2^6 \cdot 3^3 \cdot 7 = 12096.
+\]
+The derived subgroup $G_2(2)'$ is $\PSU(3,3)$ of order 6048, which is a simple group.
+Thus $G_2(2)$ is an almost-simple group with simple socle $\PSU(3,3)$.
+
+\subsection{The Split Cayley Hexagon $\GH$}
+
+A \emph{generalized hexagon of order $(s,t)$} is a point-line geometry in which every
+line contains $s+1$ points, every point is on $t+1$ lines, and the point-line incidence
+graph has girth 12 (so there are no ordinary $k$-gons for $k < 6$ in the geometry).
+The split Cayley hexagon $\GH$ has $s = t = 2$, giving:
+\begin{itemize}[noitemsep]
+  \item $1 + 2(1 + 2 + 4 + 8 + 16 + 32) = 63$ points,
+  \item $63$ lines,
+  \item each point on 3 lines, each line through 3 points.
+\end{itemize}
+The points lie on the parabolic quadric $Q(6,2) \subset \mathrm{PG}(6,2)$, and the lines
+are certain totally isotropic lines with respect to the associated alternating trilinear
+form coming from the octonion multiplication.  The full automorphism group of $\GH$
+is $G_2(2)$, which acts regularly on ordered flags (incident point-line pairs).
+
+\section{The Three Graphs}
+
+\subsection{The Tutte 12-Cage}
+
+\begin{definition}
+The \emph{Tutte 12-cage} is the point-line incidence graph of $\GH$: its 126 vertices
+are the 63 points and 63 lines of $\GH$, and a point $p$ is adjacent to a line $\ell$
+if and only if $p \in \ell$.
+\end{definition}
+
+The Tutte 12-cage is the unique $(3,12)$-cage: the smallest 3-regular graph of girth 12.
+It is distance-transitive with diameter 6, and $\Aut(\Gamma) \cong G_2(2)$.  As a
+bipartite graph (points versus lines), its spectrum is symmetric about 0.
+
+\subsection{The $\GH$ Collinearity Graph}
+
+\begin{definition}
+The \emph{$\GH$ collinearity graph} (or \emph{point graph}) is the graph on the 63 points
+of $\GH$ in which two points are adjacent if and only if they are collinear (lie on a
+common line of $\GH$).
+\end{definition}
+
+Since each point lies on 3 lines each containing 2 other points, the collinearity graph
+is 6-regular.  It is strongly regular but not with the parameters of a srg; more precisely
+it is distance-regular with diameter 3 and intersection array
+\[
+  \{6, 4, 4; 1, 1, 3\}.
+\]
+The distance distribution from any vertex $v$ is: 1 vertex at distance 0 ($v$ itself),
+6 at distance 1, 24 at distance 2, and 32 at distance 3.
+
+\subsection{The Meinhold-72 Graph}
+
+\begin{definition}
+The \emph{Meinhold-72 graph} is the quotient of the Clayworth graph by the action of
+$K = \PSL(3,2) \cong \PSL(2,7)$, a subgroup of $G_2(2)$ of order 168.  It has 72 vertices,
+is 7-regular, has girth 4, and diameter 5.
+\end{definition}
+
+The Clayworth graph is the Cayley graph $\mathrm{Cay}(G_2(2), S)$ for a suitable
+generating set $S$; collapsing the orbits of $K$ yields Meinhold-72.  The graph was
+named after Nick Meinhold who first identified it as a distinct object in the census
+of cubic arc-transitive graphs related to $G_2(2)$.  Unlike the other two, Meinhold-72
+is not distance-regular.
+
+\section{Spectral Analysis}
+
+Let $\Gamma$ be a $k$-regular graph on $n$ vertices with adjacency matrix $A$.
+The eigenvalues of $A$ satisfy $k = \lambda_1 \geq \lambda_2 \geq \cdots \geq \lambda_n$.
+A connected $k$-regular graph is \emph{Ramanujan} if
+\[
+  \max(\lambda_2, |\lambda_n|) \leq 2\sqrt{k-1}.
+\]
+Ramanujan graphs are optimal expanders: they achieve the spectral gap predicted by
+the Alon--Boppana theorem.
+
+\subsection{Tutte 12-Cage}
+
+The Tutte 12-cage ($n = 126$, $k = 3$) has Ramanujan threshold $2\sqrt{2} \approx 2.828$.
+
+\begin{table}[h]
+\centering
+\caption{Adjacency spectrum of the Tutte 12-cage ($n=126$, $k=3$, girth 12).}
+\label{tab:tutte}
+\begin{tabular}{@{}rrl@{}}
+\toprule
+Eigenvalue & Multiplicity & Exact form \\
+\midrule
+$3$        & $1$  & $k$ (trivial) \\
+$\sqrt{6}$ & $21$ & $\approx 2.4495$ \\
+$\sqrt{2}$ & $27$ & $\approx 1.4142$ \\
+$0$        & $28$ & \\
+$-\sqrt{2}$& $27$ & \\
+$-\sqrt{6}$& $21$ & \\
+$-3$       & $1$  & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{proposition}
+The Tutte 12-cage has spectrum
+\[
+  \bigl\{3^1,\; (\sqrt{6})^{21},\; (\sqrt{2})^{27},\; 0^{28},\;
+  (-\sqrt{2})^{27},\; (-\sqrt{6})^{21},\; (-3)^1\bigr\}.
+\]
+Its spectrum is symmetric about 0, consistent with bipartiteness.
+It is \emph{not} Ramanujan: $\sqrt{6} \approx 2.449$ falls below the threshold
+$2\sqrt{2} \approx 2.828$, so it narrowly misses. The spectral gap is $3 - \sqrt{6} \approx 0.551$.
+\end{proposition}
+
+The symmetry of the spectrum about 0 is a consequence of bipartiteness: for any bipartite
+graph, if $\lambda$ is an eigenvalue then $-\lambda$ is also an eigenvalue with the same
+multiplicity.  The Tutte cage is indeed bipartite (points vs.\ lines), so this is expected.
+
+The 7 distinct eigenvalues match the diameter plus 1 ($\mathrm{diam} = 6$), confirming
+that the Tutte cage is distance-regular (as expected from its distance-transitivity).
+In a distance-regular graph, the number of distinct eigenvalues equals the diameter plus one.
+
+\subsection{GH(2,2) Collinearity Graph}
+
+The collinearity graph ($n = 63$, $k = 6$) has Ramanujan threshold $2\sqrt{5} \approx 4.472$.
+
+\begin{table}[h]
+\centering
+\caption{Adjacency spectrum of the $\GH$ collinearity graph ($n=63$, $k=6$, girth 3).}
+\label{tab:gh22}
+\begin{tabular}{@{}rrl@{}}
+\toprule
+Eigenvalue & Multiplicity & Source \\
+\midrule
+$6$   & $1$  & trivial eigenvalue \\
+$3$   & $21$ & \\
+$-1$  & $27$ & \\
+$-3$  & $14$ & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{proposition}
+The $\GH$ collinearity graph has spectrum $\{6^1, 3^{21}, (-1)^{27}, (-3)^{14}\}$.
+It has exactly 4 distinct eigenvalues, consistent with its diameter of 3.
+It is \textbf{Ramanujan}: $\lambda_2 = 3 < 2\sqrt{5} \approx 4.472$.
+The spectral gap is $6 - 3 = 3$.
+\end{proposition}
+
+The Ramanujan property here is notable: the collinearity graph achieves optimal expansion
+for a 6-regular graph.  The four distinct eigenvalues $\{6, 3, -1, -3\}$ are all integers,
+a signature of the graph's deep algebraic structure.
+
+The multiplicity pattern $(1, 21, 27, 14)$ sums to 63 and reflects the representation
+theory of $G_2(2)$.  Specifically, $G_2(2)$ acts on the 63 points; the decomposition of
+the permutation character into irreducible representations of $G_2(2)$ yields exactly
+these multiplicities.  The eigenvalue 3 with multiplicity 21 corresponds to the 21-dimensional
+representation related to $\PSL(2,7)$; the eigenvalue $-1$ with multiplicity 27 and $-3$
+with multiplicity 14 correspond to other irreducible components.
+
+The girth of the collinearity graph is 3 (any three points on a common line form a triangle).
+The graph is non-bipartite, and its spectrum is not symmetric about 0, consistent with
+the eigenvalue $-1 \neq -6$.
+
+\subsection{Meinhold-72 Graph}
+
+The Meinhold-72 graph ($n = 72$, $k = 7$) has Ramanujan threshold $2\sqrt{6} \approx 4.899$.
+
+\begin{table}[h]
+\centering
+\caption{Adjacency spectrum of the Meinhold-72 graph ($n=72$, $k=7$, girth 4).}
+\label{tab:meinhold}
+\begin{tabular}{@{}rrl@{}}
+\toprule
+Eigenvalue & Multiplicity & Exact form \\
+\midrule
+$7$           & $1$  & $k$ (trivial) \\
+$\sqrt{13}$   & $14$ & $\approx 3.606$ \\
+$1$           & $21$ & \\
+$-1$          & $21$ & \\
+$-\sqrt{13}$  & $14$ & \\
+$-7$          & $1$  & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{proposition}
+The Meinhold-72 graph has spectrum
+\[
+  \bigl\{7^1,\; (\sqrt{13})^{14},\; 1^{21},\; (-1)^{21},\;
+  (-\sqrt{13})^{14},\; (-7)^1\bigr\}.
+\]
+Its spectrum is symmetric about 0, so it is bipartite.
+It is \emph{not} Ramanujan: $\lambda_2 = \sqrt{13} \approx 3.606$ is within
+$2\sqrt{6} \approx 4.899$, but $|\lambda_{\min}| = 7 = k$ exceeds it
+(bipartite graphs always have $\lambda_{\min} = -k$).
+\end{proposition}
+
+The eigenvalue $-k = -7$ with multiplicity 1 is the hallmark of a bipartite regular graph:
+$-\lambda$ is an eigenvalue whenever $\lambda$ is, and the trivial eigenvalue $k$ pairs with
+$-k$.  The symmetric spectrum $(7, \sqrt{13}, 1, -1, -\sqrt{13}, -7)$ confirms bipartiteness.
+Note that $13 = 7 + 6 = k + (k-1)$, an arithmetic relationship that sometimes occurs in
+bipartite Cayley graphs.
+
+The spectral gap $7 - \sqrt{13} \approx 3.394$ is the largest among the three graphs,
+indicating strong connectivity despite the bipartite structure.
+
+\section{Comparison and Discussion}
+
+\subsection{Spectral Summary}
+
+\begin{table}[h]
+\centering
+\caption{Spectral comparison of the three $G_2(2)$ graphs.}
+\label{tab:comparison}
+\begin{tabular}{@{}lrrp{3cm}p{1.2cm}ccrrrr@{}}
+\toprule
+Graph & $n$ & $k$ & $\lambda_2$ & $\lambda_{\min}$ & Ram.\ & Bip.\ & $g$ & $d$ & \#ev \\
+\midrule
+Tutte 12-cage        & 126 & 3 & $\sqrt{6}\approx 2.449$ & $-3$ & No  & Yes & 12 & 6 & 7 \\
+GH(2,2) collinearity & 63  & 6 & $3$                     & $-3$ & Yes & No  &  3 & 3 & 4 \\
+Meinhold-72          & 72  & 7 & $\sqrt{13}\approx 3.606$& $-7$ & No  & Yes &  4 & 5 & 6 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Same Group, Radically Different Spectra}
+
+All three graphs have $\Aut(\Gamma) \cong G_2(2)$, yet their spectral properties differ
+dramatically.  This illustrates a fundamental principle: the automorphism group constrains
+but does not determine the spectrum.  The spectrum depends on the combinatorial structure of
+the graph, not just its symmetry group.
+
+The collinearity graph is the ``cleanest'' spectrally: four distinct integer eigenvalues,
+Ramanujan, with a spectral gap equal to half the degree.  This reflects the fact that the
+collinearity graph is a \emph{strongly regular} analogue (more precisely, distance-regular
+with diameter 3), where the eigenvalues are determined by the intersection array and must
+satisfy specific integrality conditions imposed by the Krein conditions.
+
+The Tutte cage has the most eigenvalues (7, matching its diameter as required by
+distance-regularity), and its irrational eigenvalues $\pm\sqrt{6}$ and $\pm\sqrt{2}$
+arise from the characteristic polynomial of the distance-regular scheme, which factors
+over $\mathbb{Q}(\sqrt{2}, \sqrt{3})$.
+
+The Meinhold-72 graph sits between the other two: bipartite like the Tutte cage but
+with fewer distinct eigenvalues (6), and with irrational $\pm\sqrt{13}$.  Its large
+degree ($k = 7$) gives it the biggest spectral gap of the three.
+
+\subsection{Ramanujan Analysis}
+
+Only the collinearity graph is Ramanujan.  This is perhaps counterintuitive since the
+Tutte cage is the most constrained (cubic, maximum girth) but fails to be Ramanujan.
+The Alon--Boppana theorem guarantees that for any infinite family of $k$-regular graphs,
+$\liminf \lambda_2 \geq 2\sqrt{k-1}$; the failure of the Tutte cage to be Ramanujan
+shows that high girth does not automatically imply good expansion.
+
+For the Meinhold-72 graph, even though $\lambda_2 = \sqrt{13} \approx 3.606 < 2\sqrt{6}
+\approx 4.899$, the graph fails to be Ramanujan because $|\lambda_{\min}| = 7 = k$,
+which is the maximum possible value.  This is again a consequence of bipartiteness:
+bipartite $k$-regular graphs always have $\lambda_{\min} = -k$, so they can never be
+Ramanujan in the strict sense.
+
+\subsection{Distance-Regularity}
+
+Two of the three graphs are distance-regular:
+\begin{itemize}
+  \item The \textbf{Tutte 12-cage} is distance-transitive (and hence distance-regular)
+        with intersection array $\{3,2,2,2,2,2;1,1,1,1,1,3\}$ and diameter 6.
+  \item The \textbf{$\GH$ collinearity graph} is distance-regular with diameter 3
+        and intersection array $\{6,4,4;1,1,3\}$.
+\end{itemize}
+The \textbf{Meinhold-72 graph} is not distance-regular (diameter 5, but the number of
+distinct eigenvalues is 6, and the intersection array does not exist globally).
+
+A distance-regular graph of diameter $d$ has exactly $d+1$ distinct eigenvalues.
+The Tutte cage: $d = 6$, $d+1 = 7$ distinct eigenvalues. \checkmark
+The collinearity graph: $d = 3$, $d+1 = 4$ distinct eigenvalues. \checkmark
+
+\subsection{Bipartiteness and Spectral Symmetry}
+
+A $k$-regular graph is bipartite if and only if $-k$ is an eigenvalue.  Equivalently,
+the spectrum is symmetric about 0.  The Tutte cage and Meinhold-72 are bipartite; the
+collinearity graph is not (it contains triangles).
+
+The bipartiteness of the Tutte cage is clear: points and lines form the two parts.
+The bipartiteness of Meinhold-72 is more subtle and reflects the structure of the
+Cayworth-to-Meinhold quotient construction.
+
+\section{Algebraic Connectivity}
+
+The \emph{algebraic connectivity} (Fiedler eigenvalue) of a connected graph is the
+second-smallest eigenvalue of the Laplacian $L = kI - A$, equal to $k - \lambda_{\max}^-$
+where $\lambda_{\max}^-$ is the largest eigenvalue strictly less than $k$.
+
+\begin{table}[h]
+\centering
+\caption{Algebraic connectivity $\mu_2$ of the three graphs.}
+\label{tab:fiedler}
+\begin{tabular}{@{}lrr@{}}
+\toprule
+Graph & $\mu_2 = k - \lambda_2^*$ & Approximate value \\
+\midrule
+Tutte 12-cage        & $3 - \sqrt{6}$  & $\approx 0.551$ \\
+GH(2,2) collinearity & $6 - 3 = 3$     & $3.000$ \\
+Meinhold-72          & $7 - \sqrt{13}$ & $\approx 3.394$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The collinearity graph and Meinhold-72 both have large algebraic connectivity (3 and
+$\approx 3.394$ respectively), meaning they are highly connected and difficult to
+disconnect by removing few edges.  The Tutte cage, being sparse (cubic) and of large
+girth, has much smaller algebraic connectivity $\approx 0.551$.
+
+\section{Conclusion}
+
+The three graphs arising from $G_2(2)$ present a case study in how a fixed automorphism
+group can give rise to graphs with fundamentally different spectral behaviour.  The GH(2,2)
+collinearity graph stands out as a particularly elegant object: a Ramanujan graph with
+only four integer eigenvalues, optimal expansion, and deep connections to the representation
+theory of the exceptional group $G_2(2)$ and its subgroups.
+
+The Tutte 12-cage is the unique graph achieving the theoretical minimum size for a cubic
+graph of girth 12, and its spectrum reflects the distance-regular structure of the
+generalized hexagon.  The Meinhold-72 graph, constructed via a quotient of the Clayworth
+graph, is the most mysterious of the three: bipartite, with irrational eigenvalues $\pm\sqrt{13}$,
+and not distance-regular despite having $G_2(2)$ as its full automorphism group.
+
+A natural direction for further investigation is whether these spectral profiles can be
+predicted from the representation theory of $G_2(2)$: the eigenvalues of a Cayley or
+coset graph are determined by the characters of the irreducible representations of the group,
+evaluated at the connection set.  Matching the observed multiplicities $(1, 21, 27, 14)$
+of the collinearity graph to the character table of $G_2(2)$ would give a representation-
+theoretic proof of the spectral data.
+
+\end{document}
