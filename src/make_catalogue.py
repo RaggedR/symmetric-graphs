@@ -90,6 +90,12 @@ SECTIONS = [
          r"Cubic coset graph of $\mathrm{PSL}(2,13)$ with $S_3$ point stabilizer "
          r"(the Foster-182 line of the census). Part of the evidence that the "
          r"$S_3$-stabilizer family is Ramanujan."),
+        ("zhou-z2-quotient", r"Zhou $\mathbb{Z}_2$ quotient — 91 vertices",
+         r"The 2:1 quotient $\mathrm{Sab}(\mathrm{PSL}(2,13), D_{12})$ of the "
+         r"previous page's F182A: fibres are the size-2 blocks of "
+         r"$\mathrm{PSL}(2,13)$, fusing the cover's 14 $Z_{13}$-rings into 7 "
+         r"pairs. Vertices inherit the cover's colours (fill = outer fibre "
+         r"ring, border = inner), so this page and its cover read as a pair."),
         ("auto-biggssmith", r"Biggs--Smith (F102A)",
          r"The Biggs--Smith graph on 102 vertices, "
          r"$\mathrm{Aut} = \mathrm{PSL}(2,17)$ with $S_4$ stabilizer — "
@@ -122,11 +128,14 @@ SECTIONS = [
         ("tutte12cage-clean", r"Tutte 12-cage — clean rendering",
          r"Hand-tuned presentation drawing of the Tutte 12-cage (labels, legend "
          r"and clutter stripped) for use in papers and slides."),
-        ("auto-meinhold72", r"Meinhold-72 orbital graph",
+        ("meinhold72-rings", r"Meinhold-72 orbital graph",
          r"Orbital graph of $G_2(2)$ acting on the 72 cosets of "
-         r"$\mathrm{PSL}(3,2)$. Its rank-8 Hecke algebra satisfies $B^2 = 13I$ — "
-         r"the ``why 13'' story ($13 = 7 + 2\cdot 3$ via the 36+36 chiral Fano "
-         r"structures); see the why13 paper in the hecke repo."),
+         r"$\mathrm{PSL}(3,2)$, drawn by a $C_7 < G_2(2)$ ring decomposition: "
+         r"10 rings of 7 (plus the 2 fixed points at the centre), whose "
+         r"offset-optimised layout aligns into seven radial spokes. Its rank-8 "
+         r"Hecke algebra satisfies $B^2 = 13I$ — the ``why 13'' story "
+         r"($13 = 7 + 2\cdot 3$ via the 36+36 chiral Fano structures); see the "
+         r"why13 paper in the hecke repo."),
         ("dmt", r"Twisted triality hexagon $\mathrm{GH}(2,8)$ — ${}^3D_4(2)$",
          r"Collinearity graph of the twisted triality hexagon "
          r"$\mathrm{GH}(2,8)$: 819 points, valency 18, distance-regular of "
@@ -387,7 +396,7 @@ HECKE = {
         r"transitive. The twin spherical tables are on the F126A page. "
         r"\emph{Non-trivial representations: none (both orbit pairs "
         r"Gelfand).}",
-    "auto-meinhold72": r"The headline act. Rank 8, $\mathcal H\cong\C^2"
+    "meinhold72-rings": r"The headline act. Rank 8, $\mathcal H\cong\C^2"
         r"\oplus M_2\oplus\C^2$, and in the $M_2$ block three relations "
         r"hold: $A^2=I$, $B^2=13I$, $AB+BA=-4I$, with the directed "
         r"orbital pair $BA$, $AB$ of charpoly $x^2+4x+13$ — the Gaussian "
@@ -523,7 +532,6 @@ IMAGE_OVERRIDES = {
     "auto-cr19": "clayworth/named_graphs/cr19.jpg",
     "auto-cr31": "clayworth/named_graphs/cr31.jpg",
     "auto-pg23": "clayworth/named_graphs/pg23.jpg",
-    "auto-meinhold72": "clayworth/named_graphs/meinhold72.jpg",
     "auto-petersen_voltage": "clayworth/named_graphs/petersen_voltage.jpg",
     "auto-heawood_voltage": "clayworth/named_graphs/heawood_voltage.jpg",
     "auto-mk_voltage": "clayworth/named_graphs/mk_voltage.jpg",
@@ -537,7 +545,6 @@ IMAGE_OVERRIDES = {
     "auto-biggssmith": "clayworth/named_graphs/biggssmith-F102A.jpg",
     "auto-gh22": "lean/named_graphs/langer-63v.jpg",
     "auto-tuttecage12": "lean/named_graphs/tutte-12cage.jpg",
-    "zhou-z2-quotient": "lean/named_graphs/zhou6-91v.jpg",
 }
 
 PREAMBLE = r"""\documentclass[11pt]{article}
@@ -659,7 +666,9 @@ def tex_escape_stem(stem):
 
 
 # Drawings deliberately left out of the catalogue (Robin, 2026-06-10).
-EXCLUDED = {"zhou-quotient-spectral", "zhou-z2-quotient"}
+# zhou-z2-quotient re-included 2026-06-12 after the cover-colour redraw;
+# auto-meinhold72 superseded by meinhold72-rings (C7 ring layout).
+EXCLUDED = {"zhou-quotient-spectral", "auto-meinhold72"}
 
 
 def main():

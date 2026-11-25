@@ -9,6 +9,7 @@
 
 \newtheorem{theorem}{Theorem}[section]
 \newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
 \theoremstyle{remark}
 \newtheorem{remark}[theorem]{Remark}
 
@@ -750,6 +751,112 @@ spherical values live in $\Q(\sqrt2)$) and $\mathrm{PSL}(2,19)/S_3$
 place (\texttt{hecke\_irreps3.g}, which restricts the orbital matrices to
 the $\chi$-isotypic subspace before the eigenvalue search); these can be
 run when wanted.
+
+%=====================================================================
+\section{When does a $2$-dimensional block exist?}\label{sec:2dim}
+
+The dodecahedral $\mathrm{PSL}(2,5)/C_3$ (\S\ref{sec:psl25}) and
+$\mathrm{PSL}(2,7)/C_3$ (\S\ref{sec:psl27}) both carry $M_2$ blocks. Across
+the whole $\mathrm{PSL}(2,q)/C_3$ family these are the exception: they stop
+at $q=9$. This section proves it. All values are produced by
+\texttt{hecke\_2dim\_blocks.g} (GAP-verified for $q\le 49$).
+
+Write $C_3=\langle g\rangle$ with $g$ of order $3$. By Frobenius reciprocity
+the multiplicity of an irreducible $\chi$ of $G=\mathrm{PSL}(2,q)$ in
+$\pi=\ind_{C_3}^G\mathbf1$ is the dimension of its $C_3$-fixed space:
+\begin{equation}\label{eq:mfix}
+  m_\chi \;=\; \langle \pi,\chi\rangle
+         \;=\; \langle \chi|_{C_3},\mathbf1\rangle
+         \;=\; \tfrac13\bigl(\chi(1)+\chi(g)+\chi(g^2)\bigr)
+         \;=\; \tfrac13\bigl(\chi(1)+2\chi(g)\bigr),
+\end{equation}
+the last step because $g$ is conjugate to $g^{-1}$ in $\mathrm{PSL}(2,q)$, so
+$\chi(g)=\chi(g^2)\in\Z$. A $2$-dimensional block is an irreducible
+constituent with $m_\chi=2$.
+
+\begin{lemma}[Bounded values]\label{lem:bounded}
+For every irreducible character $\chi$ of $\mathrm{PSL}(2,q)$ ($q$ odd) and
+every element $g$ of order $3$, $\ |\chi(g)|\le 2$.
+\end{lemma}
+
+\begin{proof}
+If $3\nmid q$, then $g$ is a regular element of a cyclic maximal torus $T$:
+the split torus of order $(q-1)/2$ when $q\equiv1\pmod3$, the non-split
+torus of order $(q+1)/2$ when $q\equiv2\pmod3$. On such an element the
+irreducible characters take the values: $1$ (trivial); $\pm1$ (Steinberg,
+$+$ on the split torus, $-$ on the non-split); for a principal series
+character, $\phi(g)+\phi(g)^{-1}$ with $\phi$ a character of the split torus
+(and $0$ on the non-split torus); for a discrete series character,
+$-\bigl(\psi(g)+\psi(g)^{-1}\bigr)$ with $\psi$ a character of the non-split
+torus (and $0$ on the split torus); and for the two cuspidal ``half''
+characters of degree $(q\pm1)/2$, a value in $\{0,\pm1\}$. Since $g$ has
+order $3$, each $\phi(g),\psi(g)$ is a cube root of unity, so the series
+values lie in $\{2,-1\}$ and $\{-2,1\}$ respectively. In all cases
+$|\chi(g)|\le 2$. For $q=3^k$ the element $g$ is unipotent and the bound is
+checked directly (e.g.\ $q=9$: $\mathrm{PSL}(2,9)\cong A_6$).
+\end{proof}
+
+\begin{proposition}[Degree bound]\label{prop:degbound}
+If $m_\chi=2$ then $\chi(1)=6-2\chi(g)\in\{2,4,6,8,10\}$. Every nontrivial
+irreducible of $\mathrm{PSL}(2,q)$ has degree $\ge(q-1)/2$, so a
+$2$-dimensional block forces $(q-1)/2\le10$, i.e.\ $q\le 21$.
+\end{proposition}
+
+\begin{theorem}\label{thm:2dim}
+For an odd prime power $q\ge5$, the Hecke algebra
+$\mathcal H(\mathrm{PSL}(2,q),C_3)$ contains a $2$-dimensional block if and
+only if $q\in\{5,7,9\}$. For $q\ge11$ the multiplicity $2$ never occurs: the
+multiplicities present in $\ind_{C_3}\mathbf1$ jump from $1$ to $\ge3$.
+\end{theorem}
+
+\begin{proof}
+Proposition~\ref{prop:degbound} leaves the finite list
+$q\in\{5,7,9,11,13,17,19\}$. Combining \eqref{eq:mfix} with the character
+values of Lemma~\ref{lem:bounded}:
+\begin{itemize}
+\item $q\equiv1\pmod3$ ($g$ split): the discrete series (degree $q-1$,
+  $\chi(g)=0$) and the non-trivially-restricted principal series (degree
+  $q+1$, $\chi(g)=-1$) both have $m_\chi=(q-1)/3$, the smallest value
+  attained by a nontrivial constituent. $(q-1)/3=2\iff q=7$, where
+  \emph{both} occur --- the two blocks of \S\ref{sec:psl27}.
+\item $q\equiv2\pmod3$ ($g$ non-split): the non-trivially-restricted
+  discrete series (degree $q-1$, $\chi(g)=1$) has $m_\chi=(q+1)/3$, the
+  smallest value that can equal $2$. $(q+1)/3=2\iff q=5$ --- the single
+  block of \S\ref{sec:psl25}.
+\item $q=9=3^2$ ($g$ unipotent): in $\mathrm{PSL}(2,9)\cong A_6$ the two
+  irreducibles of degree $8$ have $\chi(g)=-1$, giving $m_\chi=2$.
+\end{itemize}
+Running the list, $q=5,7,9$ produce blocks (one, two, two respectively) and
+$q=11,13,17,19$ produce none: their multiplicity sets are
+$\{1,3,4\},\{1,3,4,5\},\{1,3,4,5,6\},\{1,3,6,7,8\}$, all omitting $2$. The
+square cases $q=25,49$ --- the first $q=q_0^2$ beyond the exceptional range
+--- confirm the stabilised regime, with least nontrivial multiplicity $5$
+and $9$.
+\end{proof}
+
+\begin{remark}[The three are the exceptional isomorphisms]\label{rem:excep}
+The values $\{5,7,9\}$ are exactly the $q$ for which $\mathrm{PSL}(2,q)$ has
+an exceptional isomorphism to an alternating or linear group:
+\[
+\mathrm{PSL}(2,5)\cong A_5,\qquad
+\mathrm{PSL}(2,7)\cong \mathrm{PSL}(3,2)=\mathrm{GL}(3,2),\qquad
+\mathrm{PSL}(2,9)\cong A_6.
+\]
+A $2$-dimensional block is thus a representation-theoretic shadow of
+smallness: it survives only while $\mathrm{PSL}(2,q)$ is still one of the
+sporadically small simple groups, and is extinguished once the minimal
+faithful degree $(q-1)/2$ outgrows the window $[2,10]$ that
+Lemma~\ref{lem:bounded} forces on a multiplicity-$2$ constituent. These
+blocks of degree $\le 10$ are also the only ones whose generator can have
+finite order --- the order-$3$ generator of \S\ref{sec:psl27} ($\chi_6$).
+\end{remark}
+
+\begin{remark}[``Dies at $q=11$'']\label{rem:dies}
+Earlier survey notes recorded the $2$-dimensional blocks ``dying at
+$q=11$''. Theorem~\ref{thm:2dim} makes this exact: $q=11$ is the first odd
+prime power past the degree window, and $q=13$ --- the next $q\equiv1
+\pmod3$ after $7$ --- is where $(q-1)/3$ has climbed from $2$ to $4$.
+\end{remark}
 
 %=====================================================================
 \section{The pattern: which $N$ appears in $B^2=NI$?}\label{sec:pattern}
