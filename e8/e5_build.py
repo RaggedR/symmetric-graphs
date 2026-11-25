@@ -54,7 +54,7 @@ def draw(ip, fname, title):
         o.append(fr"\fill[ring{ring_of[radii[k]]}] ({P[k,0]*s:.3f},{P[k,1]*s:.3f}) circle (3.0pt);")
     o.append(fr"\node[white!80!black,font=\small\itshape] at (0,-8.4) {{{title}}};")
     o += [r"\end{tikzpicture}", r"\end{document}"]
-    open(f"/Users/robin/git/graphviz/e8/{fname}.tex", "w").write("\n".join(o))
+    open(f"/Users/miriam/symmetric-graphs/e8/{fname}.tex", "w").write("\n".join(o))
     print(fname, "edges:", len(E))
 
 
