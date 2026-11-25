@@ -1,0 +1,282 @@
+\documentclass[11pt]{article}
+\usepackage[a4paper,margin=2.4cm]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{microtype}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+\theoremstyle{remark}
+\newtheorem*{remark}{Remark}
+
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\CC}{\mathbb{C}}
+\newcommand{\Weyl}{W}
+\newcommand{\ip}[2]{\langle #1,#2\rangle}
+\newcommand{\hw}{\hat w}
+
+\title{Folding the exceptional ladder through its spectrum}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+\vspace{-2.5em}
+
+\begin{abstract}
+\noindent
+The minuscule coset spaces of the Weyl-group chain
+$\Weyl(E_8)\supset \Weyl(E_7)\supset \Weyl(E_6)\supset \Weyl(D_5)$ carry three
+commutative association schemes, whose principal graphs are the $4_{21}$ edge
+graph ($240$ vertices), the Gosset graph ($56$), and the Schl\"afli graph
+($27$). Each of the first two is an antipodal distance-regular graph of
+diameter $3$; folding by the antipode gives $\mathrm{SRG}(120,56,28,24)$ and the
+complete graph $K_{28}$ respectively, while the Schl\"afli graph is terminal.
+We record a uniform spectral description of this folding: the quotient's
+spectrum is exactly the $\sigma$-even half of the cover's, and the
+$\sigma$-\emph{odd} half is the reflection representation of the Weyl group,
+occurring at a single eigenvalue ($28$, $9$, $-5$) with multiplicity equal to
+the rank ($8\to7\to6$). Everything is elementary; the point is that one picture
+governs all three rungs.
+\end{abstract}
+
+\section{Setup}
+
+Work in $\RR^8$ with the standard inner product. Let $R$ be the $240$ roots of
+$E_8$, all of norm $\ip{r}{r}=2$. Fix a root $r_0=e_1+e_2$ and a vector
+$w_0=e_1+e_3$. The \emph{minuscule descent} produces the three vertex sets
+\[
+  X_8=R,\qquad
+  X_7=\{\,r\in R:\ip{r}{r_0}=1\,\},\qquad
+  X_6=\{\,w\in X_7:\ip{w}{w_0}=1\,\},
+\]
+with $|X_8|=240$, $|X_7|=56$, $|X_6|=27$.
+Each $X_n$ is a single orbit of $G_n:=\Weyl(E_n)$, with point stabiliser
+$H_n=\Weyl(E_{n-1})$ (reading $E_5=D_5$); the indices
+$|G_n/H_n|=240,56,27$ match $|X_n|$. The pair $(G_n,H_n)$ is a
+\emph{Gelfand pair}: the Hecke algebra
+$\mathcal H(G_n,H_n)=\mathrm{End}_{G_n}\CC[X_n]$ is commutative, so the
+permutation module $\CC[X_n]$ is \emph{multiplicity-free}. Equivalently the
+orbitals (the inner-product classes on $X_n$) form a commutative association
+scheme, the Bose--Mesner algebra of which is $\mathcal H(G_n,H_n)$.
+
+The \emph{principal graph} $\Gamma_n$ joins $u\sim v$ when $\ip{u}{v}=1$ (the
+$60^\circ$ class). Then $\Gamma_8$ is the $4_{21}$/Gosset edge graph
+($56$-regular), $\Gamma_7$ is the Gosset graph ($27$-regular), and $\Gamma_6$ is
+the Schl\"afli graph $\mathrm{SRG}(27,10,1,5)$ (via $\ip{u}{v}=0$; see the
+remark in \S4). Their spectra are
+\[
+  \begin{aligned}
+  \Gamma_8&:\ 56^1\,28^8\,8^{35}\,(-2)^{112}\,(-4)^{84},\\
+  \Gamma_7&:\ 27^1\,9^7\,(-1)^{27}\,(-3)^{21},
+  \qquad
+  \Gamma_6:\ 10^1\,1^{20}\,(-5)^6 .
+  \end{aligned}
+\]
+
+\subsection*{The Bose--Mesner algebra of $E_8$}
+
+The $E_8$ scheme has rank $5$, with basis $\{I,A,B,C,D\}$ indexed by the inner
+product $2,1,0,-1,-2$ and valencies $1,56,126,56,1$. Here $A=\Gamma_8$,
+$C=A\circ D$ is its antipodal twin, $B$ is the $126$-regular ``bloom'' of
+orthogonal roots, and $D$ is the antipodal matching ($120\cdot K_2$). The full
+multiplication table (commutative; $I$ is the unit) is
+\[
+\renewcommand{\arraystretch}{1.25}
+\begin{array}{c|ccccc}
+\cdot & I & A & B & C & D\\\hline
+A & A & 56I{+}27A{+}12B{+}C & 27A{+}32B{+}27C & A{+}12B{+}27C{+}56D & C\\
+B & B & 27A{+}32B{+}27C & 126I{+}72A{+}60B{+}72C{+}126D & 27A{+}32B{+}27C & B\\
+C & C & A{+}12B{+}27C{+}56D & 27A{+}32B{+}27C & 56I{+}27A{+}12B{+}C & A\\
+D & D & C & B & A & I
+\end{array}
+\]
+The last row shows that $D$ acts as the involution $I\leftrightarrow D$,
+$A\leftrightarrow C$, $B\mapsto B$ --- it is the $\mathbb Z/2$ grading of
+Proposition~\ref{prop:anti}, and the symmetries $A^2=C^2$, $AB=BC$, $AD=C$ it
+forces are exactly the antipodal twinning that makes the fold of \S3 possible.
+
+\section{The antipode is a point-reflection}
+
+\begin{proposition}\label{prop:anti}
+$\Gamma_8$ and $\Gamma_7$ are antipodal distance-regular graphs of diameter $3$.
+In each, the distance-$3$ relation is the perfect matching
+$v\mapsto \sigma(v)$, where $\sigma$ is the affine point-reflection through the
+centre $c$ of the vertex set:
+\[
+  \sigma(v)=2c-v,\qquad c=0 \ \text{for } E_8,\qquad c=\tfrac12 r_0 \ \text{for } E_7 .
+\]
+Thus the fibres are $\{v,-v\}$ for $E_8$ and $\{w,\,r_0-w\}$ for $E_7$.
+$\Gamma_6$ has odd order and no such matching: it is terminal.
+\end{proposition}
+
+\begin{proof}
+The distance distribution from a vertex is $(1,56,182,1)$ for $\Gamma_8$ and
+$(1,27,27,1)$ for $\Gamma_7$ (direct count), so each is an antipodal cover with
+fibres of size~$2$; the far vertex is the unique one at $\ip{\cdot}{v}=-2$ (for
+$E_8$) resp.\ $\ip{\cdot}{v}=-1$ (for $E_7$). For $E_8$ that vertex is $-v$. For
+$E_7$, if $\ip{w}{r_0}=\ip{\bar w}{r_0}=1$ and $\ip{w}{\bar w}=-1$, then
+$\bar w=r_0-w$ solves all three constraints and has norm $2$, so it is the
+antipode. Both maps are $v\mapsto 2c-v$ with $c$ as stated. Since $27$ is odd,
+$\Gamma_6$ admits no fixed-point-free involution.
+\end{proof}
+
+\section{The spectral fold}
+
+Let $\Gamma$ be an antipodal $2$-cover with antipode $\sigma$ and adjacency
+operator $A$. Because $\sigma\in\mathrm{Aut}(\Gamma)$ and $\sigma^2=1$,
+$\CC[X]=\CC[X]^{+}\oplus\CC[X]^{-}$ splits into the $(\pm1)$-eigenspaces of
+$\sigma$, and $A$ preserves each (as $A$ commutes with $\sigma$).
+
+\begin{proposition}\label{prop:fold}
+The spectrum of the antipodal quotient $\Gamma/\sigma$ is exactly the spectrum
+of $A|_{\CC[X]^{+}}$, i.e.\ the ``$\sigma$-even'' eigenvalues of $\Gamma$. The
+``$\sigma$-odd'' eigenvalues (those of $A|_{\CC[X]^{-}}$) are annihilated by the
+fold.
+\end{proposition}
+
+\begin{proof}
+The fibre partition $\{\{v,\sigma v\}\}$ is equitable, so its quotient matrix
+$B$ (adjacency of $\Gamma/\sigma$) satisfies $A\,\iota=\iota\,B$, where
+$\iota:\CC[X/\sigma]\hookrightarrow\CC[X]$ sends a class to the indicator of its
+fibre. The image of $\iota$ is exactly $\CC[X]^{+}$ (functions constant on
+fibres), and $\iota$ intertwines $B$ with $A|_{\CC[X]^{+}}$; hence
+$\mathrm{spec}(B)=\mathrm{spec}(A|_{\CC[X]^{+}})$. The complement
+$\CC[X]^{-}$ is the kernel of the fibre-sum map and plays no role in the
+quotient.
+\end{proof}
+
+Applied to our two covers:
+\[
+  \underbrace{56^1\,8^{35}\,(-4)^{84}}_{\sigma\text{-even}}
+  \ \big|\
+  \underbrace{28^8\,(-2)^{112}}_{\sigma\text{-odd}}
+  \qquad\Longrightarrow\qquad
+  \mathrm{SRG}(120,56,28,24),
+\]
+\[
+  \underbrace{27^1\,(-1)^{27}}_{\sigma\text{-even}}
+  \ \big|\
+  \underbrace{9^7\,(-3)^{21}}_{\sigma\text{-odd}}
+  \qquad\Longrightarrow\qquad
+  K_{28}.
+\]
+The $E_7$ fold is forced to be trivial: a connected graph with only two
+distinct eigenvalues is complete, and $\Gamma_7$'s even spectrum has exactly
+two eigenvalues, leaving no room for a non-trivial strongly regular quotient
+such as the conjectured $\mathrm{SRG}(28,12,6,4)$.
+
+\section{The odd part is the reflection representation}
+
+Let $V_n$ be the reflection representation of $\Weyl(E_n)$: the span of the
+centred position vectors $\hw:=w-\mathrm{proj}_{\,U}(w)$, where $U$ is the span
+of the descent constraints ($U=0$ for $E_8$, $U=\langle r_0\rangle$ for $E_7$,
+$U=\langle r_0,w_0\rangle$ for $E_6$). Then $\dim V_n=n$ (the rank).
+
+\begin{theorem}\label{thm:refl}
+In each rung the reflection representation $V_n$ occurs in $\CC[X_n]$ with
+multiplicity one, $A$ acts on it by the scalar
+\[
+  \lambda_n=\frac{k\,\langle \hw_i,\hw_j\rangle_{\mathrm{adj}}}{\langle\hw,\hw\rangle}
+  \ =\ 28,\ 9,\ -5\qquad(n=8,7,6),
+\]
+where $k$ is the valency and $i\sim j$ adjacent, and for $n=8,7$ the antipode
+acts on $V_n$ as $-1$. Consequently $V_8,V_7$ are $\sigma$-odd: they are exactly
+the part of each cover destroyed by folding.
+\end{theorem}
+
+\begin{proof}
+The coordinate functionals $f_u:v\mapsto\ip{v}{u}$ ($u\perp U$) span a copy of
+$V_n$ inside $\CC[X_n]$, nonzero because $X_n$ spans $U^{\perp}$. As
+$(G_n,H_n)$ is a Gelfand pair, $\CC[X_n]$ is multiplicity-free, so $V_n$ occurs
+exactly once; by Schur's lemma $A$ acts on it by a scalar $\lambda_n$. Summing
+the adjacency over neighbours, $\sum_{j\sim i}\hw_j=\lambda_n\hw_i$ by
+$G_n$-equivariance; pairing with $\hw_i$ gives
+$\lambda_n=k\,\langle\hw_i,\hw_j\rangle_{\mathrm{adj}}/\langle\hw,\hw\rangle$.
+A direct computation of the projected norms and adjacency inner products,
+\[
+  \langle\hw,\hw\rangle=2,\ \tfrac32,\ \tfrac43,\qquad
+  \langle\hw_i,\hw_j\rangle_{\mathrm{adj}}=1,\ \tfrac12,\ -\tfrac23
+  \qquad(n=8,7,6),
+\]
+yields $\lambda_n=56\cdot1/2=28$, $27\cdot\tfrac12/\tfrac32=9$,
+$10\cdot(-\tfrac23)/\tfrac43=-5$. Finally $\sigma(v)=2c-v$ fixes $U$ pointwise
+and negates $U^{\perp}$, hence acts as $-1$ on $V_n$ for $n=8,7$; so $V_n$ lies
+in $\CC[X_n]^{-}$ and is killed by the fold (Proposition~\ref{prop:fold}).
+\end{proof}
+
+\begin{corollary}
+The eigenvalue carrying the reflection representation has multiplicity
+$\dim V_n=n$: the multiplicities $8\to7\to6$ down the ladder are the ranks
+$E_8\supset E_7\supset E_6$. The geometric $n$-dimensional embedding is precisely
+the spectral component that folding removes.
+\end{corollary}
+
+\begin{center}
+\begin{tabular}{llccl}
+\toprule
+rung & principal graph & vertices & fold & reflection eigenvalue (mult.) \\
+\midrule
+$E_8$ & $4_{21}$ / Gosset & $240$ & $\mathrm{SRG}(120,56,28,24)$ & $28$ \ ($8$) \\
+$E_7$ & Gosset graph      & $56$  & $K_{28}$                      & $9$  \ ($7$) \\
+$E_6$ & Schl\"afli graph  & $27$  & --- (terminal)                & $-5$ \ ($6$) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{The Hecke algebra as $\CC^5$}
+
+The three statements above --- covers, spectrum, algebra --- are three faces of
+the single commutative algebra $\mathcal H=\mathcal H(G_8,H_8)$. It has
+dimension $5$ (one basis element per orbital), and being commutative and
+semisimple over $\CC$,
+\[
+  \mathcal H\ \cong\ \CC\oplus\CC\oplus\CC\oplus\CC\oplus\CC,
+\]
+so all of its irreducible representations are $1$-dimensional. The five
+irreducible characters $\chi_i:\mathcal H\to\CC$ are the rows of the eigenmatrix
+$P$ (the value $\chi_i(M)$ is the eigenvalue of the basis element $M$ on the
+$i$-th common eigenspace):
+\[
+\renewcommand{\arraystretch}{1.1}
+\begin{array}{c|ccccc|l}
+ & I & A & B & C & D & \text{paired }\Weyl(E_8)\text{-module}\\\hline
+\chi_0 & 1 & 56 & 126 & 56 & 1 & \mathbf{1}\ \ (\text{trivial})\\
+\chi_1 & 1 & 28 & 0 & -28 & -1 & \mathbf{8}\ \ (\text{reflection rep }V_8)\\
+\chi_2 & 1 & 8 & -18 & 8 & 1 & \mathbf{35}\\
+\chi_3 & 1 & -2 & 0 & 2 & -1 & \mathbf{112}\\
+\chi_4 & 1 & -4 & 6 & -4 & 1 & \mathbf{84}
+\end{array}
+\]
+One checks directly that each row is an algebra homomorphism against the table
+of \S1 (e.g.\ $\chi_1(A)^2=28^2=784=56+27\cdot28-28=\chi_1(56I{+}27A{+}12B{+}C)$).
+
+By the double-centraliser property of the Gelfand pair, these five characters
+are in bijection with the $\Weyl(E_8)$-irreducible constituents of the
+permutation module $\CC[X_8]$, and each occurs with multiplicity one. The
+\emph{multiplicity} $m_i$ of eigenspace $i$ --- i.e.\ $\dim$ of the associated
+idempotent's image --- is the dimension of the paired $G$-module:
+\[
+  1+8+35+112+84 = 240 = |X_8|.
+\]
+Thus the reflection representation of Theorem~\ref{thm:refl} is the $G$-module
+$\mathbf 8$ dual to the character $\chi_1$, whose signature $D\mapsto-1$ marks
+it (with $\chi_3\leftrightarrow\mathbf{112}$) as the $\sigma$-odd part killed by
+folding; the three $\sigma$-even characters $\chi_0,\chi_2,\chi_4$
+($D\mapsto+1$) are the spectrum of $\mathrm{SRG}(120,56,28,24)$.
+
+\begin{remark}
+The ingredients are classical --- the antipodal double-cover structure of the
+Gosset and $E_8$ root graphs is in Brouwer--Cohen--Neumaier, and
+Proposition~\ref{prop:fold} is the standard equitable-partition fact. What is
+worth recording is the \emph{uniform} reading of all three rungs at once: that
+folding the exceptional ladder is the same operation as discarding the Weyl
+group's reflection representation, and that this is legible in the spectrum as
+the rank descent $8\to7\to6$. The $\ip{u}{v}=0$ convention for $\Gamma_6$ (rather
+than $\ip{u}{v}=1$) is forced: among the $27$ lines the Schl\"afli adjacency is
+the $0$-class, and it is this class that is strongly regular. All statements
+were checked numerically in \texttt{fold\_analysis.py}.
+\end{remark}
+
+\end{document}

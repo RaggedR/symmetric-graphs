@@ -1,0 +1,48 @@
+\documentclass[11pt]{article}
+\usepackage[a4paper,margin=1.6cm]{geometry}
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage[hidelinks]{hyperref}
+\pagestyle{empty}
+
+\newcommand{\plate}[3]{%
+  % #1 = file, #2 = title, #3 = caption
+  \begin{center}
+    {\large\bfseries #2}\\[2pt]
+    {\itshape #3}\\[6pt]
+    \includegraphics[width=0.92\textwidth,height=0.84\textheight,keepaspectratio]{#1}
+  \end{center}
+  \clearpage}
+
+\begin{document}
+
+\begin{center}
+  \vspace*{3cm}
+  {\Huge\bfseries The exceptional ladder}\\[1cm]
+  {\LARGE E$_8$ and E$_7$ rungs}\\[6pt]
+  {\large orbital graphs (Hecke-algebra basis) on the Coxeter plane}\\[2cm]
+  {\large
+  \begin{tabular}{ll}
+    \textbf{E$_8$ rung} & $W(E_8)/W(E_7)$, 240 roots, rank-5 scheme\\[4pt]
+    \textbf{E$_7$ rung} & $W(E_7)/W(E_6)$, 56 minuscule weights, rank-4 scheme
+  \end{tabular}}
+\end{center}
+\clearpage
+
+{\centering\section*{E$_8$ rung --- $W(E_8)/W(E_7)$, the 240 roots}\par}
+\clearpage
+
+\plate{e8_id.pdf}{E$_8$: the 240 roots}{identity class (inner product $+2$); eight rings of thirty on the 30-fold Coxeter plane}
+\plate{e8_mandala.pdf}{E$_8$: the mandala}{inner product $+1$, the $4_{21}$/Gosset edge graph, 56-regular --- generates the rank-5 Hecke algebra}
+\plate{e8_ip0.pdf}{E$_8$: the bloom}{inner product $0$, orthogonal roots, 126-regular ($= 2\times$ the complement of SRG$(120,56,28,24)$)}
+\plate{e8_ipm1.pdf}{E$_8$: the weave}{inner product $-1$, the antipodal twin of the mandala (56-regular)}
+\plate{e8_ipm2.pdf}{E$_8$: the antipodal matching}{inner product $-2$, $120\cdot K_2$ --- the $r\mapsto-r$ involution folding to SRG$(120,56,28,24)$}
+
+{\centering\section*{E$_7$ rung --- $W(E_7)/W(E_6)$, the 56 minuscule weights}\par}
+\clearpage
+
+\plate{e7_mandala.pdf}{E$_7$: the Gosset graph}{inner product $+1$, 27-regular; an antipodal double cover of $K_{28}$}
+\plate{e7_partner.pdf}{E$_7$: the partner graph}{inner product $0$, the other 27-regular orbital}
+\plate{e7_bitangents.pdf}{E$_7$: the bitangents}{inner product $-1$, $28\cdot K_2$ --- each weight paired with its antipode $r_0-w$}
+
+\end{document}
