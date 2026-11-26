@@ -1,0 +1,5 @@
+clean_e8_id	/Users/miriam/symmetric-graphs/e8/clean_e8_id.tex
+clean_e8_mandala	/Users/miriam/symmetric-graphs/e8/clean_e8_mandala.tex
+clean_e8_bloom	/Users/miriam/symmetric-graphs/e8/clean_e8_bloom.tex
+clean_e8_weave	/Users/miriam/symmetric-graphs/e8/clean_e8_weave.tex
+clean_e8_antipodal	/Users/miriam/symmetric-graphs/e8/clean_e8_antipodal.tex

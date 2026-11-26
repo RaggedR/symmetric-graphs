@@ -1,0 +1,10 @@
+1	/Users/miriam/symmetric-graphs/e8/carter_class_1.tex	carter_class_1.pdf
+A1	/Users/miriam/symmetric-graphs/e8/carter_class_A1.tex	carter_class_A1.pdf
+A1A1A1A1A1A1A1A1	/Users/miriam/symmetric-graphs/e8/carter_class_A1A1A1A1A1A1A1A1.tex	carter_class_A1A1A1A1A1A1A1A1.pdf
+A2	/Users/miriam/symmetric-graphs/e8/carter_class_A2.tex	carter_class_A2.pdf
+A2A1A1A1A1A1A1	/Users/miriam/symmetric-graphs/e8/carter_class_A2A1A1A1A1A1A1.tex	carter_class_A2A1A1A1A1A1A1.pdf
+A2A2	/Users/miriam/symmetric-graphs/e8/carter_class_A2A2.tex	carter_class_A2A2.pdf
+A2A2A1A1A1A1	/Users/miriam/symmetric-graphs/e8/carter_class_A2A2A1A1A1A1.tex	carter_class_A2A2A1A1A1A1.pdf
+A2A2A2	/Users/miriam/symmetric-graphs/e8/carter_class_A2A2A2.tex	carter_class_A2A2A2.pdf
+A2A2A2A1A1	/Users/miriam/symmetric-graphs/e8/carter_class_A2A2A2A1A1.tex	carter_class_A2A2A2A1A1.pdf
+A2A2A2A2	/Users/miriam/symmetric-graphs/e8/carter_class_A2A2A2A2.tex	carter_class_A2A2A2A2.pdf

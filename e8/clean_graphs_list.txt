@@ -1,0 +1,10 @@
+clean_g2_roots.pdf
+clean_f4_roots.pdf
+clean_a2_roots.pdf
+clean_a3_roots.pdf
+clean_d4_graph.pdf
+clean_d6_graph.pdf
+clean_d7_classical.pdf
+clean_e5_clebsch.pdf
+clean_e6_schlafli.pdf
+clean_e7_mandala.pdf

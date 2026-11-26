@@ -1,0 +1,791 @@
+{
+  "group": "W(E8)",
+  "group_order": 696729600,
+  "num_conjugacy_classes": 112,
+  "classes": [
+    {
+      "index": 1,
+      "label": "s",
+      "order": 1,
+      "class_size": 1,
+      "reduced_word_length": 0
+    },
+    {
+      "index": 2,
+      "label": "s87654",
+      "order": 2,
+      "class_size": 1,
+      "reduced_word_length": 120
+    },
+    {
+      "index": 3,
+      "label": "s75645",
+      "order": 2,
+      "class_size": 113400,
+      "reduced_word_length": 76
+    },
+    {
+      "index": 4,
+      "label": "s34132",
+      "order": 6,
+      "class_size": 268800,
+      "reduced_word_length": 58
+    },
+    {
+      "index": 5,
+      "label": "s78567",
+      "order": 3,
+      "class_size": 268800,
+      "reduced_word_length": 62
+    },
+    {
+      "index": 6,
+      "label": "s45678",
+      "order": 6,
+      "class_size": 14515200,
+      "reduced_word_length": 48
+    },
+    {
+      "index": 7,
+      "label": "s67865",
+      "order": 4,
+      "class_size": 15120,
+      "reduced_word_length": 60
+    },
+    {
+      "index": 8,
+      "label": "s87653",
+      "order": 12,
+      "class_size": 9676800,
+      "reduced_word_length": 54
+    },
+    {
+      "index": 9,
+      "label": "s41324",
+      "order": 2,
+      "class_size": 3150,
+      "reduced_word_length": 84
+    },
+    {
+      "index": 10,
+      "label": "s32456",
+      "order": 6,
+      "class_size": 4480,
+      "reduced_word_length": 40
+    },
+    {
+      "index": 11,
+      "label": "s45678",
+      "order": 3,
+      "class_size": 4480,
+      "reduced_word_length": 80
+    },
+    {
+      "index": 12,
+      "label": "s84567",
+      "order": 10,
+      "class_size": 1161216,
+      "reduced_word_length": 40
+    },
+    {
+      "index": 13,
+      "label": "s76543",
+      "order": 5,
+      "class_size": 1161216,
+      "reduced_word_length": 80
+    },
+    {
+      "index": 14,
+      "label": "s24567",
+      "order": 5,
+      "class_size": 580608,
+      "reduced_word_length": 72
+    },
+    {
+      "index": 15,
+      "label": "s67834",
+      "order": 10,
+      "class_size": 580608,
+      "reduced_word_length": 48
+    },
+    {
+      "index": 16,
+      "label": "s34132",
+      "order": 2,
+      "class_size": 3780,
+      "reduced_word_length": 20
+    },
+    {
+      "index": 17,
+      "label": "s56745",
+      "order": 2,
+      "class_size": 3780,
+      "reduced_word_length": 100
+    },
+    {
+      "index": 18,
+      "label": "s75624",
+      "order": 4,
+      "class_size": 45360,
+      "reduced_word_length": 91
+    },
+    {
+      "index": 19,
+      "label": "s64534",
+      "order": 4,
+      "class_size": 45360,
+      "reduced_word_length": 29
+    },
+    {
+      "index": 20,
+      "label": "s34567",
+      "order": 10,
+      "class_size": 8709120,
+      "reduced_word_length": 50
+    },
+    {
+      "index": 21,
+      "label": "s45678",
+      "order": 10,
+      "class_size": 8709120,
+      "reduced_word_length": 70
+    },
+    {
+      "index": 22,
+      "label": "s76534",
+      "order": 20,
+      "class_size": 17418240,
+      "reduced_word_length": 33
+    },
+    {
+      "index": 23,
+      "label": "s45624",
+      "order": 20,
+      "class_size": 17418240,
+      "reduced_word_length": 87
+    },
+    {
+      "index": 24,
+      "label": "s67134",
+      "order": 2,
+      "class_size": 120,
+      "reduced_word_length": 103
+    },
+    {
+      "index": 25,
+      "label": "s54324",
+      "order": 2,
+      "class_size": 120,
+      "reduced_word_length": 17
+    },
+    {
+      "index": 26,
+      "label": "s41324",
+      "order": 3,
+      "class_size": 2240,
+      "reduced_word_length": 10
+    },
+    {
+      "index": 27,
+      "label": "s87654",
+      "order": 6,
+      "class_size": 2240,
+      "reduced_word_length": 110
+    },
+    {
+      "index": 28,
+      "label": "s67134",
+      "order": 6,
+      "class_size": 80640,
+      "reduced_word_length": 99
+    },
+    {
+      "index": 29,
+      "label": "s54324",
+      "order": 6,
+      "class_size": 80640,
+      "reduced_word_length": 21
+    },
+    {
+      "index": 30,
+      "label": "s78456",
+      "order": 6,
+      "class_size": 89600,
+      "reduced_word_length": 62
+    },
+    {
+      "index": 31,
+      "label": "s13245",
+      "order": 3,
+      "class_size": 89600,
+      "reduced_word_length": 58
+    },
+    {
+      "index": 32,
+      "label": "s65432",
+      "order": 6,
+      "class_size": 268800,
+      "reduced_word_length": 57
+    },
+    {
+      "index": 33,
+      "label": "s78765",
+      "order": 6,
+      "class_size": 268800,
+      "reduced_word_length": 63
+    },
+    {
+      "index": 34,
+      "label": "s73456",
+      "order": 6,
+      "class_size": 100800,
+      "reduced_word_length": 96
+    },
+    {
+      "index": 35,
+      "label": "s65413",
+      "order": 6,
+      "class_size": 100800,
+      "reduced_word_length": 24
+    },
+    {
+      "index": 36,
+      "label": "s24567",
+      "order": 2,
+      "class_size": 37800,
+      "reduced_word_length": 85
+    },
+    {
+      "index": 37,
+      "label": "s13456",
+      "order": 2,
+      "class_size": 37800,
+      "reduced_word_length": 35
+    },
+    {
+      "index": 38,
+      "label": "s45678",
+      "order": 6,
+      "class_size": 2419200,
+      "reduced_word_length": 65
+    },
+    {
+      "index": 39,
+      "label": "s83245",
+      "order": 6,
+      "class_size": 2419200,
+      "reduced_word_length": 55
+    },
+    {
+      "index": 40,
+      "label": "s34562",
+      "order": 6,
+      "class_size": 1612800,
+      "reduced_word_length": 76
+    },
+    {
+      "index": 41,
+      "label": "s13456",
+      "order": 7,
+      "class_size": 24883200,
+      "reduced_word_length": 84
+    },
+    {
+      "index": 42,
+      "label": "s87654",
+      "order": 14,
+      "class_size": 24883200,
+      "reduced_word_length": 36
+    },
+    {
+      "index": 43,
+      "label": "s13456",
+      "order": 14,
+      "class_size": 24883200,
+      "reduced_word_length": 45
+    },
+    {
+      "index": 44,
+      "label": "s24567",
+      "order": 14,
+      "class_size": 24883200,
+      "reduced_word_length": 75
+    },
+    {
+      "index": 45,
+      "label": "s78456",
+      "order": 4,
+      "class_size": 151200,
+      "reduced_word_length": 51
+    },
+    {
+      "index": 46,
+      "label": "s34132",
+      "order": 6,
+      "class_size": 2419200,
+      "reduced_word_length": 58
+    },
+    {
+      "index": 47,
+      "label": "s85674",
+      "order": 6,
+      "class_size": 2419200,
+      "reduced_word_length": 62
+    },
+    {
+      "index": 48,
+      "label": "s78245",
+      "order": 12,
+      "class_size": 9676800,
+      "reduced_word_length": 51
+    },
+    {
+      "index": 49,
+      "label": "s78456",
+      "order": 4,
+      "class_size": 907200,
+      "reduced_word_length": 59
+    },
+    {
+      "index": 50,
+      "label": "s78245",
+      "order": 12,
+      "class_size": 29030400,
+      "reduced_word_length": 63
+    },
+    {
+      "index": 51,
+      "label": "s45678",
+      "order": 6,
+      "class_size": 1612800,
+      "reduced_word_length": 45
+    },
+    {
+      "index": 52,
+      "label": "s32456",
+      "order": 6,
+      "class_size": 1612800,
+      "reduced_word_length": 75
+    },
+    {
+      "index": 53,
+      "label": "s53413",
+      "order": 6,
+      "class_size": 4838400,
+      "reduced_word_length": 41
+    },
+    {
+      "index": 54,
+      "label": "s67456",
+      "order": 6,
+      "class_size": 4838400,
+      "reduced_word_length": 79
+    },
+    {
+      "index": 55,
+      "label": "s78456",
+      "order": 8,
+      "class_size": 3628800,
+      "reduced_word_length": 62
+    },
+    {
+      "index": 56,
+      "label": "s43245",
+      "order": 12,
+      "class_size": 2419200,
+      "reduced_word_length": 52
+    },
+    {
+      "index": 57,
+      "label": "s82456",
+      "order": 24,
+      "class_size": 29030400,
+      "reduced_word_length": 58
+    },
+    {
+      "index": 58,
+      "label": "s71345",
+      "order": 20,
+      "class_size": 34836480,
+      "reduced_word_length": 52
+    },
+    {
+      "index": 59,
+      "label": "s73456",
+      "order": 30,
+      "class_size": 23224320,
+      "reduced_word_length": 74
+    },
+    {
+      "index": 60,
+      "label": "s65413",
+      "order": 15,
+      "class_size": 23224320,
+      "reduced_word_length": 46
+    },
+    {
+      "index": 61,
+      "label": "s67134",
+      "order": 4,
+      "class_size": 453600,
+      "reduced_word_length": 41
+    },
+    {
+      "index": 62,
+      "label": "s54324",
+      "order": 4,
+      "class_size": 453600,
+      "reduced_word_length": 79
+    },
+    {
+      "index": 63,
+      "label": "s74562",
+      "order": 6,
+      "class_size": 806400,
+      "reduced_word_length": 56
+    },
+    {
+      "index": 64,
+      "label": "s65341",
+      "order": 6,
+      "class_size": 806400,
+      "reduced_word_length": 64
+    },
+    {
+      "index": 65,
+      "label": "s56784",
+      "order": 12,
+      "class_size": 14515200,
+      "reduced_word_length": 47
+    },
+    {
+      "index": 66,
+      "label": "s13245",
+      "order": 12,
+      "class_size": 14515200,
+      "reduced_word_length": 73
+    },
+    {
+      "index": 67,
+      "label": "s13456",
+      "order": 6,
+      "class_size": 1209600,
+      "reduced_word_length": 71
+    },
+    {
+      "index": 68,
+      "label": "s67824",
+      "order": 6,
+      "class_size": 1209600,
+      "reduced_word_length": 49
+    },
+    {
+      "index": 69,
+      "label": "s13456",
+      "order": 6,
+      "class_size": 604800,
+      "reduced_word_length": 74
+    },
+    {
+      "index": 70,
+      "label": "s76543",
+      "order": 6,
+      "class_size": 604800,
+      "reduced_word_length": 46
+    },
+    {
+      "index": 71,
+      "label": "s73456",
+      "order": 10,
+      "class_size": 5806080,
+      "reduced_word_length": 45
+    },
+    {
+      "index": 72,
+      "label": "s65413",
+      "order": 10,
+      "class_size": 5806080,
+      "reduced_word_length": 75
+    },
+    {
+      "index": 73,
+      "label": "s34567",
+      "order": 6,
+      "class_size": 3225600,
+      "reduced_word_length": 40
+    },
+    {
+      "index": 74,
+      "label": "s82456",
+      "order": 6,
+      "class_size": 403200,
+      "reduced_word_length": 52
+    },
+    {
+      "index": 75,
+      "label": "s71345",
+      "order": 4,
+      "class_size": 37800,
+      "reduced_word_length": 48
+    },
+    {
+      "index": 76,
+      "label": "s65432",
+      "order": 4,
+      "class_size": 37800,
+      "reduced_word_length": 72
+    },
+    {
+      "index": 77,
+      "label": "s34562",
+      "order": 12,
+      "class_size": 2419200,
+      "reduced_word_length": 50
+    },
+    {
+      "index": 78,
+      "label": "s76541",
+      "order": 12,
+      "class_size": 2419200,
+      "reduced_word_length": 70
+    },
+    {
+      "index": 79,
+      "label": "s67845",
+      "order": 4,
+      "class_size": 680400,
+      "reduced_word_length": 66
+    },
+    {
+      "index": 80,
+      "label": "s54324",
+      "order": 4,
+      "class_size": 907200,
+      "reduced_word_length": 44
+    },
+    {
+      "index": 81,
+      "label": "s67134",
+      "order": 4,
+      "class_size": 907200,
+      "reduced_word_length": 76
+    },
+    {
+      "index": 82,
+      "label": "s65432",
+      "order": 12,
+      "class_size": 7257600,
+      "reduced_word_length": 74
+    },
+    {
+      "index": 83,
+      "label": "s87134",
+      "order": 12,
+      "class_size": 7257600,
+      "reduced_word_length": 46
+    },
+    {
+      "index": 84,
+      "label": "s56786",
+      "order": 12,
+      "class_size": 3628800,
+      "reduced_word_length": 63
+    },
+    {
+      "index": 85,
+      "label": "s84324",
+      "order": 12,
+      "class_size": 3628800,
+      "reduced_word_length": 57
+    },
+    {
+      "index": 86,
+      "label": "s87345",
+      "order": 18,
+      "class_size": 6451200,
+      "reduced_word_length": 42
+    },
+    {
+      "index": 87,
+      "label": "s65413",
+      "order": 9,
+      "class_size": 6451200,
+      "reduced_word_length": 78
+    },
+    {
+      "index": 88,
+      "label": "s13456",
+      "order": 18,
+      "class_size": 19353600,
+      "reduced_word_length": 69
+    },
+    {
+      "index": 89,
+      "label": "s45678",
+      "order": 18,
+      "class_size": 19353600,
+      "reduced_word_length": 51
+    },
+    {
+      "index": 90,
+      "label": "s54324",
+      "order": 8,
+      "class_size": 1814400,
+      "reduced_word_length": 43
+    },
+    {
+      "index": 91,
+      "label": "s67876",
+      "order": 8,
+      "class_size": 1814400,
+      "reduced_word_length": 77
+    },
+    {
+      "index": 92,
+      "label": "s45678",
+      "order": 12,
+      "class_size": 1209600,
+      "reduced_word_length": 52
+    },
+    {
+      "index": 93,
+      "label": "s56783",
+      "order": 12,
+      "class_size": 1209600,
+      "reduced_word_length": 68
+    },
+    {
+      "index": 94,
+      "label": "s87562",
+      "order": 24,
+      "class_size": 14515200,
+      "reduced_word_length": 57
+    },
+    {
+      "index": 95,
+      "label": "s64534",
+      "order": 24,
+      "class_size": 14515200,
+      "reduced_word_length": 63
+    },
+    {
+      "index": 96,
+      "label": "s84567",
+      "order": 12,
+      "class_size": 4838400,
+      "reduced_word_length": 64
+    },
+    {
+      "index": 97,
+      "label": "s13245",
+      "order": 12,
+      "class_size": 4838400,
+      "reduced_word_length": 56
+    },
+    {
+      "index": 98,
+      "label": "s24567",
+      "order": 4,
+      "class_size": 2721600,
+      "reduced_word_length": 81
+    },
+    {
+      "index": 99,
+      "label": "s24534",
+      "order": 12,
+      "class_size": 1209600,
+      "reduced_word_length": 55
+    },
+    {
+      "index": 100,
+      "label": "s67564",
+      "order": 12,
+      "class_size": 1209600,
+      "reduced_word_length": 65
+    },
+    {
+      "index": 101,
+      "label": "s54132",
+      "order": 8,
+      "class_size": 5443200,
+      "reduced_word_length": 68
+    },
+    {
+      "index": 102,
+      "label": "s86734",
+      "order": 8,
+      "class_size": 5443200,
+      "reduced_word_length": 52
+    },
+    {
+      "index": 103,
+      "label": "s24567",
+      "order": 9,
+      "class_size": 12902400,
+      "reduced_word_length": 92
+    },
+    {
+      "index": 104,
+      "label": "s34567",
+      "order": 18,
+      "class_size": 12902400,
+      "reduced_word_length": 28
+    },
+    {
+      "index": 105,
+      "label": "s54324",
+      "order": 30,
+      "class_size": 11612160,
+      "reduced_word_length": 60
+    },
+    {
+      "index": 106,
+      "label": "s86713",
+      "order": 15,
+      "class_size": 11612160,
+      "reduced_word_length": 60
+    },
+    {
+      "index": 107,
+      "label": "s87653",
+      "order": 8,
+      "class_size": 10886400,
+      "reduced_word_length": 36
+    },
+    {
+      "index": 108,
+      "label": "s78245",
+      "order": 8,
+      "class_size": 10886400,
+      "reduced_word_length": 69
+    },
+    {
+      "index": 109,
+      "label": "s85432",
+      "order": 30,
+      "class_size": 11612160,
+      "reduced_word_length": 59
+    },
+    {
+      "index": 110,
+      "label": "s67865",
+      "order": 30,
+      "class_size": 11612160,
+      "reduced_word_length": 61
+    },
+    {
+      "index": 111,
+      "label": "s41324",
+      "order": 4,
+      "class_size": 5443200,
+      "reduced_word_length": 30
+    },
+    {
+      "index": 112,
+      "label": "s34132",
+      "order": 8,
+      "class_size": 43545600,
+      "reduced_word_length": 63
+    }
+  ]
+}

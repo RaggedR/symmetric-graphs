@@ -1,0 +1,376 @@
+{
+  "total_classes": 112,
+  "listed_classes": 74,
+  "classes": [
+    {
+      "label": "1",
+      "levi_type": "E8",
+      "description": "Identity"
+    },
+    {
+      "label": "E8",
+      "levi_type": "E8",
+      "description": "Coxeter element"
+    },
+    {
+      "label": "E7",
+      "levi_type": "E7",
+      "description": "E7 Coxeter"
+    },
+    {
+      "label": "E7A1",
+      "levi_type": "E7\u00d7A1",
+      "description": "E7 \u00d7 A1"
+    },
+    {
+      "label": "E6",
+      "levi_type": "E6",
+      "description": "E6 Coxeter"
+    },
+    {
+      "label": "E6A2",
+      "levi_type": "E6\u00d7A2",
+      "description": "E6 \u00d7 A2"
+    },
+    {
+      "label": "E6A1A1",
+      "levi_type": "E6\u00d7A1\u00d7A1",
+      "description": "E6 \u00d7 A1\u00b2"
+    },
+    {
+      "label": "D8",
+      "levi_type": "D8",
+      "description": "D8 root system"
+    },
+    {
+      "label": "D7",
+      "levi_type": "D7",
+      "description": "D7 root system"
+    },
+    {
+      "label": "D7A1",
+      "levi_type": "D7\u00d7A1",
+      "description": "D7 \u00d7 A1"
+    },
+    {
+      "label": "D6",
+      "levi_type": "D6",
+      "description": "D6 root system"
+    },
+    {
+      "label": "D6A2",
+      "levi_type": "D6\u00d7A2",
+      "description": "D6 \u00d7 A2"
+    },
+    {
+      "label": "D6A1A1",
+      "levi_type": "D6\u00d7A1\u00d7A1",
+      "description": "D6 \u00d7 A1\u00b2"
+    },
+    {
+      "label": "D5",
+      "levi_type": "D5",
+      "description": "D5 root system"
+    },
+    {
+      "label": "D5A3",
+      "levi_type": "D5\u00d7A3",
+      "description": "D5 \u00d7 A3"
+    },
+    {
+      "label": "D5A2A1",
+      "levi_type": "D5\u00d7A2\u00d7A1",
+      "description": "D5 \u00d7 A2 \u00d7 A1"
+    },
+    {
+      "label": "D5A1A1A1",
+      "levi_type": "D5\u00d7A1\u00d7A1\u00d7A1",
+      "description": "D5 \u00d7 A1\u00b3"
+    },
+    {
+      "label": "D4",
+      "levi_type": "D4",
+      "description": "D4 root system"
+    },
+    {
+      "label": "D4D4",
+      "levi_type": "D4\u00d7D4",
+      "description": "D4\u00b2 (twin trialities)"
+    },
+    {
+      "label": "D4A4",
+      "levi_type": "D4\u00d7A4",
+      "description": "D4 \u00d7 A4"
+    },
+    {
+      "label": "D4A3A1",
+      "levi_type": "D4\u00d7A3\u00d7A1",
+      "description": "D4 \u00d7 A3 \u00d7 A1"
+    },
+    {
+      "label": "D4A2A2",
+      "levi_type": "D4\u00d7A2\u00d7A2",
+      "description": "D4 \u00d7 A2\u00b2"
+    },
+    {
+      "label": "D4A2A1A1",
+      "levi_type": "D4\u00d7A2\u00d7A1\u00d7A1",
+      "description": "D4 \u00d7 A2 \u00d7 A1\u00b2"
+    },
+    {
+      "label": "D4A1A1A1A1",
+      "levi_type": "D4\u00d7A1\u2074",
+      "description": "D4 \u00d7 A1\u2074"
+    },
+    {
+      "label": "F4",
+      "levi_type": "F4",
+      "description": "F4 root system"
+    },
+    {
+      "label": "F4A4",
+      "levi_type": "F4\u00d7A4",
+      "description": "F4 \u00d7 A4"
+    },
+    {
+      "label": "F4D4",
+      "levi_type": "F4\u00d7D4",
+      "description": "F4 \u00d7 D4"
+    },
+    {
+      "label": "F4A3A1",
+      "levi_type": "F4\u00d7A3\u00d7A1",
+      "description": "F4 \u00d7 A3 \u00d7 A1"
+    },
+    {
+      "label": "F4A2A2",
+      "levi_type": "F4\u00d7A2\u00d7A2",
+      "description": "F4 \u00d7 A2\u00b2"
+    },
+    {
+      "label": "F4A2A1A1",
+      "levi_type": "F4\u00d7A2\u00d7A1\u00d7A1",
+      "description": "F4 \u00d7 A2 \u00d7 A1\u00b2"
+    },
+    {
+      "label": "F4A1A1A1A1",
+      "levi_type": "F4\u00d7A1\u2074",
+      "description": "F4 \u00d7 A1\u2074"
+    },
+    {
+      "label": "G2",
+      "levi_type": "G2",
+      "description": "G2 root system"
+    },
+    {
+      "label": "G2E6",
+      "levi_type": "G2\u00d7E6",
+      "description": "G2 \u00d7 E6"
+    },
+    {
+      "label": "G2D6",
+      "levi_type": "G2\u00d7D6",
+      "description": "G2 \u00d7 D6"
+    },
+    {
+      "label": "G2A6",
+      "levi_type": "G2\u00d7A6",
+      "description": "G2 \u00d7 A6"
+    },
+    {
+      "label": "G2A5A1",
+      "levi_type": "G2\u00d7A5\u00d7A1",
+      "description": "G2 \u00d7 A5 \u00d7 A1"
+    },
+    {
+      "label": "G2A4A2",
+      "levi_type": "G2\u00d7A4\u00d7A2",
+      "description": "G2 \u00d7 A4 \u00d7 A2"
+    },
+    {
+      "label": "G2A3A3",
+      "levi_type": "G2\u00d7A3\u00d7A3",
+      "description": "G2 \u00d7 A3\u00b2"
+    },
+    {
+      "label": "G2A3A2A1",
+      "levi_type": "G2\u00d7A3\u00d7A2\u00d7A1",
+      "description": "G2 \u00d7 A3 \u00d7 A2 \u00d7 A1"
+    },
+    {
+      "label": "G2A2A2A2",
+      "levi_type": "G2\u00d7A2\u00b3",
+      "description": "G2 \u00d7 A2\u00b3"
+    },
+    {
+      "label": "G2A2A2A1A1",
+      "levi_type": "G2\u00d7A2\u00b2\u00d7A1\u00b2",
+      "description": "G2 \u00d7 A2\u00b2 \u00d7 A1\u00b2"
+    },
+    {
+      "label": "A8",
+      "levi_type": "A8",
+      "description": "A8 (9-simplex)"
+    },
+    {
+      "label": "A7",
+      "levi_type": "A7",
+      "description": "A7 (8-simplex)"
+    },
+    {
+      "label": "A7A1",
+      "levi_type": "A7\u00d7A1",
+      "description": "A7 \u00d7 A1"
+    },
+    {
+      "label": "A6",
+      "levi_type": "A6",
+      "description": "A6 (7-simplex)"
+    },
+    {
+      "label": "A6A2",
+      "levi_type": "A6\u00d7A2",
+      "description": "A6 \u00d7 A2"
+    },
+    {
+      "label": "A6A1A1",
+      "levi_type": "A6\u00d7A1\u00d7A1",
+      "description": "A6 \u00d7 A1\u00b2"
+    },
+    {
+      "label": "A5",
+      "levi_type": "A5",
+      "description": "A5 (6-simplex)"
+    },
+    {
+      "label": "A5A3",
+      "levi_type": "A5\u00d7A3",
+      "description": "A5 \u00d7 A3"
+    },
+    {
+      "label": "A5A2A1",
+      "levi_type": "A5\u00d7A2\u00d7A1",
+      "description": "A5 \u00d7 A2 \u00d7 A1"
+    },
+    {
+      "label": "A5A1A1A1",
+      "levi_type": "A5\u00d7A1\u00b3",
+      "description": "A5 \u00d7 A1\u00b3"
+    },
+    {
+      "label": "A4",
+      "levi_type": "A4",
+      "description": "A4 (5-simplex)"
+    },
+    {
+      "label": "A4A4",
+      "levi_type": "A4\u00d7A4",
+      "description": "A4\u00b2 (twin pentachorons)"
+    },
+    {
+      "label": "A4A3A1",
+      "levi_type": "A4\u00d7A3\u00d7A1",
+      "description": "A4 \u00d7 A3 \u00d7 A1"
+    },
+    {
+      "label": "A4A2A2",
+      "levi_type": "A4\u00d7A2\u00d7A2",
+      "description": "A4 \u00d7 A2\u00b2"
+    },
+    {
+      "label": "A4A2A1A1",
+      "levi_type": "A4\u00d7A2\u00d7A1\u00d7A1",
+      "description": "A4 \u00d7 A2 \u00d7 A1\u00b2"
+    },
+    {
+      "label": "A4A1A1A1A1",
+      "levi_type": "A4\u00d7A1\u2074",
+      "description": "A4 \u00d7 A1\u2074"
+    },
+    {
+      "label": "A3",
+      "levi_type": "A3",
+      "description": "A3 (tetrahedron)"
+    },
+    {
+      "label": "A3A3",
+      "levi_type": "A3\u00d7A3",
+      "description": "A3\u00b2 (twin tetrahedra)"
+    },
+    {
+      "label": "A3A3A2",
+      "levi_type": "A3\u00d7A3\u00d7A2",
+      "description": "A3\u00b2 \u00d7 A2"
+    },
+    {
+      "label": "A3A3A1A1",
+      "levi_type": "A3\u00d7A3\u00d7A1\u00d7A1",
+      "description": "A3\u00b2 \u00d7 A1\u00b2"
+    },
+    {
+      "label": "A3A2",
+      "levi_type": "A3\u00d7A2",
+      "description": "A3 \u00d7 A2"
+    },
+    {
+      "label": "A3A2A2A1",
+      "levi_type": "A3\u00d7A2\u00d7A2\u00d7A1",
+      "description": "A3 \u00d7 A2\u00b2 \u00d7 A1"
+    },
+    {
+      "label": "A3A2A1A1A1",
+      "levi_type": "A3\u00d7A2\u00d7A1\u00b3",
+      "description": "A3 \u00d7 A2 \u00d7 A1\u00b3"
+    },
+    {
+      "label": "A3A1A1A1A1A1",
+      "levi_type": "A3\u00d7A1\u2075",
+      "description": "A3 \u00d7 A1\u2075"
+    },
+    {
+      "label": "A2",
+      "levi_type": "A2",
+      "description": "A2 (triangle)"
+    },
+    {
+      "label": "A2A2",
+      "levi_type": "A2\u00d7A2",
+      "description": "A2\u00b2 (twin triangles)"
+    },
+    {
+      "label": "A2A2A2",
+      "levi_type": "A2\u00d7A2\u00d7A2",
+      "description": "A2\u00b3 (triple triangles)"
+    },
+    {
+      "label": "A2A2A2A2",
+      "levi_type": "A2\u2074",
+      "description": "A2\u2074 (quad triangles)"
+    },
+    {
+      "label": "A2A2A2A1A1",
+      "levi_type": "A2\u00b3\u00d7A1\u00b2",
+      "description": "A2\u00b3 \u00d7 A1\u00b2"
+    },
+    {
+      "label": "A2A2A1A1A1A1",
+      "levi_type": "A2\u00b2\u00d7A1\u2074",
+      "description": "A2\u00b2 \u00d7 A1\u2074"
+    },
+    {
+      "label": "A2A1A1A1A1A1A1",
+      "levi_type": "A2\u00d7A1\u2076",
+      "description": "A2 \u00d7 A1\u2076"
+    },
+    {
+      "label": "A1",
+      "levi_type": "A1",
+      "description": "A1 (single reflection)"
+    },
+    {
+      "label": "A1A1A1A1A1A1A1A1",
+      "levi_type": "A1\u2078",
+      "description": "A1\u2078 (the octave)"
+    }
+  ]
+}
