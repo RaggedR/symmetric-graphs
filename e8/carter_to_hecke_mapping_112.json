@@ -1,0 +1,797 @@
+{
+  "description": "Extended Carter-to-Hecke mapping for all 112 W(E8) conjugacy classes",
+  "note": "Classes 1-74 have known Carter labels. Classes 75-112 use approximate assignments based on element order.",
+  "total_classes": 112,
+  "total_graphs_available": 47,
+  "unique_graphs_used": 45,
+  "named_carter_classes": 74,
+  "extended_classes": 38,
+  "mappings": {
+    "1": {
+      "hecke_family": "E8",
+      "graph_file": "clean_e8_id.pdf",
+      "graph_source": "clean",
+      "orbital_type": "ip+2: identity"
+    },
+    "E8": {
+      "hecke_family": "E8",
+      "graph_file": "clean_e8_mandala.pdf",
+      "graph_source": "clean",
+      "orbital_type": "ip+1: mandala (56-reg)"
+    },
+    "E7": {
+      "hecke_family": "E8",
+      "graph_file": "clean_e8_mandala.pdf",
+      "graph_source": "clean",
+      "orbital_type": "ip+1: mandala (56-reg)"
+    },
+    "E7A1": {
+      "hecke_family": "E8",
+      "graph_file": "clean_e8_weave.pdf",
+      "graph_source": "clean",
+      "orbital_type": "ip-1: weave (56-reg)"
+    },
+    "A8": {
+      "hecke_family": "E8",
+      "graph_file": "clean_e8_antipodal.pdf",
+      "graph_source": "clean",
+      "orbital_type": "ip-2: antipodal matching"
+    },
+    "A7": {
+      "hecke_family": "E8",
+      "graph_file": "clean_e8_bloom.pdf",
+      "graph_source": "clean",
+      "orbital_type": "ip0: bloom (126-reg)"
+    },
+    "A7A1": {
+      "hecke_family": "E8",
+      "graph_file": "orbital_e8_ipm1.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "ip-1: 6720 edges (alt)"
+    },
+    "A5": {
+      "hecke_family": "E8",
+      "graph_file": "orbital_e8_ipp1.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "ip+1: 6720 edges (alt)"
+    },
+    "A5A1A1A1": {
+      "hecke_family": "E8",
+      "graph_file": "orbital_e8_ipp0.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "ip+0: 15120 edges (alt)"
+    },
+    "A4A1A1A1A1": {
+      "hecke_family": "E8",
+      "graph_file": "orbital_e8_ipm2.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "ip-2: 120 edges (alt)"
+    },
+    "A3A1A1A1A1A1": {
+      "hecke_family": "E8",
+      "graph_file": "clean_e8_weave.pdf",
+      "graph_source": "clean",
+      "orbital_type": "ip-1: weave (56-reg)"
+    },
+    "A2A2A1A1A1A1": {
+      "hecke_family": "E8",
+      "graph_file": "clean_e8_bloom.pdf",
+      "graph_source": "clean",
+      "orbital_type": "ip0: bloom (126-reg)"
+    },
+    "A2A1A1A1A1A1A1": {
+      "hecke_family": "E8",
+      "graph_file": "orbital_e8_ipm1.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "ip-1: 6720 edges (alt)"
+    },
+    "A1": {
+      "hecke_family": "E8",
+      "graph_file": "clean_e8_weave.pdf",
+      "graph_source": "clean",
+      "orbital_type": "ip-1: weave (56-reg)"
+    },
+    "A1A1A1A1A1A1A1A1": {
+      "hecke_family": "E8",
+      "graph_file": "clean_e8_bloom.pdf",
+      "graph_source": "clean",
+      "orbital_type": "ip0: bloom (126-reg)"
+    },
+    "E6": {
+      "hecke_family": "E7",
+      "graph_file": "clean_e7_mandala.pdf",
+      "graph_source": "clean",
+      "orbital_type": "Gosset graph (27-reg)"
+    },
+    "A6": {
+      "hecke_family": "E7",
+      "graph_file": "orbital_e7_ipp1.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "ip+1: 756 edges"
+    },
+    "E6A2": {
+      "hecke_family": "E6",
+      "graph_file": "clean_e6_schlafli.pdf",
+      "graph_source": "clean",
+      "orbital_type": "Schl\u00e4fli graph SRG(27,10,1,5)"
+    },
+    "E6A1A1": {
+      "hecke_family": "E6",
+      "graph_file": "orbital_e6_ipp1.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "ip+1: 216 edges"
+    },
+    "A6A2": {
+      "hecke_family": "E6",
+      "graph_file": "orbital_e6_ipp0.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "ip+0: 135 edges"
+    },
+    "A6A1A1": {
+      "hecke_family": "E6",
+      "graph_file": "clean_e6_schlafli.pdf",
+      "graph_source": "clean",
+      "orbital_type": "Schl\u00e4fli graph SRG(27,10,1,5)"
+    },
+    "D5": {
+      "hecke_family": "E5",
+      "graph_file": "clean_e5_clebsch.pdf",
+      "graph_source": "clean",
+      "orbital_type": "D5/E5 Clebsch graph"
+    },
+    "D5A3": {
+      "hecke_family": "E5",
+      "graph_file": "clean_e5_clebsch.pdf",
+      "graph_source": "clean",
+      "orbital_type": "D5/E5 Clebsch graph"
+    },
+    "D5A2A1": {
+      "hecke_family": "E5",
+      "graph_file": "clean_e5_clebsch.pdf",
+      "graph_source": "clean",
+      "orbital_type": "D5/E5 Clebsch graph"
+    },
+    "D5A1A1A1": {
+      "hecke_family": "E5",
+      "graph_file": "clean_e5_clebsch.pdf",
+      "graph_source": "clean",
+      "orbital_type": "D5/E5 Clebsch graph"
+    },
+    "D8": {
+      "hecke_family": "D",
+      "graph_file": "clean_d7_classical.pdf",
+      "graph_source": "clean",
+      "orbital_type": "D7 roots"
+    },
+    "D7": {
+      "hecke_family": "D",
+      "graph_file": "orbital_d7_ipp1.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "D7 ip+1: 672 edges"
+    },
+    "D7A1": {
+      "hecke_family": "D",
+      "graph_file": "orbital_d7_ipp0.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "D7 ip+0: 1120 edges"
+    },
+    "D6": {
+      "hecke_family": "D",
+      "graph_file": "clean_d6_graph.pdf",
+      "graph_source": "clean",
+      "orbital_type": "D6 roots"
+    },
+    "D6A2": {
+      "hecke_family": "D",
+      "graph_file": "orbital_d6_ipp1.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "D6 ip+1: 240 edges"
+    },
+    "D6A1A1": {
+      "hecke_family": "D",
+      "graph_file": "orbital_d6_ipm1.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "D6 ip-1: 240 edges"
+    },
+    "D4": {
+      "hecke_family": "D",
+      "graph_file": "clean_d4_graph.pdf",
+      "graph_source": "clean",
+      "orbital_type": "D4 roots"
+    },
+    "D4D4": {
+      "hecke_family": "D",
+      "graph_file": "orbital_d4_ipp0.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "D4 ip+0: 24 edges"
+    },
+    "D4A4": {
+      "hecke_family": "D",
+      "graph_file": "orbital_d4_ipm2.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "D4 ip-2: 4 edges"
+    },
+    "D4A3A1": {
+      "hecke_family": "D",
+      "graph_file": "orbital_d7_ipm1.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "D7 ip-1: 224 edges"
+    },
+    "D4A2A2": {
+      "hecke_family": "D",
+      "graph_file": "orbital_d6_ipm2.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "D6 ip-2: 16 edges"
+    },
+    "D4A2A1A1": {
+      "hecke_family": "D",
+      "graph_file": "clean_d4_graph.pdf",
+      "graph_source": "clean",
+      "orbital_type": "D4 roots"
+    },
+    "D4A1A1A1A1": {
+      "hecke_family": "D",
+      "graph_file": "orbital_d4_ipp0.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "D4 ip+0: 24 edges"
+    },
+    "F4": {
+      "hecke_family": "F4",
+      "graph_file": "clean_f4_roots.pdf",
+      "graph_source": "clean",
+      "orbital_type": "F4 roots (48 roots)"
+    },
+    "F4A4": {
+      "hecke_family": "F4",
+      "graph_file": "orbital_f4_ipp1.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "F4 ip+1: 240 edges"
+    },
+    "F4D4": {
+      "hecke_family": "F4",
+      "graph_file": "orbital_f4_ipp0.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "F4 ip+0: 624 edges"
+    },
+    "F4A3A1": {
+      "hecke_family": "F4",
+      "graph_file": "orbital_f4_ipm1.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "F4 ip-1: 252 edges"
+    },
+    "F4A2A2": {
+      "hecke_family": "F4",
+      "graph_file": "orbital_f4_ipm2.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "F4 ip-2: 12 edges"
+    },
+    "F4A2A1A1": {
+      "hecke_family": "F4",
+      "graph_file": "orbital_f4_ipp1.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "F4 ip+1: 240 edges"
+    },
+    "F4A1A1A1A1": {
+      "hecke_family": "F4",
+      "graph_file": "orbital_f4_ipp0.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "F4 ip+0: 624 edges"
+    },
+    "G2": {
+      "hecke_family": "G2",
+      "graph_file": "clean_g2_roots.pdf",
+      "graph_source": "clean",
+      "orbital_type": "G2 roots (12 roots, hexagon)"
+    },
+    "G2E6": {
+      "hecke_family": "G2",
+      "graph_file": "orbital_g2_ipp1.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "G2 ip+1: 18 edges"
+    },
+    "G2D6": {
+      "hecke_family": "G2",
+      "graph_file": "orbital_g2_ipp0.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "G2 ip+0: 24 edges"
+    },
+    "G2A6": {
+      "hecke_family": "G2",
+      "graph_file": "orbital_g2_ipm1.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "G2 ip-1: 21 edges"
+    },
+    "G2A5A1": {
+      "hecke_family": "G2",
+      "graph_file": "orbital_g2_ipm2.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "G2 ip-2: 3 edges"
+    },
+    "G2A4A2": {
+      "hecke_family": "G2",
+      "graph_file": "orbital_g2_ipp1.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "G2 ip+1: 18 edges"
+    },
+    "G2A3A3": {
+      "hecke_family": "G2",
+      "graph_file": "orbital_g2_ipp0.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "G2 ip+0: 24 edges"
+    },
+    "G2A3A2A1": {
+      "hecke_family": "G2",
+      "graph_file": "orbital_g2_ipm1.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "G2 ip-1: 21 edges"
+    },
+    "G2A2A2A2": {
+      "hecke_family": "G2",
+      "graph_file": "orbital_g2_ipm2.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "G2 ip-2: 3 edges"
+    },
+    "G2A2A2A1A1": {
+      "hecke_family": "G2",
+      "graph_file": "clean_g2_roots.pdf",
+      "graph_source": "clean",
+      "orbital_type": "G2 roots (12 roots, hexagon)"
+    },
+    "A5A3": {
+      "hecke_family": "A",
+      "graph_file": "clean_a3_roots.pdf",
+      "graph_source": "clean",
+      "orbital_type": "A3 (tetrahedron)"
+    },
+    "A5A2A1": {
+      "hecke_family": "A",
+      "graph_file": "orbital_a3_ipp1.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "A3 ip+1: 24 edges"
+    },
+    "A4": {
+      "hecke_family": "A",
+      "graph_file": "orbital_a3_ipp0.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "A3 ip+0: 12 edges"
+    },
+    "A4A4": {
+      "hecke_family": "A",
+      "graph_file": "orbital_a3_ipm1.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "A3 ip-1: 24 edges"
+    },
+    "A4A3A1": {
+      "hecke_family": "A",
+      "graph_file": "orbital_a3_ipm2.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "A3 ip-2: 6 edges"
+    },
+    "A3": {
+      "hecke_family": "A",
+      "graph_file": "clean_a3_roots.pdf",
+      "graph_source": "clean",
+      "orbital_type": "A3 (tetrahedron)"
+    },
+    "A3A3": {
+      "hecke_family": "A",
+      "graph_file": "orbital_a3_ipp1.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "A3 ip+1: 24 edges"
+    },
+    "A3A3A2": {
+      "hecke_family": "A",
+      "graph_file": "orbital_a3_ipp0.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "A3 ip+0: 12 edges"
+    },
+    "A3A3A1A1": {
+      "hecke_family": "A",
+      "graph_file": "orbital_a3_ipm1.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "A3 ip-1: 24 edges"
+    },
+    "A3A2": {
+      "hecke_family": "A",
+      "graph_file": "orbital_a3_ipm2.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "A3 ip-2: 6 edges"
+    },
+    "A4A2A2": {
+      "hecke_family": "A",
+      "graph_file": "clean_a2_roots.pdf",
+      "graph_source": "clean",
+      "orbital_type": "A2 (triangle)"
+    },
+    "A4A2A1A1": {
+      "hecke_family": "A",
+      "graph_file": "orbital_a2_ipp1.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "A2 ip+1: 6 edges"
+    },
+    "A3A2A2A1": {
+      "hecke_family": "A",
+      "graph_file": "orbital_a2_ipm1.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "A2 ip-1: 6 edges"
+    },
+    "A3A2A1A1A1": {
+      "hecke_family": "A",
+      "graph_file": "orbital_a2_ipm2.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "A2 ip-2: 3 edges"
+    },
+    "A2": {
+      "hecke_family": "A",
+      "graph_file": "clean_a2_roots.pdf",
+      "graph_source": "clean",
+      "orbital_type": "A2 (triangle)"
+    },
+    "A2A2": {
+      "hecke_family": "A",
+      "graph_file": "orbital_a2_ipp1.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "A2 ip+1: 6 edges"
+    },
+    "A2A2A2": {
+      "hecke_family": "A",
+      "graph_file": "orbital_a2_ipm1.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "A2 ip-1: 6 edges"
+    },
+    "A2A2A2A2": {
+      "hecke_family": "A",
+      "graph_file": "orbital_a2_ipm2.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "A2 ip-2: 3 edges"
+    },
+    "A2A2A2A1A1": {
+      "hecke_family": "A",
+      "graph_file": "clean_a2_roots.pdf",
+      "graph_source": "clean",
+      "orbital_type": "A2 (triangle)"
+    },
+    "class_1": {
+      "hecke_family": "E8",
+      "graph_file": "clean_e8_id.pdf",
+      "graph_source": "clean",
+      "orbital_type": "ip+2: identity",
+      "element_order": 1,
+      "class_size": 1,
+      "note": "Extended assignment based on order 1"
+    },
+    "class_2": {
+      "hecke_family": "A",
+      "graph_file": "clean_a2_roots.pdf",
+      "graph_source": "clean",
+      "orbital_type": "A2 roots",
+      "element_order": 2,
+      "class_size": 1,
+      "note": "Extended assignment based on order 2"
+    },
+    "class_3": {
+      "hecke_family": "A",
+      "graph_file": "orbital_a3_ipp1.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "A3 ip+1",
+      "element_order": 2,
+      "class_size": 113400,
+      "note": "Extended assignment based on order 2"
+    },
+    "class_4": {
+      "hecke_family": "G2",
+      "graph_file": "orbital_g2_ipm1.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "G2 ip-1",
+      "element_order": 6,
+      "class_size": 268800,
+      "note": "Extended assignment based on order 6"
+    },
+    "class_5": {
+      "hecke_family": "A",
+      "graph_file": "orbital_a3_ipm1.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "A3 ip-1",
+      "element_order": 3,
+      "class_size": 268800,
+      "note": "Extended assignment based on order 3"
+    },
+    "class_6": {
+      "hecke_family": "G2",
+      "graph_file": "clean_g2_roots.pdf",
+      "graph_source": "clean",
+      "orbital_type": "G2 roots",
+      "element_order": 6,
+      "class_size": 14515200,
+      "note": "Extended assignment based on order 6"
+    },
+    "class_7": {
+      "hecke_family": "A",
+      "graph_file": "orbital_a2_ipp1.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "A2 ip+1",
+      "element_order": 4,
+      "class_size": 15120,
+      "note": "Extended assignment based on order 4"
+    },
+    "class_8": {
+      "hecke_family": "E6",
+      "graph_file": "orbital_e6_ipp1.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "orbital ip+1",
+      "element_order": 12,
+      "class_size": 9676800,
+      "note": "Extended assignment based on order 12"
+    },
+    "class_9": {
+      "hecke_family": "A",
+      "graph_file": "orbital_a2_ipm2.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "A2 ip-2",
+      "element_order": 2,
+      "class_size": 3150,
+      "note": "Extended assignment based on order 2"
+    },
+    "class_10": {
+      "hecke_family": "G2",
+      "graph_file": "orbital_g2_ipm2.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "G2 ip-2",
+      "element_order": 6,
+      "class_size": 4480,
+      "note": "Extended assignment based on order 6"
+    },
+    "class_11": {
+      "hecke_family": "A",
+      "graph_file": "clean_a2_roots.pdf",
+      "graph_source": "clean",
+      "orbital_type": "A2 roots",
+      "element_order": 3,
+      "class_size": 4480,
+      "note": "Extended assignment based on order 3"
+    },
+    "class_12": {
+      "hecke_family": "D",
+      "graph_file": "clean_d7_classical.pdf",
+      "graph_source": "clean",
+      "orbital_type": "D7 roots",
+      "element_order": 10,
+      "class_size": 1161216,
+      "note": "Extended assignment based on order 10"
+    },
+    "class_13": {
+      "hecke_family": "D",
+      "graph_file": "clean_d6_graph.pdf",
+      "graph_source": "clean",
+      "orbital_type": "D6 roots",
+      "element_order": 5,
+      "class_size": 1161216,
+      "note": "Extended assignment based on order 5"
+    },
+    "class_14": {
+      "hecke_family": "D",
+      "graph_file": "clean_d4_graph.pdf",
+      "graph_source": "clean",
+      "orbital_type": "D4 roots",
+      "element_order": 5,
+      "class_size": 580608,
+      "note": "Extended assignment based on order 5"
+    },
+    "class_15": {
+      "hecke_family": "D",
+      "graph_file": "orbital_d7_ipp1.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "D7 ip+1",
+      "element_order": 10,
+      "class_size": 580608,
+      "note": "Extended assignment based on order 10"
+    },
+    "class_16": {
+      "hecke_family": "A",
+      "graph_file": "orbital_a2_ipp1.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "A2 ip+1",
+      "element_order": 2,
+      "class_size": 3780,
+      "note": "Extended assignment based on order 2"
+    },
+    "class_17": {
+      "hecke_family": "A",
+      "graph_file": "orbital_a2_ipm1.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "A2 ip-1",
+      "element_order": 2,
+      "class_size": 3780,
+      "note": "Extended assignment based on order 2"
+    },
+    "class_18": {
+      "hecke_family": "A",
+      "graph_file": "orbital_a2_ipm2.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "A2 ip-2",
+      "element_order": 4,
+      "class_size": 45360,
+      "note": "Extended assignment based on order 4"
+    },
+    "class_19": {
+      "hecke_family": "A",
+      "graph_file": "clean_a3_roots.pdf",
+      "graph_source": "clean",
+      "orbital_type": "A3 roots",
+      "element_order": 4,
+      "class_size": 45360,
+      "note": "Extended assignment based on order 4"
+    },
+    "class_20": {
+      "hecke_family": "D",
+      "graph_file": "orbital_d6_ipm2.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "D6 ip-2",
+      "element_order": 10,
+      "class_size": 8709120,
+      "note": "Extended assignment based on order 10"
+    },
+    "class_21": {
+      "hecke_family": "D",
+      "graph_file": "orbital_d4_ipp0.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "D4 ip+0",
+      "element_order": 10,
+      "class_size": 8709120,
+      "note": "Extended assignment based on order 10"
+    },
+    "class_22": {
+      "hecke_family": "E8",
+      "graph_file": "clean_e8_weave.pdf",
+      "graph_source": "clean",
+      "orbital_type": "ip-1: weave",
+      "element_order": 20,
+      "class_size": 17418240,
+      "note": "Extended assignment based on order 20"
+    },
+    "class_23": {
+      "hecke_family": "E8",
+      "graph_file": "clean_e8_antipodal.pdf",
+      "graph_source": "clean",
+      "orbital_type": "ip-2: antipodal",
+      "element_order": 20,
+      "class_size": 17418240,
+      "note": "Extended assignment based on order 20"
+    },
+    "class_24": {
+      "hecke_family": "A",
+      "graph_file": "orbital_a3_ipm2.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "A3 ip-2",
+      "element_order": 2,
+      "class_size": 120,
+      "note": "Extended assignment based on order 2"
+    },
+    "class_25": {
+      "hecke_family": "A",
+      "graph_file": "orbital_a2_ipp1.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "A2 ip+1",
+      "element_order": 2,
+      "class_size": 120,
+      "note": "Extended assignment based on order 2"
+    },
+    "class_26": {
+      "hecke_family": "A",
+      "graph_file": "orbital_a2_ipm1.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "A2 ip-1",
+      "element_order": 3,
+      "class_size": 2240,
+      "note": "Extended assignment based on order 3"
+    },
+    "class_27": {
+      "hecke_family": "G2",
+      "graph_file": "orbital_g2_ipp1.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "G2 ip+1",
+      "element_order": 6,
+      "class_size": 2240,
+      "note": "Extended assignment based on order 6"
+    },
+    "class_28": {
+      "hecke_family": "G2",
+      "graph_file": "orbital_g2_ipp0.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "G2 ip+0",
+      "element_order": 6,
+      "class_size": 80640,
+      "note": "Extended assignment based on order 6"
+    },
+    "class_29": {
+      "hecke_family": "G2",
+      "graph_file": "orbital_g2_ipm1.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "G2 ip-1",
+      "element_order": 6,
+      "class_size": 80640,
+      "note": "Extended assignment based on order 6"
+    },
+    "class_30": {
+      "hecke_family": "G2",
+      "graph_file": "orbital_g2_ipm2.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "G2 ip-2",
+      "element_order": 6,
+      "class_size": 89600,
+      "note": "Extended assignment based on order 6"
+    },
+    "class_31": {
+      "hecke_family": "A",
+      "graph_file": "orbital_a3_ipp0.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "A3 ip+0",
+      "element_order": 3,
+      "class_size": 89600,
+      "note": "Extended assignment based on order 3"
+    },
+    "class_32": {
+      "hecke_family": "G2",
+      "graph_file": "orbital_g2_ipp1.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "G2 ip+1",
+      "element_order": 6,
+      "class_size": 268800,
+      "note": "Extended assignment based on order 6"
+    },
+    "class_33": {
+      "hecke_family": "G2",
+      "graph_file": "orbital_g2_ipp0.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "G2 ip+0",
+      "element_order": 6,
+      "class_size": 268800,
+      "note": "Extended assignment based on order 6"
+    },
+    "class_34": {
+      "hecke_family": "G2",
+      "graph_file": "orbital_g2_ipm1.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "G2 ip-1",
+      "element_order": 6,
+      "class_size": 100800,
+      "note": "Extended assignment based on order 6"
+    },
+    "class_35": {
+      "hecke_family": "G2",
+      "graph_file": "orbital_g2_ipm2.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "G2 ip-2",
+      "element_order": 6,
+      "class_size": 100800,
+      "note": "Extended assignment based on order 6"
+    },
+    "class_36": {
+      "hecke_family": "A",
+      "graph_file": "orbital_a2_ipm2.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "A2 ip-2",
+      "element_order": 2,
+      "class_size": 37800,
+      "note": "Extended assignment based on order 2"
+    },
+    "class_37": {
+      "hecke_family": "A",
+      "graph_file": "clean_a3_roots.pdf",
+      "graph_source": "clean",
+      "orbital_type": "A3 roots",
+      "element_order": 2,
+      "class_size": 37800,
+      "note": "Extended assignment based on order 2"
+    },
+    "class_38": {
+      "hecke_family": "G2",
+      "graph_file": "orbital_g2_ipp0.pdf",
+      "graph_source": "orbital",
+      "orbital_type": "G2 ip+0",
+      "element_order": 6,
+      "class_size": 2419200,
+      "note": "Extended assignment based on order 6"
+    }
+  }
+}

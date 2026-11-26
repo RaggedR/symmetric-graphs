@@ -1,0 +1,34 @@
+\documentclass[tikz,border=6pt]{standalone}
+\usepackage{tikz}
+\begin{document}
+\begin{tikzpicture}
+\definecolor{ring0}{rgb}{1.000,0.440,0.200}
+\definecolor{ring1}{rgb}{0.600,0.200,1.000}
+\definecolor{bg}{rgb}{0.04,0.05,0.09}
+\fill[bg] (-8.2,-8.9) rectangle (8.2,8.2);
+\draw[ring0,line width=0.5pt,opacity=0.55] (2.980,2.980)--(-1.091,4.071);
+\draw[ring0,line width=0.5pt,opacity=0.55] (2.980,2.980)--(4.071,-1.091);
+\draw[ring1,line width=0.5pt,opacity=0.55] (2.980,2.980)--(7.051,1.889);
+\draw[ring1,line width=0.5pt,opacity=0.55] (-1.091,4.071)--(-5.162,5.162);
+\draw[ring1,line width=0.5pt,opacity=0.55] (-4.071,1.091)--(-7.051,-1.889);
+\draw[ring0,line width=0.5pt,opacity=0.55] (-2.980,-2.980)--(1.091,-4.071);
+\draw[ring1,line width=0.5pt,opacity=0.55] (1.091,-4.071)--(5.162,-5.162);
+\draw[ring1,line width=0.5pt,opacity=0.55] (4.071,-1.091)--(5.162,-5.162);
+\draw[ring1,line width=0.5pt,opacity=0.55] (1.889,7.051)--(-5.162,5.162);
+\draw[ring1,line width=0.5pt,opacity=0.55] (1.889,7.051)--(7.051,1.889);
+\draw[ring1,line width=0.5pt,opacity=0.55] (-5.162,5.162)--(-7.051,-1.889);
+\draw[ring1,line width=0.5pt,opacity=0.55] (-1.889,-7.051)--(5.162,-5.162);
+\fill[ring0] (2.980,2.980) circle (3.0pt);
+\fill[ring0] (-1.091,4.071) circle (3.0pt);
+\fill[ring0] (-4.071,1.091) circle (3.0pt);
+\fill[ring0] (-2.980,-2.980) circle (3.0pt);
+\fill[ring0] (1.091,-4.071) circle (3.0pt);
+\fill[ring0] (4.071,-1.091) circle (3.0pt);
+\fill[ring1] (1.889,7.051) circle (3.0pt);
+\fill[ring1] (-5.162,5.162) circle (3.0pt);
+\fill[ring1] (-7.051,-1.889) circle (3.0pt);
+\fill[ring1] (-1.889,-7.051) circle (3.0pt);
+\fill[ring1] (5.162,-5.162) circle (3.0pt);
+\fill[ring1] (7.051,1.889) circle (3.0pt);
+\end{tikzpicture}
+\end{document}

@@ -164,6 +164,22 @@ GraphLibrary.tuttecoxeter := function()
                adj := LCFGraph(30, [-13, -9, 7, -7, 9, 13]));
 end;
 
+# --- E8 Coxeter graph (Dynkin diagram) ---
+# Tree structure with 8 vertices representing the E8 root system
+# Structure: linear chain 1-2-3-4-5-6-7 with 8 branching from 3
+GraphLibrary.e8_coxeter := function()
+    return rec(name := "E8-Coxeter", n := 8, adj := [
+        [2],           # 1 connects to 2
+        [1,3],         # 2 connects to 1,3
+        [2,4,8],       # 3 connects to 2,4,8 (branch point)
+        [3,5],         # 4 connects to 3,5
+        [4,6],         # 5 connects to 4,6
+        [5,7],         # 6 connects to 5,7
+        [6],           # 7 connects to 6
+        [3]            # 8 connects to 3 (branch)
+    ]);
+end;
+
 # Extra GraphLibrary entries restored from pre-restructure symmetric-layout.g
 # (voltage graphs, PG(2,3), PSL(2,q) census graphs, GH(2,2) family, Meinhold-72)
 

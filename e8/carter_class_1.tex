@@ -1,0 +1,16 @@
+\documentclass[tikz,border=6pt]{standalone}
+\usepackage{graphicx}
+\usepackage{tikz}
+\begin{document}
+\begin{tikzpicture}
+\definecolor{bg}{rgb}{0.04,0.05,0.09}
+\fill[black] (-5.5,-5.5) rectangle (5.5,5.5);
+\begin{scope}
+\clip (-5.5,-5.5) rectangle (5.5,5.5);
+\node at (0,0) {\includegraphics[width=10.0cm]{orbital_e8_ipp0.pdf}};
+\end{scope}
+\begin{scope}[shift={(-4.9,4.9)}]
+\node[white!70!bg,font=\small] at (0,0) {1};
+\end{scope}
+\end{tikzpicture}
+\end{document}

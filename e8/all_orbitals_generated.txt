@@ -1,0 +1,35 @@
+# All generated Hecke algebra orbitals
+# Format: system | ip_value | pdf_file | num_edges
+
+E8   | -2 | orbital_e8_ipm2.pdf            |   120
+E8   | -1 | orbital_e8_ipm1.pdf            |  6720
+E8   | +0 | orbital_e8_ipp0.pdf            | 15120
+E8   | +1 | orbital_e8_ipp1.pdf            |  6720
+E7   | -1 | orbital_e7_ipm1.pdf            |    28
+E7   | +0 | orbital_e7_ipp0.pdf            |   756
+E7   | +1 | orbital_e7_ipp1.pdf            |   756
+E6   | +0 | orbital_e6_ipp0.pdf            |   135
+E6   | +1 | orbital_e6_ipp1.pdf            |   216
+G2   | -2 | orbital_g2_ipm2.pdf            |     3
+G2   | -1 | orbital_g2_ipm1.pdf            |    21
+G2   | +0 | orbital_g2_ipp0.pdf            |    24
+G2   | +1 | orbital_g2_ipp1.pdf            |    18
+F4   | -2 | orbital_f4_ipm2.pdf            |    12
+F4   | -1 | orbital_f4_ipm1.pdf            |   252
+F4   | +0 | orbital_f4_ipp0.pdf            |   624
+F4   | +1 | orbital_f4_ipp1.pdf            |   240
+A3   | -2 | orbital_a3_ipm2.pdf            |     6
+A3   | -1 | orbital_a3_ipm1.pdf            |    24
+A3   | +0 | orbital_a3_ipp0.pdf            |    12
+A3   | +1 | orbital_a3_ipp1.pdf            |    24
+A2   | -2 | orbital_a2_ipm2.pdf            |     3
+A2   | -1 | orbital_a2_ipm1.pdf            |     6
+A2   | +1 | orbital_a2_ipp1.pdf            |     6
+D7   | -1 | orbital_d7_ipm1.pdf            |   224
+D7   | +0 | orbital_d7_ipp0.pdf            |  1120
+D7   | +1 | orbital_d7_ipp1.pdf            |   672
+D6   | -2 | orbital_d6_ipm2.pdf            |    16
+D6   | -1 | orbital_d6_ipm1.pdf            |   240
+D6   | +1 | orbital_d6_ipp1.pdf            |   240
+D4   | -2 | orbital_d4_ipm2.pdf            |     4
+D4   | +0 | orbital_d4_ipp0.pdf            |    24
